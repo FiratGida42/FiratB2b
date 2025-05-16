@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sepetim - B2B Portalı</title>
+    <link href="https://bootswatch.com/5/yeti/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 70px; 
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 960px;
+        }
+        #cartTable th, #cartTable td {
+            vertical-align: middle;
+        }
+        .quantity-input {
+            width: 75px;
+            text-align: center;
+        }
+        .action-cell {
+            width: 80px;
+            text-align: center;
+        }
+        .price-cell {
+            width: 130px;
+            text-align: right;
+        }
+        .total-price-cell {
+            width: 150px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">B2B Portalı (Ürünler)</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavCart" aria-controls="navbarNavCart" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavCart">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/cart">Sepetim</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/orders">Siparişlerim</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Ürünlere Dön</a>
+                    </li>
+                    {% if admin_user %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarUserDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ admin_user }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarUserDropdown">
+                            <li><a class="dropdown-item" href="/admin/me">Admin Paneli</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout">Çıkış Yap</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1 class="mb-4">Sepet Detayları</h1>
+
+        <div id="cartContent" class="p-3 border rounded shadow-sm bg-white">
+            <p id="emptyCartMessage" class="text-center text-muted fs-5 py-5">Sepetinizde henüz ürün bulunmuyor. <a href="/">Alışverişe başlayın!</a></p>
+            <table class="table table-hover" id="cartTable" style="display:none;">
+                <thead class="table-light">
+                    <tr>
+                        <th>Ürün Adı</th>
+                        <th style="width: 100px;">Miktar</th>
+                        <th class="price-cell">Birim Fiyat</th>
+                        <th class="total-price-cell">Toplam Fiyat</th>
+                        <th class="action-cell">Sil</th>
+                    </tr>
+                </thead>
+                <tbody id="cartTableBody">
+                    <!-- Sepet ürünleri buraya dinamik olarak eklenecek -->
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="3" class="text-end fs-4">Genel Toplam:</th>
+                        <th id="cartGrandTotal" class="fs-4 total-price-cell">0.00 TL</th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div id="orderActions" class="mt-4 p-3 border rounded shadow-sm bg-white" style="display:none;">
+            <h3 class="mb-3">Siparişi Tamamla</h3>
+            <div class="row gy-3 align-items-end">
+                <div class="col-md-8"> <label for="customerName" class="form-label">Cari İsmi:</label>
+                    <input type="text" class="form-control form-control-lg" id="customerName" placeholder="Sipariş veren cari/firma adı">
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-success btn-lg w-100" id="saveOrderButton" onclick="saveOrderAndProceed()">Siparişi Kaydet ve Bitir</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cartTable = document.getElementById('cartTable');
+            const cartTableBody = document.getElementById('cartTableBody');
+            const cartGrandTotalElement = document.getElementById('cartGrandTotal');
+            const emptyCartMessage = document.getElementById('emptyCartMessage');
+            const orderActionsSection = document.getElementById('orderActions');
+            const customerNameInput = document.getElementById('customerName');
+            
+            // --- localStorage Fonksiyonları (Sepet için) ---
+            function getCartItemsFromStorage() {
+                const items = localStorage.getItem('b2bCartItems');
+                return items ? JSON.parse(items) : [];
+            }
+
+            function saveCartItemsToStorage(cartItems) {
+                localStorage.setItem('b2bCartItems', JSON.stringify(cartItems));
+            }
+
+            function clearCartFromStorage() {
+                localStorage.removeItem('b2bCartItems');
+            }
+            // --- localStorage Fonksiyonları (Eski Siparişler için - ARTIK KULLANILMAYACAK) ---
+            /*
+            function getPastOrdersFromStorage() {
+                const orders = localStorage.getItem('b2bPastOrders');
+                return orders ? JSON.parse(orders) : [];
+            }
+
+            function saveOrderToPastOrders(orderData) {
+                let pastOrders = getPastOrdersFromStorage();
+                pastOrders.push(orderData);
+                localStorage.setItem('b2bPastOrders', JSON.stringify(pastOrders));
+            }
+            */
+            // --- Bitiş ---
+
+            function formatCurrency(value) {
+                const formatter = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' });
+                return formatter.format(parseFloat(value || 0));
+            }
+
+            window.removeFromCart = function(stokKodu) {
+                let cartItems = getCartItemsFromStorage();
+                cartItems = cartItems.filter(item => item.stokKodu !== stokKodu);
+                saveCartItemsToStorage(cartItems);
+                renderCart();
+            }
+            
+            window.updateCartQuantity = function(stokKodu, newQuantity) {
+                let cartItems = getCartItemsFromStorage();
+                const itemIndex = cartItems.findIndex(item => item.stokKodu === stokKodu);
+                if (itemIndex === -1) return;
+
+                newQuantity = parseInt(newQuantity);
+                const currentItem = cartItems[itemIndex];
+
+                if (isNaN(newQuantity) || newQuantity < 0) {
+                    alert("Geçersiz miktar.");
+                    // Input'u eski değerine döndür
+                    const inputElement = document.querySelector(`#cartTableBody input[data-stok-kodu="${stokKodu}"]`);
+                    if(inputElement) inputElement.value = currentItem.quantity;
+                    return;
+                }
+                
+                if (newQuantity === 0) {
+                    removeFromCart(stokKodu);
+                    return;
+                }
+
+                if (newQuantity > currentItem.bakiye) {
+                    alert(`Yetersiz stok! Bu ürün için en fazla ${currentItem.bakiye} adet sipariş verebilirsiniz.`);
+                    const inputElement = document.querySelector(`#cartTableBody input[data-stok-kodu="${stokKodu}"]`);
+                    if(inputElement) inputElement.value = currentItem.quantity;
+                    return;
+                }
+                currentItem.quantity = newQuantity;
+                saveCartItemsToStorage(cartItems);
+                renderCart();
+            }
+
+            function renderCart() {
+                const cartItems = getCartItemsFromStorage();
+                cartTableBody.innerHTML = '';
+                let grandTotal = 0;
+                
+                if (cartItems.length === 0) {
+                    emptyCartMessage.style.display = 'block';
+                    cartTable.style.display = 'none';
+                    orderActionsSection.style.display = 'none';
+                } else {
+                    emptyCartMessage.style.display = 'none';
+                    cartTable.style.display = 'table';
+                    orderActionsSection.style.display = 'block';
+
+                    cartItems.forEach(item => {
+                        const tr = document.createElement('tr');
+                        const itemTotalPrice = item.quantity * item.price;
+                        grandTotal += itemTotalPrice;
+
+                        tr.innerHTML = `
+                            <td>${item.stokAdi} <small class="text-muted d-block">(${item.stokKodu})</small></td>
+                            <td>
+                                <input type="number" class="form-control form-control-sm quantity-input" 
+                                       value="${item.quantity}" data-stok-kodu="${item.stokKodu}"
+                                       onchange="updateCartQuantity('${item.stokKodu}', this.value)" 
+                                       min="1" max="${item.bakiye}">
+                            </td>
+                            <td class="price-cell">${formatCurrency(item.price)}</td>
+                            <td class="total-price-cell">${formatCurrency(itemTotalPrice)}</td>
+                            <td class="action-cell"><button class="btn btn-danger btn-sm" onclick="removeFromCart('${item.stokKodu}')">&times;</button></td>
+                        `;
+                        cartTableBody.appendChild(tr);
+                    });
+                }
+                cartGrandTotalElement.textContent = formatCurrency(grandTotal);
+            }
+
+            window.saveOrderAndProceed = async function() {
+                const customerName = customerNameInput.value.trim();
+                const cartItems = getCartItemsFromStorage();
+
+                if (cartItems.length === 0) {
+                    alert("Sepetiniz boş. Lütfen ürün ekleyin.");
+                    return;
+                }
+                // Cari ismi artık opsiyonel olduğu için zorunlu kontrolü kaldırabiliriz veya sunucuya bırakabiliriz.
+                // Şimdilik frontend'de zorunlu bırakmayalım, Pydantic modelinde opsiyonel (customer_name: Optional[str]).
+                // if (!customerName) {
+                //     alert("Lütfen sipariş için bir Cari İsmi girin.");
+                //     customerNameInput.focus();
+                //     return;
+                // }
+                
+                const orderPayload = {
+                    customer_name: customerName || null, // Boşsa null gönder
+                    items: cartItems.map(item => ({
+                        product_code: item.stokKodu,
+                        product_name: item.stokAdi,
+                        quantity: item.quantity,
+                        unit_price: item.price
+                    }))
+                };
+
+                try {
+                    const response = await fetch('/api/orders', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // CSRF token gerekirse buraya eklenecek (FastAPI'de session auth için genellikle gerekmez)
+                        },
+                        body: JSON.stringify(orderPayload)
+                    });
+
+                    if (response.ok) { // HTTP 200-299 aralığı için
+                        const newOrder = await response.json();
+                        alert(`Siparişiniz başarıyla oluşturuldu! Sipariş ID: ${newOrder.id}`);
+                        clearCartFromStorage();
+                        renderCart(); // Sepeti boşaltıp arayüzü güncelle
+                        customerNameInput.value = ''; // Cari adı alanını temizle
+                        // İsteğe bağlı: Kullanıcıyı siparişler sayfasına yönlendir
+                        // window.location.href = '/orders'; 
+                    } else {
+                        const errorData = await response.json().catch(() => ({ detail: "Bilinmeyen bir hata oluştu veya sunucudan JSON formatında yanıt gelmedi." }));
+                        console.error("Sipariş oluşturma hatası:", response.status, errorData);
+                        alert(`Sipariş oluşturulurken bir hata oluştu: ${errorData.detail || response.statusText}`);
+                    }
+                } catch (error) {
+                    console.error("Fetch hatası:", error);
+                    alert("Sipariş gönderilirken bir ağ hatası oluştu. Lütfen internet bağlantınızı kontrol edin.");
+                }
+            }
+            
+            renderCart(); // Sayfa yüklendiğinde sepeti render et
+        });
+    </script>
+</body>
+</html> 

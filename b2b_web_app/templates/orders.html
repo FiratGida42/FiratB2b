@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - B2B Portalı</title>
+    <link href="https://bootswatch.com/5/yeti/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 70px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 1140px; /* Daha geniş konteyner */
+        }
+        .accordion-button:not(.collapsed) {
+            color: #052c65;
+            background-color: #cfe2ff;
+        }
+        .order-card {
+            margin-bottom: 1.5rem;
+        }
+        .product-table th, .product-table td {
+            font-size: 0.9rem;
+        }
+        .order-summary-value {
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">B2B Portalı</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavOrders" aria-controls="navbarNavOrders" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavOrders">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Ürünler</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cart">Sepetim</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/orders">Siparişlerim</a>
+                    </li>
+                    {% if admin_user %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarUserDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ admin_user }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarUserDropdown">
+                            <li><a class="dropdown-item" href="/admin/me">Admin Paneli</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout">Çıkış Yap</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1 class="mb-4 text-center">{{ title }}</h1>
+
+        <div id="ordersContainer">
+            <!-- Siparişler buraya dinamik olarak eklenecek -->
+        </div>
+        <p id="noOrdersMessage" class="text-center text-muted fs-5 py-5" style="display:none;">
+            Henüz kayıtlı bir sipariş bulunmuyor.
+        </p>
+    </div>
+
+    <script>
+        // GLOBAL SCOPE TANIMLAMALARI BAŞLANGICI
+        let currentOrdersCache = [];
+
+        const OrderStatusEnum = {
+            PENDING: "Yeni Sipariş",
+            PROCESSING: "Hazırlanıyor",
+            SHIPPED: "Kargolandı",
+            DELIVERED: "Teslim Edildi",
+            CANCELED: "İptal Edildi",
+            RETURNED: "İade Edildi"
+        };
+
+        function formatCurrency(value) {
+            const formatter = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' });
+            return formatter.format(parseFloat(value || 0));
+        }
+
+        function formatDate(isoString) {
+            if (!isoString) return '';
+            const date = new Date(isoString);
+            return date.toLocaleString('tr-TR', {
+                year: 'numeric', month: 'long', day: 'numeric',
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            });
+        }
+
+        async function triggerDownload(fileObject) {
+            const shareData = {
+                files: [fileObject],
+                title: fileObject.name,
+                text: `Sipariş dosyası: ${fileObject.name}`,
+            };
+
+            if (navigator.canShare && navigator.canShare(shareData)) {
+                try {
+                    await navigator.share(shareData);
+                    console.log('Dosya başarıyla paylaşıldı.');
+                    // Paylaşım başarılı olduktan sonra ek bir işlem gerekirse buraya eklenebilir.
+                    // Örneğin, URL.revokeObjectURL(link.href) burada çağrılabilir AMA link burada tanımlı değil.
+                    // Dosya paylaşıldıktan sonra blob URL'nin serbest bırakılması gerekebilir, ancak navigator.share dosyayı kopyalar.
+                } catch (error) {
+                    console.error('Dosya paylaşılırken hata oluştu:', error);
+                    // Paylaşım başarısız olursa veya iptal edilirse, indirme yöntemine geri dön
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(fileObject);
+                    link.download = fileObject.name;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(link.href); // Kaynakları serbest bırak
+                }
+            } else {
+                // Tarayıcı Web Share API'sini desteklemiyorsa veya bu tür dosyayı paylaşamıyorsa, doğrudan indir
+                console.log('Web Share API desteklenmiyor veya bu dosya paylaşılamıyor, doğrudan indiriliyor.');
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(fileObject);
+                link.download = fileObject.name;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(link.href); // Kaynakları serbest bırak
+            }
+        }
+
+        function exportOrderToExcel(orderData) {
+            const wb = XLSX.utils.book_new();
+            const orderInfo = [
+                ["Sipariş Bilgileri:"],
+                ["Sipariş ID:", orderData.id],
+                ["Cari İsmi:", orderData.customer_name || "Belirtilmemiş"],
+                ["Sipariş Tarihi:", formatDate(orderData.created_at)],
+                ["Sipariş Durumu:", OrderStatusEnum[orderData.status] || orderData.status],
+                ["Genel Toplam:", formatCurrency(orderData.total_amount)],
+                [] 
+            ];
+            const productHeader = ["Stok Kodu", "Ürün Adı", "Miktar", "Birim Fiyat", "Toplam Fiyat"];
+            const productRows = orderData.items.map(item => ([
+                item.product_code,
+                item.product_name,
+                item.quantity,
+                parseFloat(item.unit_price || 0), 
+                parseFloat((item.quantity || 0) * (item.unit_price || 0))
+            ]));
+            const ws_data = [ ...orderInfo, ["Ürün Listesi:"], productHeader, ...productRows ];
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            
+            ws['!cols'] = [ { wch: 15 }, { wch: 40 }, { wch: 10 }, { wch: 15 }, { wch: 18 } ];
+            
+            const currencyStyle = { t: 'n', z: '#,##0.00 "TL"' };
+            for (let R = orderInfo.length + 1 + 1; R < ws_data.length; ++R) {
+                if(ws_data[R] && ws_data[R][3] !== undefined) {
+                     const cellRefD = XLSX.utils.encode_cell({c:3, r:R});
+                     if(!ws[cellRefD]) ws[cellRefD] = {};
+                     ws[cellRefD].t = currencyStyle.t;
+                     ws[cellRefD].z = currencyStyle.z;
+                }
+                if(ws_data[R] && ws_data[R][4] !== undefined) {
+                     const cellRefE = XLSX.utils.encode_cell({c:4, r:R});
+                     if(!ws[cellRefE]) ws[cellRefE] = {};
+                     ws[cellRefE].t = currencyStyle.t;
+                     ws[cellRefE].z = currencyStyle.z;
+                }
+            }
+
+            XLSX.utils.book_append_sheet(wb, ws, "SiparisDetayi");
+            const fileNameDate = new Date(orderData.created_at).toLocaleDateString('tr-TR').replace(/\./g, '-');
+            const safeCariIsmi = (orderData.customer_name || "musteri").replace(/[^a-z0-9_\-]/gi, '_').substring(0, 30);
+            const fileName = `siparis_${orderData.id}_${safeCariIsmi}_${fileNameDate}.xlsx`;
+            
+            const wbout = XLSX.write(wb, {bookType:'xlsx', type:'array'});
+            const blob = new Blob([wbout], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+            return new File([blob], fileName, {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+        }
+
+        function exportOrderToPDF(orderData) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF(); 
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            
+            let yPos = 15; 
+            const pageHeight = doc.internal.pageSize.height;
+            const pageWidth = doc.internal.pageSize.width;
+            const margin = 15;
+
+            const replaceTrChars = (text) => {
+                if (typeof text !== 'string') return text;
+                return text.replace(/İ/g, 'I').replace(/Ş/g, 'S').replace(/Ğ/g, 'G').replace(/Ü/g, 'U').replace(/Ö/g, 'O').replace(/Ç/g, 'C')
+                           .replace(/ı/g, 'i').replace(/ş/g, 's').replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ö/g, 'o').replace(/ç/g, 'c');
+            };
+
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text(replaceTrChars("SİPARİŞ DETAYLARI"), pageWidth / 2, yPos, { align: "center" });
+            yPos += 10;
+            
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.text(replaceTrChars(`Sipariş ID: ${orderData.id}`), margin, yPos);
+            doc.text(replaceTrChars(`Sipariş Tarihi: ${formatDate(orderData.created_at)}`), pageWidth - margin, yPos, { align: "right" });
+            yPos += 7;
+            doc.text(replaceTrChars(`Cari İsmi: ${orderData.customer_name || 'Belirtilmemiş'}`), margin, yPos);
+            doc.text(replaceTrChars(`Durum: ${OrderStatusEnum[orderData.status] || orderData.status}`), pageWidth - margin, yPos, { align: "right" });
+            yPos += 10;
+
+            const tableColumn = ["Stok Kodu", "Ürün Adı", "Miktar", "Birim Fiyat", "Toplam Fiyat"].map(replaceTrChars);
+            const tableRows = orderData.items.map(item => ([
+                replaceTrChars(item.product_code),
+                replaceTrChars(item.product_name), 
+                item.quantity,
+                parseFloat(item.unit_price || 0).toFixed(2) + " TL",
+                parseFloat((item.quantity || 0) * (item.unit_price || 0)).toFixed(2) + " TL"
+            ]));
+
+            doc.autoTable({
+                head: [tableColumn],
+                body: tableRows,
+                startY: yPos, 
+                theme: 'grid',
+                styles: { font: "helvetica", fontSize: 8, cellPadding: 1.5, overflow: 'linebreak' },
+                headStyles: { fillColor: [33, 37, 41], textColor: 255, fontStyle: 'bold', font: "helvetica", fontSize: 8, halign: 'center' },
+                columnStyles: {
+                    0: { cellWidth: 25, halign: 'left' },    
+                    1: { cellWidth: 'auto' },             
+                    2: { halign: 'center', cellWidth: 15 },
+                    3: { halign: 'right', cellWidth: 25 }, 
+                    4: { halign: 'right', cellWidth: 30 }  
+                },
+                tableWidth: 'auto', 
+                margin: { top: 0, right: margin, bottom: 25, left: margin }, 
+                showHead: 'everyPage',
+                didDrawPage: function (data) {
+                    doc.setFontSize(8);
+                    doc.setTextColor(100);
+                    doc.text(replaceTrChars('Sayfa ' + doc.internal.getNumberOfPages()), pageWidth - margin, pageHeight - 10, { align: 'right' });
+                }
+            });
+
+            let finalY = (doc.lastAutoTable.finalY || yPos + 10);
+            if (finalY > pageHeight - 30) { 
+                doc.addPage();
+                finalY = margin + 5; 
+            }
+            finalY += 10; 
+
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "bold");
+            doc.text(replaceTrChars("Genel Toplam:"), pageWidth - margin - 30, finalY, { align: "right" });
+            doc.setFont("helvetica", "normal");
+            doc.text(`${parseFloat(orderData.total_amount || 0).toFixed(2)} TL`, pageWidth - margin, finalY, { align: "right" });
+
+            const fileNameDate = new Date(orderData.created_at).toLocaleDateString('tr-TR').replace(/\./g, '-');
+            const safeCariIsmi = (orderData.customer_name || "musteri").replace(/[^a-z0-9_\-]/gi, '_').substring(0, 30);
+            const fileName = `siparis_${orderData.id}_${safeCariIsmi}_${fileNameDate}.pdf`;
+            
+            const blob = doc.output('blob');
+            return new File([blob], fileName, {type:"application/pdf"});
+        }
+
+        async function downloadOrder(orderId, format) {
+            const orderData = currentOrdersCache.find(order => order.id === orderId);
+            if (!orderData) {
+                alert("Geçersiz sipariş seçimi veya sipariş bulunamadı.");
+                return;
+            }
+            try {
+                let fileToDownload;
+                if (format === 'excel') {
+                    fileToDownload = exportOrderToExcel(orderData);
+                } else if (format === 'pdf') {
+                    fileToDownload = exportOrderToPDF(orderData);
+                }
+
+                if (fileToDownload) {
+                    await triggerDownload(fileToDownload);
+                } else {
+                    throw new Error("Dosya oluşturulamadı.");
+                }
+            } catch (error) {
+                console.error(`Sipariş ${format.toUpperCase()} oluşturma/indirme hatası (ID: ${orderId}):`, error);
+                alert(`Sipariş ${format.toUpperCase()} olarak dışa aktarılırken bir hata oluştu: ${error.message}`);
+            }
+        }
+        // GLOBAL SCOPE TANIMLAMALARI SONU
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const ordersContainer = document.getElementById('ordersContainer');
+            const noOrdersMessage = document.getElementById('noOrdersMessage');
+
+            async function fetchOrdersFromServer() {
+                try {
+                    const response = await fetch('/api/orders');
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => null);
+                        const detail = errorData?.detail || `Siparişler yüklenemedi (HTTP ${response.status})`;
+                        console.error("Sipariş yükleme hatası:", detail);
+                        noOrdersMessage.textContent = `Siparişler yüklenirken bir hata oluştu: ${detail}`;
+                        noOrdersMessage.style.display = 'block';
+                        ordersContainer.innerHTML = ''; 
+                        return [];
+                    }
+                    const orders = await response.json();
+                    return orders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); // En yeni sipariş üste
+                } catch (error) {
+                    console.error("Fetch hatası (siparişler):", error);
+                    noOrdersMessage.textContent = "Siparişler yüklenirken bir ağ hatası oluştu.";
+                    noOrdersMessage.style.display = 'block';
+                    ordersContainer.innerHTML = '';
+                    return [];
+                }
+            }
+
+            async function renderOrders() {
+                console.log("renderOrders fonksiyonu çağrıldı.");
+                const orders = await fetchOrdersFromServer();
+                currentOrdersCache = orders;
+                ordersContainer.innerHTML = '';
+
+                if (orders.length === 0) {
+                    noOrdersMessage.textContent = "Henüz kayıtlı bir siparişiniz bulunmuyor.";
+                    noOrdersMessage.style.display = 'block';
+                    return;
+                }
+                noOrdersMessage.style.display = 'none';
+
+                const accordion = document.createElement('div');
+                accordion.classList.add('accordion');
+                accordion.id = "ordersListAccordion";
+
+                orders.forEach((order, index) => {
+                    const accordionItemId = `order-${order.id}`;
+                    const collapseId = `collapse-${order.id}`;
+
+                    const itemDiv = document.createElement('div');
+                    itemDiv.classList.add('accordion-item', 'order-card');
+
+                    const header = document.createElement('h2');
+                    header.classList.add('accordion-header');
+                    header.id = `heading-${order.id}`;
+
+                    const button = document.createElement('button');
+                    button.classList.add('accordion-button', 'collapsed');
+                    button.type = 'button';
+                    button.setAttribute('data-bs-toggle', 'collapse');
+                    button.setAttribute('data-bs-target', `#${collapseId}`);
+                    button.setAttribute('aria-expanded', 'false');
+                    button.setAttribute('aria-controls', collapseId);
+                    button.innerHTML = `
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <div>
+                                <strong style="font-size: 1.05em;">${order.customer_name || 'Cari Belirtilmemiş'}</strong>
+                                <small class="text-muted ms-2">(${formatDate(order.created_at)})</small>
+                            </div>
+                            <span class="badge bg-primary" style="font-size: 0.9em;">Sipariş Detayları</span>
+                        </div>
+                    `;
+                    header.appendChild(button);
+
+                    const collapseDiv = document.createElement('div');
+                    collapseDiv.id = collapseId;
+                    collapseDiv.classList.add('accordion-collapse', 'collapse');
+                    collapseDiv.setAttribute('aria-labelledby', `heading-${order.id}`);
+                    // collapseDiv.setAttribute('data-bs-parent', '#ordersListAccordion'); // Tek seferde bir tane açık istiyorsanız
+
+                    const bodyDiv = document.createElement('div');
+                    bodyDiv.classList.add('accordion-body');
+
+                    // Ürün Tablosu
+                    const productTable = document.createElement('table');
+                    productTable.classList.add('table', 'table-sm', 'table-bordered', 'product-table');
+                    productTable.innerHTML = `
+                        <thead class="table-light">
+                            <tr>
+                                <th>Stok Kodu</th>
+                                <th>Ürün Adı</th>
+                                <th class="text-center">Miktar</th>
+                                <th class="text-end">Birim Fiyat</th>
+                                <th class="text-end">Ara Toplam</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${order.items.map(p_item => `
+                                <tr>
+                                    <td>${p_item.product_code}</td>
+                                    <td>${p_item.product_name}</td>
+                                    <td class="text-center">${p_item.quantity}</td>
+                                    <td class="text-end">${formatCurrency(p_item.unit_price)}</td>
+                                    <td class="text-end">${formatCurrency(p_item.quantity * p_item.unit_price)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                         <tfoot>
+                            <tr>
+                                <td colspan="4" class="text-end fw-bold">Sipariş Toplamı:</td>
+                                <td class="text-end fw-bold">${formatCurrency(order.total_amount)}</td>
+                            </tr>
+                        </tfoot>
+                    `;
+                    bodyDiv.appendChild(productTable);
+
+                    // Dışa Aktarma Butonları (fonksiyonlar güncellenmeli)
+                    // Şimdilik sadece place holder, fonksiyonları sonra bağlayacağız.
+                    const exportDiv = document.createElement('div');
+                    exportDiv.classList.add('mt-3');
+                    exportDiv.innerHTML = `
+                        <button class="btn btn-outline-success btn-sm me-2" onclick="downloadOrder(${order.id}, 'excel')">Excel'e Aktar</button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="downloadOrder(${order.id}, 'pdf')">PDF'e Aktar</button>
+                    `;
+                    bodyDiv.appendChild(exportDiv);
+
+                    collapseDiv.appendChild(bodyDiv);
+                    itemDiv.appendChild(header);
+                    itemDiv.appendChild(collapseDiv);
+                    accordion.appendChild(itemDiv);
+                });
+                ordersContainer.appendChild(accordion);
+            }
+
+            renderOrders();
+        });
+    </script>
+    <!-- Gerekli kütüphaneler (SheetJS, jsPDF, jsPDF-AutoTable, Bootstrap) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Bootstrap Icons CSS (Paylaşım ikonu için) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</body>
+</html> 

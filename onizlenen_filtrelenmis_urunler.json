@@ -1,0 +1,1118 @@
+[
+    {
+        "STOK_KODU": "054",
+        "STOK_ADI": "ALTINYILDIZ İRMİK 500 GR *24",
+        "BAKIYE": "48",
+        "SATIS_FIAT1": "19.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8695975001026",
+        "IMAGE_PATH_WEB": "images/product_054.jpg"
+    },
+    {
+        "STOK_KODU": "056",
+        "STOK_ADI": "ALTINYILDIZ BALDO PİRİNÇ 900 GR*12",
+        "BAKIYE": "84",
+        "SATIS_FIAT1": "63.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8695975010431",
+        "IMAGE_PATH_WEB": "images/product_056.jpg"
+    },
+    {
+        "STOK_KODU": "057",
+        "STOK_ADI": "ALTINYILDIZ BUĞDAY NİŞASTA 1KG*12",
+        "BAKIYE": "84",
+        "SATIS_FIAT1": "54.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8695975002078",
+        "IMAGE_PATH_WEB": "images/product_057.jpg"
+    },
+    {
+        "STOK_KODU": "058",
+        "STOK_ADI": "ALTINYILDIZ BUĞDAY NİŞASTA 400 GR*24",
+        "BAKIYE": "192",
+        "SATIS_FIAT1": "27.50000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8695975002047",
+        "IMAGE_PATH_WEB": "images/product_058.jpg"
+    },
+    {
+        "STOK_KODU": "059",
+        "STOK_ADI": "ALTINYILDIZ BULGUR 900 GR*12",
+        "BAKIYE": "29",
+        "SATIS_FIAT1": "27.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8695975010219",
+        "IMAGE_PATH_WEB": "images/product_059.jpg"
+    },
+    {
+        "STOK_KODU": "060",
+        "STOK_ADI": "ALTINYILDIZ KÖFTELİK DÜĞÜ 900 GR*12",
+        "BAKIYE": "12",
+        "SATIS_FIAT1": "27.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8695975010226",
+        "IMAGE_PATH_WEB": "images/product_060.jpg"
+    },
+    {
+        "STOK_KODU": "062",
+        "STOK_ADI": "ALTINYILDIZ FASÜLYE 900 GR*12",
+        "BAKIYE": "48",
+        "SATIS_FIAT1": "64.25000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8695975010028",
+        "IMAGE_PATH_WEB": "images/product_062.jpg"
+    },
+    {
+        "STOK_KODU": "063",
+        "STOK_ADI": "ALTINYILDIZ İRMİK 1 KG*12",
+        "BAKIYE": "120",
+        "SATIS_FIAT1": "37.50000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8695975001019",
+        "IMAGE_PATH_WEB": "images/product_063.jpg"
+    },
+    {
+        "STOK_KODU": "064",
+        "STOK_ADI": "ALTINYILDIZ KIRMIZI MERCİMEK 900 GR*12",
+        "BAKIYE": "96",
+        "SATIS_FIAT1": "48.50000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8695975010318",
+        "IMAGE_PATH_WEB": "images/product_064.jpg"
+    },
+    {
+        "STOK_KODU": "065",
+        "STOK_ADI": "ALTINYILDIZ KIRIK PİRİNÇ *15",
+        "BAKIYE": "105",
+        "SATIS_FIAT1": "31.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8695975011018",
+        "IMAGE_PATH_WEB": "images/product_065.jpg"
+    },
+    {
+        "STOK_KODU": "066",
+        "STOK_ADI": "ALTINYILDIZ MISIR NİŞASTA 1 KG*12",
+        "BAKIYE": "132",
+        "SATIS_FIAT1": "34.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8695975002016",
+        "IMAGE_PATH_WEB": "images/product_066.png"
+    },
+    {
+        "STOK_KODU": "067",
+        "STOK_ADI": "ALTINYILDIZ MISIR NİŞASTA 400 GR*24",
+        "BAKIYE": "96",
+        "SATIS_FIAT1": "17.50000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8695975002023",
+        "IMAGE_PATH_WEB": "images/product_067.png"
+    },
+    {
+        "STOK_KODU": "068",
+        "STOK_ADI": "ALTINYILDIZ NOHUT 900 GR*12",
+        "BAKIYE": "48",
+        "SATIS_FIAT1": "54.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8695975010110",
+        "IMAGE_PATH_WEB": "images/product_068.jpg"
+    },
+    {
+        "STOK_KODU": "068-01",
+        "STOK_ADI": "ALTINYILDIZ NOHUT 2500 GR*6",
+        "BAKIYE": "12",
+        "SATIS_FIAT1": "150.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/product_068-01.jpg"
+    },
+    {
+        "STOK_KODU": "071",
+        "STOK_ADI": "ALTINYILDIZ PİLAVLIK PİRİNÇ 900 GR*12",
+        "BAKIYE": "84",
+        "SATIS_FIAT1": "51.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8695975010554",
+        "IMAGE_PATH_WEB": "images/product_071.png"
+    },
+    {
+        "STOK_KODU": "072",
+        "STOK_ADI": "ALTINYILDIZ YEŞİL MERCİMEK 900GR*12",
+        "BAKIYE": "36",
+        "SATIS_FIAT1": "77.50000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8695975010455",
+        "IMAGE_PATH_WEB": "images/product_072.png"
+    },
+    {
+        "STOK_KODU": "099",
+        "STOK_ADI": "KÜRE PİRİNÇ 25 KG",
+        "BAKIYE": "2",
+        "SATIS_FIAT1": "1550.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440307204",
+        "IMAGE_PATH_WEB": "images/product_099.jpg"
+    },
+    {
+        "STOK_KODU": "1220",
+        "STOK_ADI": "SELVA İRMİK ( 500 GR ) *20*",
+        "BAKIYE": "280",
+        "SATIS_FIAT1": "25.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8690890220088",
+        "IMAGE_PATH_WEB": "images/product_1220.jpg"
+    },
+    {
+        "STOK_KODU": "1242",
+        "STOK_ADI": "DURU B BAŞBAŞI BULGURU 1 KG*12*",
+        "BAKIYE": "8",
+        "SATIS_FIAT1": "44.25000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440601005",
+        "IMAGE_PATH_WEB": "images/product_1242.jpg"
+    },
+    {
+        "STOK_KODU": "1246",
+        "STOK_ADI": "DURU B KIRMIZI YAPRAK MERCİMEK 1 KG*12",
+        "BAKIYE": "68",
+        "SATIS_FIAT1": "88.75000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440710356",
+        "IMAGE_PATH_WEB": "images/product_1246.jpg"
+    },
+    {
+        "STOK_KODU": "1248-01",
+        "STOK_ADI": "DURU B PİLAVLIK PİRİNÇ 2 KG*8*",
+        "BAKIYE": "94",
+        "SATIS_FIAT1": "163.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440309369",
+        "IMAGE_PATH_WEB": "images/product_1248-01.png"
+    },
+    {
+        "STOK_KODU": "1249",
+        "STOK_ADI": "DURU B AŞURELİK BUĞDAY 1 KG*12",
+        "BAKIYE": "9",
+        "SATIS_FIAT1": "35.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440710332",
+        "IMAGE_PATH_WEB": "images/product_1249.jpeg"
+    },
+    {
+        "STOK_KODU": "1285",
+        "STOK_ADI": "DURU B KIRIK PİRİNÇ 1 KG*12",
+        "BAKIYE": "64",
+        "SATIS_FIAT1": "47.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440710585",
+        "IMAGE_PATH_WEB": "images/product_1285.jpeg"
+    },
+    {
+        "STOK_KODU": "1286-01",
+        "STOK_ADI": "DURU B FUTBOL KIRMIZI MERCİMEK 2 KG*8",
+        "BAKIYE": "53",
+        "SATIS_FIAT1": "177.50000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440308942",
+        "IMAGE_PATH_WEB": "images/product_1286-01.png"
+    },
+    {
+        "STOK_KODU": "1395",
+        "STOK_ADI": "DURU B ESMER KÖFTELİK 1 KG*12",
+        "BAKIYE": "43",
+        "SATIS_FIAT1": "39.50000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440503002",
+        "IMAGE_PATH_WEB": "images/product_1395.jpg"
+    },
+    {
+        "STOK_KODU": "142",
+        "STOK_ADI": "DURU B OSMANCIK PİRİNÇ 2 KG*8*",
+        "BAKIYE": "144",
+        "SATIS_FIAT1": "185.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440308935",
+        "IMAGE_PATH_WEB": "images/product_142.jpg"
+    },
+    {
+        "STOK_KODU": "2431",
+        "STOK_ADI": "DURU B BALDO PİRİNÇ 5 KG*4",
+        "BAKIYE": "1",
+        "SATIS_FIAT1": "520.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440105039",
+        "IMAGE_PATH_WEB": "images/product_2431.jpg"
+    },
+    {
+        "STOK_KODU": "2477",
+        "STOK_ADI": "DURU B OSMANCIK 5 KG*4",
+        "BAKIYE": "11",
+        "SATIS_FIAT1": "450.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440105022",
+        "IMAGE_PATH_WEB": "images/product_2477.png"
+    },
+    {
+        "STOK_KODU": "2783-01",
+        "STOK_ADI": "DURU B KURU FASÜLYE 2 KG*8*",
+        "BAKIYE": "53",
+        "SATIS_FIAT1": "170.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440309352",
+        "IMAGE_PATH_WEB": "images/product_2783-01.png"
+    },
+    {
+        "STOK_KODU": "2821-01",
+        "STOK_ADI": "DURU B KOÇBAŞI NOHUT 2 KG*8*",
+        "BAKIYE": "54",
+        "SATIS_FIAT1": "169.50000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/product_2821-01.png"
+    },
+    {
+        "STOK_KODU": "343",
+        "STOK_ADI": "DURU B BALDO PİRİNÇ 1 KG*12",
+        "BAKIYE": "60",
+        "SATIS_FIAT1": "108.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440710301",
+        "IMAGE_PATH_WEB": "images/product_343.png"
+    },
+    {
+        "STOK_KODU": "345",
+        "STOK_ADI": "DURU B ÇİĞKÖFTELİK BULGUR 1 KG*12",
+        "BAKIYE": "302",
+        "SATIS_FIAT1": "39.50000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440301004",
+        "IMAGE_PATH_WEB": "images/product_345.png"
+    },
+    {
+        "STOK_KODU": "347",
+        "STOK_ADI": "DURU B FUTBOL KIRMIZI MERCİMEK 1 KG*12",
+        "BAKIYE": "360",
+        "SATIS_FIAT1": "88.75000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440710349",
+        "IMAGE_PATH_WEB": "images/product_347.png"
+    },
+    {
+        "STOK_KODU": "348",
+        "STOK_ADI": "DURU B KOÇBAŞI NOHUT 8 MM 1KG *12",
+        "BAKIYE": "17",
+        "SATIS_FIAT1": "91.50000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440710448",
+        "IMAGE_PATH_WEB": "images/product_348.jpg"
+    },
+    {
+        "STOK_KODU": "349",
+        "STOK_ADI": "DURU B KÖFTELİK BULGUR 1 KG*12",
+        "BAKIYE": "756",
+        "SATIS_FIAT1": "39.50000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440200109",
+        "IMAGE_PATH_WEB": "images/product_349.png"
+    },
+    {
+        "STOK_KODU": "350",
+        "STOK_ADI": "DURU B KÖFTELİK BULGUR 5 KG",
+        "BAKIYE": "22",
+        "SATIS_FIAT1": "180.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440500025",
+        "IMAGE_PATH_WEB": "images/product_350.png"
+    },
+    {
+        "STOK_KODU": "351",
+        "STOK_ADI": "DURU B KURU FASÜLYE 1 KG *12",
+        "BAKIYE": "59",
+        "SATIS_FIAT1": "85.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440710394",
+        "IMAGE_PATH_WEB": "images/product_351.jpg"
+    },
+    {
+        "STOK_KODU": "354",
+        "STOK_ADI": "DURU B OSMANCIK PİRİNÇ 1 KG*12",
+        "BAKIYE": "48",
+        "SATIS_FIAT1": "92.50000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440710578",
+        "IMAGE_PATH_WEB": "images/product_354.png"
+    },
+    {
+        "STOK_KODU": "356",
+        "STOK_ADI": "DURU B PATLAYAN MISIR 1 KG*12",
+        "BAKIYE": "108",
+        "SATIS_FIAT1": "43.50000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440710455",
+        "IMAGE_PATH_WEB": "images/product_356.jpg"
+    },
+    {
+        "STOK_KODU": "359",
+        "STOK_ADI": "DURU B PİLAVLIK BULGUR 5 KG",
+        "BAKIYE": "26",
+        "SATIS_FIAT1": "180.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440500018",
+        "IMAGE_PATH_WEB": "images/product_359.jpg"
+    },
+    {
+        "STOK_KODU": "1481",
+        "STOK_ADI": "GÖKDERE KIRMIZI FUTBOL MERCİMEK 1 KG*12 SKT-11.2026",
+        "BAKIYE": "60",
+        "SATIS_FIAT1": "56.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8694694200499",
+        "IMAGE_PATH_WEB": "images/image_placeholder.png"
+    },
+    {
+        "STOK_KODU": "1482",
+        "STOK_ADI": "GÖKDERE PATLAYAN MISIR 1 KG*12",
+        "BAKIYE": "120",
+        "SATIS_FIAT1": "25.75000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8694694200628",
+        "IMAGE_PATH_WEB": "images/product_1482.png"
+    },
+    {
+        "STOK_KODU": "16955",
+        "STOK_ADI": "DURU B PİLAVLIK BULGUR 2 KG *8*",
+        "BAKIYE": "76",
+        "SATIS_FIAT1": "88.50000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440309529",
+        "IMAGE_PATH_WEB": "images/product_16955.png"
+    },
+    {
+        "STOK_KODU": "1696-01",
+        "STOK_ADI": "DURU B KÖFTELİK BULGUR 2 KG *8",
+        "BAKIYE": "47",
+        "SATIS_FIAT1": "88.50000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/product_1696-01.jpg"
+    },
+    {
+        "STOK_KODU": "1697-01",
+        "STOK_ADI": "DURU B ÇİĞKÖFTELİK BULGUR 2 KG *8",
+        "BAKIYE": "63",
+        "SATIS_FIAT1": "88.50000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/product_1697-01.png"
+    },
+    {
+        "STOK_KODU": "1787",
+        "STOK_ADI": "DURU B BALDO PİRİNÇ 2 KG*8",
+        "BAKIYE": "83",
+        "SATIS_FIAT1": "216.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440308928",
+        "IMAGE_PATH_WEB": "images/product_1787.jpg"
+    },
+    {
+        "STOK_KODU": "1788",
+        "STOK_ADI": "DURU B PİLAVLIK PİRİNÇ 1 KG*12",
+        "BAKIYE": "48",
+        "SATIS_FIAT1": "81.50000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440710318",
+        "IMAGE_PATH_WEB": "images/product_1788.png"
+    },
+    {
+        "STOK_KODU": "961",
+        "STOK_ADI": "SELVA İRMİK 1 KG*12",
+        "BAKIYE": "156",
+        "SATIS_FIAT1": "49.00000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8690890004022",
+        "IMAGE_PATH_WEB": "images/product_961.png"
+    },
+    {
+        "STOK_KODU": "D101",
+        "STOK_ADI": "DURU B PİLAVLIK BULGUR 1 KG*12",
+        "BAKIYE": "894",
+        "SATIS_FIAT1": "39.50000000",
+        "GRUP_KODU": "BAKLIYAT",
+        "BARKOD1": "8691440101000",
+        "IMAGE_PATH_WEB": "images/product_D101.png"
+    },
+    {
+        "STOK_KODU": "1023",
+        "STOK_ADI": "SU BARDAĞI ALANYA 6*8",
+        "BAKIYE": "104",
+        "SATIS_FIAT1": "75.00000000",
+        "GRUP_KODU": "BARDAK",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/product_1023.png"
+    },
+    {
+        "STOK_KODU": "613",
+        "STOK_ADI": "KARTON BARDAK 200 CC*50*60",
+        "BAKIYE": "2334",
+        "SATIS_FIAT1": "21.90000000",
+        "GRUP_KODU": "BARDAK",
+        "BARKOD1": "8680643279807",
+        "IMAGE_PATH_WEB": "images/product_613.jpg"
+    },
+    {
+        "STOK_KODU": "860",
+        "STOK_ADI": "PAŞABAHÇE BÜYÜK OPTİK*6",
+        "BAKIYE": "112",
+        "SATIS_FIAT1": "540.00000000",
+        "GRUP_KODU": "BARDAK",
+        "BARKOD1": "8693357033726",
+        "IMAGE_PATH_WEB": "images/product_860.png"
+    },
+    {
+        "STOK_KODU": "862",
+        "STOK_ADI": "PAŞABAHÇE KÜÇÜK*6* 42011",
+        "BAKIYE": "5",
+        "SATIS_FIAT1": "530.00000000",
+        "GRUP_KODU": "BARDAK",
+        "BARKOD1": "86933507033757",
+        "IMAGE_PATH_WEB": "images/product_862.png"
+    },
+    {
+        "STOK_KODU": "986",
+        "STOK_ADI": "PET BARDAKK *30",
+        "BAKIYE": "63",
+        "SATIS_FIAT1": "13.00000000",
+        "GRUP_KODU": "BARDAK",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/product_986.png"
+    },
+    {
+        "STOK_KODU": "1034",
+        "STOK_ADI": "SLEEPY NATURAL FIRSAT PAKET 1 NO 50*6",
+        "BAKIYE": "7",
+        "SATIS_FIAT1": "925.00000000",
+        "GRUP_KODU": "BEZ",
+        "BARKOD1": "8682241215171",
+        "IMAGE_PATH_WEB": "images/product_1034.png"
+    },
+    {
+        "STOK_KODU": "1035",
+        "STOK_ADI": "SLEEPY NATURAL FIRSAT PAKET 2 NO 48*6",
+        "BAKIYE": "3",
+        "SATIS_FIAT1": "925.00000000",
+        "GRUP_KODU": "BEZ",
+        "BARKOD1": "8682241215188",
+        "IMAGE_PATH_WEB": "images/product_1035.png"
+    },
+    {
+        "STOK_KODU": "1037",
+        "STOK_ADI": "SLEEPY NATURAL FIRSAT PAKET 3 NO 42*6",
+        "BAKIYE": "5",
+        "SATIS_FIAT1": "925.00000000",
+        "GRUP_KODU": "BEZ",
+        "BARKOD1": "8682241215195",
+        "IMAGE_PATH_WEB": "images/product_1037.png"
+    },
+    {
+        "STOK_KODU": "1041",
+        "STOK_ADI": "SLEEPY NATURAL 2Lİ FIRSAT PAKET 4 NO 82*3",
+        "BAKIYE": "15",
+        "SATIS_FIAT1": "925.00000000",
+        "GRUP_KODU": "BEZ",
+        "BARKOD1": "8682241215218",
+        "IMAGE_PATH_WEB": "images/product_1041.png"
+    },
+    {
+        "STOK_KODU": "1042",
+        "STOK_ADI": "SLEEPY NATURAL 2Lİ FIRSAT PAKET 5 NO 58*3",
+        "BAKIYE": "2",
+        "SATIS_FIAT1": "925.00000000",
+        "GRUP_KODU": "BEZ",
+        "BARKOD1": "8682241215232",
+        "IMAGE_PATH_WEB": "images/product_1042.png"
+    },
+    {
+        "STOK_KODU": "1043",
+        "STOK_ADI": "SLEEPY NATURAL 2Lİ FIRSAT PAKET 6 NO 46*3",
+        "BAKIYE": "3",
+        "SATIS_FIAT1": "925.00000000",
+        "GRUP_KODU": "BEZ",
+        "BARKOD1": "8682241215256",
+        "IMAGE_PATH_WEB": "images/product_1043.png"
+    },
+    {
+        "STOK_KODU": "033",
+        "STOK_ADI": "7 KG EZGİ SADE GOFRET",
+        "BAKIYE": "42",
+        "SATIS_FIAT1": "530.00000000",
+        "GRUP_KODU": "GOFRET",
+        "BARKOD1": "8693175006001",
+        "IMAGE_PATH_WEB": "images/product_033.png"
+    },
+    {
+        "STOK_KODU": "033-01",
+        "STOK_ADI": "KAKAO 7 KG EZGİ KAKAOLU GOFRET",
+        "BAKIYE": "9",
+        "SATIS_FIAT1": "530.00000000",
+        "GRUP_KODU": "GOFRET",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/product_033-01.png"
+    },
+    {
+        "STOK_KODU": "125",
+        "STOK_ADI": "ÜNLÜ GOFRET 800 GR*8",
+        "BAKIYE": "158",
+        "SATIS_FIAT1": "85.00000000",
+        "GRUP_KODU": "GOFRET",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/product_125.png"
+    },
+    {
+        "STOK_KODU": "1307",
+        "STOK_ADI": "EZGİ 900 GR GOFRET*6* VANİYALI",
+        "BAKIYE": "141",
+        "SATIS_FIAT1": "82.50000000",
+        "GRUP_KODU": "GOFRET",
+        "BARKOD1": "8693175003000",
+        "IMAGE_PATH_WEB": "images/product_1307.png"
+    },
+    {
+        "STOK_KODU": "1307-01",
+        "STOK_ADI": "EZGİ 900 GR GOFRET*6*KAKAO*",
+        "BAKIYE": "149",
+        "SATIS_FIAT1": "82.50000000",
+        "GRUP_KODU": "GOFRET",
+        "BARKOD1": "8693175003017",
+        "IMAGE_PATH_WEB": "images/product_1307-01.png"
+    },
+    {
+        "STOK_KODU": "1307-02",
+        "STOK_ADI": "EZGİ 900 GR GOFRET*6 * MUZLU",
+        "BAKIYE": "57",
+        "SATIS_FIAT1": "82.50000000",
+        "GRUP_KODU": "GOFRET",
+        "BARKOD1": "8693175003048",
+        "IMAGE_PATH_WEB": "images/product_1307-02.png"
+    },
+    {
+        "STOK_KODU": "1307-03",
+        "STOK_ADI": "EZGİ 900 GR GOFRET* 6 * ÇİLEKLİ",
+        "BAKIYE": "42",
+        "SATIS_FIAT1": "82.50000000",
+        "GRUP_KODU": "GOFRET",
+        "BARKOD1": "8693175003024",
+        "IMAGE_PATH_WEB": "images/product_1307-03.png"
+    },
+    {
+        "STOK_KODU": "2322",
+        "STOK_ADI": "ÇÖĞENLER HELVA 4.5 KG*",
+        "BAKIYE": "13",
+        "SATIS_FIAT1": "675.00000000",
+        "GRUP_KODU": "HELVA",
+        "BARKOD1": "8697506991059",
+        "IMAGE_PATH_WEB": "images/product_2322.png"
+    },
+    {
+        "STOK_KODU": "533",
+        "STOK_ADI": "ÇÖĞENLER HELVA 500 GR*12 - KAKAOLU",
+        "BAKIYE": "81",
+        "SATIS_FIAT1": "75.00000000",
+        "GRUP_KODU": "HELVA",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/product_533.png"
+    },
+    {
+        "STOK_KODU": "533-01",
+        "STOK_ADI": "ÇÖĞENLER HELVA 500 GR*12 - SADE",
+        "BAKIYE": "10",
+        "SATIS_FIAT1": "75.00000000",
+        "GRUP_KODU": "HELVA",
+        "BARKOD1": "8697506991547",
+        "IMAGE_PATH_WEB": "images/product_533-01.png"
+    },
+    {
+        "STOK_KODU": "02030508",
+        "STOK_ADI": "NILLY ISLAK MENDİL 90 LI *12*",
+        "BAKIYE": "199",
+        "SATIS_FIAT1": "13.90000000",
+        "GRUP_KODU": "ISLAK",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/image_placeholder.png"
+    },
+    {
+        "STOK_KODU": "045",
+        "STOK_ADI": "SLEEPY YAĞ ÇÖZÜCÜ HAVLU 30 LU *12*",
+        "BAKIYE": "66",
+        "SATIS_FIAT1": "71.50000000",
+        "GRUP_KODU": "ISLAK",
+        "BARKOD1": "8682241217687",
+        "IMAGE_PATH_WEB": "images/product_045.jpg"
+    },
+    {
+        "STOK_KODU": "046",
+        "STOK_ADI": "SLEEPY KİREÇ SÖKÜCÜ HAVLU 30 LU *12*",
+        "BAKIYE": "78",
+        "SATIS_FIAT1": "71.50000000",
+        "GRUP_KODU": "ISLAK",
+        "BARKOD1": "8682241217670",
+        "IMAGE_PATH_WEB": "images/product_046.jpg"
+    },
+    {
+        "STOK_KODU": "112",
+        "STOK_ADI": "SLEEPY EASY CLEAN ORKİDE BAHÇESİ 100 LÜ *12*",
+        "BAKIYE": "4",
+        "SATIS_FIAT1": "71.50000000",
+        "GRUP_KODU": "ISLAK",
+        "BARKOD1": "8682241217700",
+        "IMAGE_PATH_WEB": "images/product_112.jpg"
+    },
+    {
+        "STOK_KODU": "1154",
+        "STOK_ADI": "SLEEPY YER TEMİZLİK MOP OKALİPTUS 50 Lİ *6*",
+        "BAKIYE": "6",
+        "SATIS_FIAT1": "120.00000000",
+        "GRUP_KODU": "ISLAK",
+        "BARKOD1": "8682241216048",
+        "IMAGE_PATH_WEB": "images/product_1154.jpg"
+    },
+    {
+        "STOK_KODU": "1155",
+        "STOK_ADI": "SLEEPY YER TEMİZLİK MOP MAVİ ÇAM  50 Lİ *6*",
+        "BAKIYE": "24",
+        "SATIS_FIAT1": "120.00000000",
+        "GRUP_KODU": "ISLAK",
+        "BARKOD1": "8682241216031",
+        "IMAGE_PATH_WEB": "images/product_1155.jpg"
+    },
+    {
+        "STOK_KODU": "1161",
+        "STOK_ADI": "SLEEPY BİO YÜZEY TEM.KARANFİL-TARÇIN 6*50",
+        "BAKIYE": "39",
+        "SATIS_FIAT1": "105.00000000",
+        "GRUP_KODU": "ISLAK",
+        "BARKOD1": "8682241216642",
+        "IMAGE_PATH_WEB": "images/product_1161.jpg"
+    },
+    {
+        "STOK_KODU": "1162",
+        "STOK_ADI": "SLEEPY BİO YÜZEY TEM. ÇAYAĞACI-MİSKET LİMONLU 6*50",
+        "BAKIYE": "37",
+        "SATIS_FIAT1": "105.00000000",
+        "GRUP_KODU": "ISLAK",
+        "BARKOD1": "8682241216635",
+        "IMAGE_PATH_WEB": "images/image_placeholder.png"
+    },
+    {
+        "STOK_KODU": "1327",
+        "STOK_ADI": "SLEEPY YÜZEY TEM.HAVLUSU ÇAMAŞIR SUYU 12*100",
+        "BAKIYE": "3",
+        "SATIS_FIAT1": "67.50000000",
+        "GRUP_KODU": "ISLAK",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/image_placeholder.png"
+    },
+    {
+        "STOK_KODU": "1328",
+        "STOK_ADI": "SLEEPY YÜZEY TEM.HAVLUSU BEYAZ SABUN 12*100",
+        "BAKIYE": "45",
+        "SATIS_FIAT1": "66.00000000",
+        "GRUP_KODU": "ISLAK",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/product_1328.jpg"
+    },
+    {
+        "STOK_KODU": "1329",
+        "STOK_ADI": "SLEEPY YÜZEY TEM.ARAP SABUNLU 12*100",
+        "BAKIYE": "804",
+        "SATIS_FIAT1": "66.00000000",
+        "GRUP_KODU": "ISLAK",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/product_1329.jpg"
+    },
+    {
+        "STOK_KODU": "2442",
+        "STOK_ADI": "SLEEPY 90 LI ISLAK MENDİL TEKLİ  SENSİTİVE  *24*",
+        "BAKIYE": "646",
+        "SATIS_FIAT1": "25.50000000",
+        "GRUP_KODU": "ISLAK",
+        "BARKOD1": "8681212061922",
+        "IMAGE_PATH_WEB": "images/image_placeholder.png"
+    },
+    {
+        "STOK_KODU": "2442-01",
+        "STOK_ADI": "SLEEPY 90 LI ISLAK MENDİL TEKLİ  GÜL KOKULU   *24*",
+        "BAKIYE": "100",
+        "SATIS_FIAT1": "25.50000000",
+        "GRUP_KODU": "ISLAK",
+        "BARKOD1": "8681212062158",
+        "IMAGE_PATH_WEB": "images/image_placeholder.png"
+    },
+    {
+        "STOK_KODU": "2442-02",
+        "STOK_ADI": "SLEEPY 90 LI ISLAK HAVLU PAMUK VE ZEYTİN 24*",
+        "BAKIYE": "72",
+        "SATIS_FIAT1": "25.50000000",
+        "GRUP_KODU": "ISLAK",
+        "BARKOD1": "8681212063520",
+        "IMAGE_PATH_WEB": "images/product_2442-02.jpg"
+    },
+    {
+        "STOK_KODU": "1854",
+        "STOK_ADI": "DALİN ISLAK MENDİL 56 LI *8*",
+        "BAKIYE": "88",
+        "SATIS_FIAT1": "87.50000000",
+        "GRUP_KODU": "ISLAK",
+        "BARKOD1": "8690605034436",
+        "IMAGE_PATH_WEB": "images/product_1854.jpeg"
+    },
+    {
+        "STOK_KODU": "048",
+        "STOK_ADI": "SENSO HAVLU 6 LI*4",
+        "BAKIYE": "4",
+        "SATIS_FIAT1": "55.00000000",
+        "GRUP_KODU": "KAGIT",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/product_048.png"
+    },
+    {
+        "STOK_KODU": "1055",
+        "STOK_ADI": "TENO TUVALET NORMAL 32 Lİ*3*",
+        "BAKIYE": "15",
+        "SATIS_FIAT1": "167.50000000",
+        "GRUP_KODU": "KAGIT",
+        "BARKOD1": "8690536024711",
+        "IMAGE_PATH_WEB": "images/product_1055.jpg"
+    },
+    {
+        "STOK_KODU": "1060-001",
+        "STOK_ADI": "TENO TUVALET 16 Lİ*3*",
+        "BAKIYE": "39",
+        "SATIS_FIAT1": "95.00000000",
+        "GRUP_KODU": "KAGIT",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/product_1060-001.png"
+    },
+    {
+        "STOK_KODU": "1062",
+        "STOK_ADI": "TENO HAVLU 6 LI *4",
+        "BAKIYE": "60",
+        "SATIS_FIAT1": "62.50000000",
+        "GRUP_KODU": "KAGIT",
+        "BARKOD1": "8690536011322",
+        "IMAGE_PATH_WEB": "images/image_placeholder.png"
+    },
+    {
+        "STOK_KODU": "1063",
+        "STOK_ADI": "TENO PEÇETE 32 Lİ",
+        "BAKIYE": "17",
+        "SATIS_FIAT1": "385.00000000",
+        "GRUP_KODU": "KAGIT",
+        "BARKOD1": "8690536012305",
+        "IMAGE_PATH_WEB": "images/product_1063.jpg"
+    },
+    {
+        "STOK_KODU": "447",
+        "STOK_ADI": "SERA PİŞİRME KAĞIDI 10 LU*24",
+        "BAKIYE": "348",
+        "SATIS_FIAT1": "22.00000000",
+        "GRUP_KODU": "KAGIT",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/product_447.jpg"
+    },
+    {
+        "STOK_KODU": "458",
+        "STOK_ADI": "SUFY HAVLU 6 LI *4*",
+        "BAKIYE": "36",
+        "SATIS_FIAT1": "55.00000000",
+        "GRUP_KODU": "KAGIT",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/image_placeholder.png"
+    },
+    {
+        "STOK_KODU": "1650",
+        "STOK_ADI": "FAMİLİA TUVALET 16 LI*3",
+        "BAKIYE": "27",
+        "SATIS_FIAT1": "117.50000000",
+        "GRUP_KODU": "KAGIT",
+        "BARKOD1": "8690536026142",
+        "IMAGE_PATH_WEB": "images/product_1650.jpg"
+    },
+    {
+        "STOK_KODU": "1748",
+        "STOK_ADI": "PAPİA TUVALET KAĞIDI 32 Lİ*3",
+        "BAKIYE": "4",
+        "SATIS_FIAT1": "290.00000000",
+        "GRUP_KODU": "KAGIT",
+        "BARKOD1": "8690536010066",
+        "IMAGE_PATH_WEB": "images/product_1748.png"
+    },
+    {
+        "STOK_KODU": "1749",
+        "STOK_ADI": "FAMİLİA TUVALET 32 Lİ*3*",
+        "BAKIYE": "42",
+        "SATIS_FIAT1": "230.00000000",
+        "GRUP_KODU": "KAGIT",
+        "BARKOD1": "8690536010165",
+        "IMAGE_PATH_WEB": "images/product_1749.jpeg"
+    },
+    {
+        "STOK_KODU": "1862",
+        "STOK_ADI": "TENO HAVLU 12 Lİ *4*",
+        "BAKIYE": "3",
+        "SATIS_FIAT1": "125.00000000",
+        "GRUP_KODU": "KAGIT",
+        "BARKOD1": "8690536025015",
+        "IMAGE_PATH_WEB": "images/product_1862.jpg"
+    },
+    {
+        "STOK_KODU": "855-06",
+        "STOK_ADI": "PAPİA HAVLU 8 Lİ *3*",
+        "BAKIYE": "347",
+        "SATIS_FIAT1": "90.00000000",
+        "GRUP_KODU": "KAGIT",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/product_855-06.jpg"
+    },
+    {
+        "STOK_KODU": "977",
+        "STOK_ADI": "PUFLA TUVALET 12 Lİ*4",
+        "BAKIYE": "16",
+        "SATIS_FIAT1": "55.00000000",
+        "GRUP_KODU": "KAGIT",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/product_977.jpg"
+    },
+    {
+        "STOK_KODU": "1302",
+        "STOK_ADI": "OYA PEKMEZ 1 KG*24",
+        "BAKIYE": "27",
+        "SATIS_FIAT1": "52.50000000",
+        "GRUP_KODU": "KAHVALTI",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/image_placeholder.png"
+    },
+    {
+        "STOK_KODU": "2594",
+        "STOK_ADI": "TUKAŞ MAYONEZ 600 GR*12* 09/2025",
+        "BAKIYE": "84",
+        "SATIS_FIAT1": "29.00000000",
+        "GRUP_KODU": "KAHVALTI",
+        "BARKOD1": "8690508006912",
+        "IMAGE_PATH_WEB": "images/product_2594.jpg"
+    },
+    {
+        "STOK_KODU": "451",
+        "STOK_ADI": "TUKAŞ KETÇAP 650 GR *12*ACILI***",
+        "BAKIYE": "852",
+        "SATIS_FIAT1": "28.00000000",
+        "GRUP_KODU": "KAHVALTI",
+        "BARKOD1": "8690508103567",
+        "IMAGE_PATH_WEB": "images/product_451.png"
+    },
+    {
+        "STOK_KODU": "451-01",
+        "STOK_ADI": "TUKAŞ KETÇAP 650 GR *12* TATLI",
+        "BAKIYE": "559",
+        "SATIS_FIAT1": "28.00000000",
+        "GRUP_KODU": "KAHVALTI",
+        "BARKOD1": "8690508006936",
+        "IMAGE_PATH_WEB": "images/product_451-01.png"
+    },
+    {
+        "STOK_KODU": "551",
+        "STOK_ADI": "GÜLEROĞLU TAHİN 800 GR PET*6",
+        "BAKIYE": "82",
+        "SATIS_FIAT1": "115.00000000",
+        "GRUP_KODU": "KAHVALTI",
+        "BARKOD1": "8692996100059",
+        "IMAGE_PATH_WEB": "images/product_551.jpg"
+    },
+    {
+        "STOK_KODU": "552",
+        "STOK_ADI": "GÜLEROĞLU TAHİN 1700 GR PET*6*",
+        "BAKIYE": "258",
+        "SATIS_FIAT1": "225.00000000",
+        "GRUP_KODU": "KAHVALTI",
+        "BARKOD1": "8692996100066",
+        "IMAGE_PATH_WEB": "images/product_552.jpg"
+    },
+    {
+        "STOK_KODU": "845",
+        "STOK_ADI": "PAKMAYA TOZ MAYA 100 GR *40",
+        "BAKIYE": "182",
+        "SATIS_FIAT1": "880.00000000",
+        "GRUP_KODU": "KAHVALTI",
+        "BARKOD1": "8690770322215",
+        "IMAGE_PATH_WEB": "images/product_845.jpeg"
+    },
+    {
+        "STOK_KODU": "1992-01",
+        "STOK_ADI": "PAKMAYA İNSTANT MAYA 3 LÜ *24*",
+        "BAKIYE": "264",
+        "SATIS_FIAT1": "21.50000000",
+        "GRUP_KODU": "KAHVALTI",
+        "BARKOD1": "1",
+        "IMAGE_PATH_WEB": "images/product_1992-01.jpg"
+    },
+    {
+        "STOK_KODU": "1995",
+        "STOK_ADI": "YEDİBAŞAK SALATA SOSU 1 KG *12*",
+        "BAKIYE": "80",
+        "SATIS_FIAT1": "44.50000000",
+        "GRUP_KODU": "KAHVALTI",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/product_1995.jpg"
+    },
+    {
+        "STOK_KODU": "2165-01",
+        "STOK_ADI": "SILADAN LİMON SOSU 500 GR GR *18*",
+        "BAKIYE": "54",
+        "SATIS_FIAT1": "15.50000000",
+        "GRUP_KODU": "KAHVALTI",
+        "BARKOD1": "",
+        "IMAGE_PATH_WEB": "images/image_placeholder.png"
+    },
+    {
+        "STOK_KODU": "1470",
+        "STOK_ADI": "MOLPED EKONOMİK UZUN 16*16",
+        "BAKIYE": "528",
+        "SATIS_FIAT1": "55.00000000",
+        "GRUP_KODU": "PED",
+        "BARKOD1": "8690536843107",
+        "IMAGE_PATH_WEB": "images/product_1470.jpeg"
+    },
+    {
+        "STOK_KODU": "2640",
+        "STOK_ADI": "ORKİD PLATİNİUM TEKLİ GECE 6 LI*24",
+        "BAKIYE": "24",
+        "SATIS_FIAT1": "28.00000000",
+        "GRUP_KODU": "PED",
+        "BARKOD1": "8001090018465",
+        "IMAGE_PATH_WEB": "images/image_placeholder.png"
+    },
+    {
+        "STOK_KODU": "2640-01",
+        "STOK_ADI": "ORKİD PLATİNİUM NORMAL TEKLI 8 LI*24",
+        "BAKIYE": "24",
+        "SATIS_FIAT1": "28.00000000",
+        "GRUP_KODU": "PED",
+        "BARKOD1": "8001090018229",
+        "IMAGE_PATH_WEB": "images/product_2640-01.jpeg"
+    },
+    {
+        "STOK_KODU": "3300",
+        "STOK_ADI": "KOTEX ULTRA GECE 16 ADET *12*",
+        "BAKIYE": "1",
+        "SATIS_FIAT1": "65.00000000",
+        "GRUP_KODU": "PED",
+        "BARKOD1": "8691900174056",
+        "IMAGE_PATH_WEB": "images/image_placeholder.png"
+    },
+    {
+        "STOK_KODU": "824",
+        "STOK_ADI": "ORKİD MAXİ GECE TEKLİ 7 Lİ*24",
+        "BAKIYE": "216",
+        "SATIS_FIAT1": "27.00000000",
+        "GRUP_KODU": "PED",
+        "BARKOD1": "8001090514714",
+        "IMAGE_PATH_WEB": "images/product_824.jpg"
+    },
+    {
+        "STOK_KODU": "826-01",
+        "STOK_ADI": "ORKİD MAXİ NORMAL TEKLİ 10 LU*16*",
+        "BAKIYE": "96",
+        "SATIS_FIAT1": "27.00000000",
+        "GRUP_KODU": "PED",
+        "BARKOD1": "8001090430458",
+        "IMAGE_PATH_WEB": "images/product_826-01.png"
+    },
+    {
+        "STOK_KODU": "827-02",
+        "STOK_ADI": "ORKİD ULTRA TEKLİ GECE EXTRA  6 LI*24*",
+        "BAKIYE": "768",
+        "SATIS_FIAT1": "27.25000000",
+        "GRUP_KODU": "PED",
+        "BARKOD1": "4015400753155",
+        "IMAGE_PATH_WEB": "images/product_827-02.jpg"
+    },
+    {
+        "STOK_KODU": "828",
+        "STOK_ADI": "ORKİD ULTRA TEKLİ NORMAL 8 Lİ *24",
+        "BAKIYE": "432",
+        "SATIS_FIAT1": "27.25000000",
+        "GRUP_KODU": "PED",
+        "BARKOD1": "8001841114767",
+        "IMAGE_PATH_WEB": "images/product_828.jpg"
+    },
+    {
+        "STOK_KODU": "829",
+        "STOK_ADI": "ORKİD ULTRA TEKLİ UZUN 7 Lİ*24",
+        "BAKIYE": "536",
+        "SATIS_FIAT1": "27.25000000",
+        "GRUP_KODU": "PED",
+        "BARKOD1": "4015400041467",
+        "IMAGE_PATH_WEB": "images/product_829.jpeg"
+    },
+    {
+        "STOK_KODU": "1998",
+        "STOK_ADI": "MOLPED EKONOMİK NORMAL 20*16",
+        "BAKIYE": "560",
+        "SATIS_FIAT1": "55.00000000",
+        "GRUP_KODU": "PED",
+        "BARKOD1": "8690536843091",
+        "IMAGE_PATH_WEB": "images/product_1998.jpg"
+    },
+    {
+        "STOK_KODU": "2661",
+        "STOK_ADI": "MERAM UN 1 KG*10",
+        "BAKIYE": "41",
+        "SATIS_FIAT1": "27.00000000",
+        "GRUP_KODU": "UN",
+        "BARKOD1": "8690829500014",
+        "IMAGE_PATH_WEB": "images/product_2661.jpg"
+    },
+    {
+        "STOK_KODU": "2662",
+        "STOK_ADI": "MERAM UN 2 KG*10",
+        "BAKIYE": "69",
+        "SATIS_FIAT1": "53.50000000",
+        "GRUP_KODU": "UN",
+        "BARKOD1": "8690829501196",
+        "IMAGE_PATH_WEB": "images/product_2662.jpg"
+    },
+    {
+        "STOK_KODU": "579",
+        "STOK_ADI": "HEKİMOĞLU SÜPER UN 1 KG*10",
+        "BAKIYE": "28",
+        "SATIS_FIAT1": "297.50000000",
+        "GRUP_KODU": "UN",
+        "BARKOD1": "8691609100011",
+        "IMAGE_PATH_WEB": "images/product_579.jpg"
+    },
+    {
+        "STOK_KODU": "580",
+        "STOK_ADI": "HEKİMOĞLU SÜPER UN 10 KG",
+        "BAKIYE": "78",
+        "SATIS_FIAT1": "285.00000000",
+        "GRUP_KODU": "UN",
+        "BARKOD1": "8691609100103",
+        "IMAGE_PATH_WEB": "images/product_580.png"
+    },
+    {
+        "STOK_KODU": "581",
+        "STOK_ADI": "HEKİMOĞLU SÜPER UN 2 KG*8",
+        "BAKIYE": "62",
+        "SATIS_FIAT1": "475.00000000",
+        "GRUP_KODU": "UN",
+        "BARKOD1": "8691609100028",
+        "IMAGE_PATH_WEB": "images/product_581.jpg"
+    },
+    {
+        "STOK_KODU": "582",
+        "STOK_ADI": "HEKİMOĞLU SÜPER UN 5 KG*3*",
+        "BAKIYE": "1",
+        "SATIS_FIAT1": "141.00000000",
+        "GRUP_KODU": "UN",
+        "BARKOD1": "8691609100165",
+        "IMAGE_PATH_WEB": "images/product_582.jpg"
+    }
+]

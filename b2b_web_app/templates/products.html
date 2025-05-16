@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - B2B Portalı</title>
+    <!-- Bootswatch Yeti Theme CSS -->
+    <link href="https://bootswatch.com/5/yeti/bootstrap.min.css" rel="stylesheet">
+    <!-- Lightgallery CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/css/lightgallery.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/css/lg-zoom.min.css" />
+
+    <style>
+        body {
+            padding-top: 56px; 
+            background-color: #f8f9fa; /* Bu arkaplan rengi temaya göre ayarlanabilir veya kaldırılabilir */
+        }
+        h1.page-title {
+            margin-bottom: 20px; 
+        }
+        /* Navbar'ın Yeti temasında daha belirgin olması için (isteğe bağlı) */
+        .navbar.bg-dark {
+            /* Yeti'nin kendi koyu rengi zaten güzel, ama isterseniz buradan değiştirebilirsiniz */
+            /* Örneğin: background-color: #343a40 !important; */
+        }
+        /* Stok Adı sütunu için özel stil */
+        .col-stok-adi {
+            min-width: 180px; /* Mobil cihazlarda Stok Adı sütununun minimum genişliği */
+            /* white-space: nowrap; */ /* İçeriğin taşmasını ve alt satıra kaymamasını istiyorsanız bunu aktif edebilirsiniz */
+        }
+        #product-search-input {
+            margin-bottom: 20px;
+        }
+        /* Tablodaki resimler için stil */
+        .product-image {
+            max-height: 50px; 
+            max-width: 70px;  
+            height: auto;     /* Değişiklik: Sabit yükseklik yerine auto */
+            width: auto;      /* Değişiklik: Sabit genişlik yerine auto */
+            object-fit: contain; /* Değişiklik: cover -> contain */
+            display: block; 
+            margin: auto;   
+            cursor: pointer; 
+        }
+        /* Lightgallery'nin z-index'ini Bootstrap modal'larından yüksek yapmak için (gerekirse) */
+        .lg-outer {
+            z-index: 1060; /* Bootstrap modal z-index'i 1050-1055 civarıdır */
+        }
+        /* Kenar çubuğu stilleri kaldırıldı */
+
+        /* Aktif linkler için daha belirgin stil */
+        .navbar-nav .nav-link.active-main-category,
+        .navbar-nav .dropdown-item.active-sub-category { /* .active-sub-category dropdown item'lara uygulanacak */
+            font-weight: bold;
+            color: #0d6efd !important; /* Bootstrap primary rengi, important gerekebilir */
+            background-color: rgba(13, 110, 253, 0.1) !important; /* Hafif bir arka plan */
+        }
+        .navbar-nav .dropdown-toggle.active-main-category { /* Sadece dropdown toggle olan ana kategori için */
+             color: #fff !important; /* Yeti temasında beyaz kalması için */
+             /* background-color: rgba(255,255,255,0.1); /* İsteğe bağlı hafif vurgu */
+        }
+        /* Sepet ve ürün tablosu için ek stiller */
+        .action-cell {
+            /* min-width: 120px; */ /* Önceki min-width değeri */
+            width: 16px !important;       /* Yeni dar genişlik, sadece ikon için */
+            min-width: 16px !important;   /* Yeni dar min-width, sadece ikon için */
+            padding: 0 !important;        /* Hücre iç boşluğunu sıfırla */
+            text-align: center;
+            vertical-align: middle;
+        }
+        .cart-icon-button {
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important; /* Dış boşlukları da sıfırla */
+            background-color: transparent !important;
+            width: 16px;
+            height: 16px;
+            display: inline-flex; /* veya flex */
+            align-items: center;
+            justify-content: center;
+            color: #0d6efd; /* Bootstrap primary rengi, outline-primary'den gelen */
+        }
+        .cart-icon-button:hover {
+            color: #0a58ca; /* Bootstrap primary hover rengi */
+        }
+        /* Lightgallery mobil kapatma butonu için CSS */
+        .lg-toolbar .lg-close.lg-icon {
+            display: inline-block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        #cartSection th, #cartSection td {
+            vertical-align: middle;
+        }
+        .quantity-input {
+            width: 70px;
+            text-align: center;
+        }
+        @media (max-width: 767px) { /* Sadece mobil cihazlar (Bootstrap sm breakpoint'i baz alındı) */
+            .lg-outer .lg-toolbar { /* Lightgallery dış sarmalayıcısı içindeki toolbar */
+                display: flex !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                background-color: rgba(0,0,0,0.3) !important; /* Toolbar'ı daha görünür yapmak için (isteğe bağlı) */
+                padding: 5px !important; /* Toolbar için iç boşluk */
+                height: auto !important; /* Toolbar yüksekliğini otomatik ayarla */
+            }
+            .lg-outer .lg-toolbar .lg-close.lg-icon {
+                display: inline-block !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                color: #FFF !important; /* İkon rengini beyaz yapalım */
+                font-size: 28px !important; /* İkon boyutunu biraz büyütelim */
+                width: 35px !important;    /* Dokunma alanını genişletelim */
+                height: 35px !important;   /* Dokunma alanını genişletelim */
+                line-height: 35px !important; /* İkonu dikeyde ortala */
+                text-align: center !important; /* İkonu yatayda ortala */
+                position: absolute !important; /* Konumlandırmayı kesinleştirelim */
+                top: 5px !important;          /* Üstten boşluk */
+                right: 5px !important;         /* Sağdan boşluk */
+                z-index: 999999 !important;    /* Diğer tüm elementlerin üzerinde olmasını garantile */
+                background-color: rgba(0,0,0,0.2) !important; /* Buton arka planı (isteğe bağlı) */
+                border-radius: 50% !important; /* Butonu yuvarlak yapalım (isteğe bağlı) */
+            }
+             /* Eğer yukarıdaki işe yaramazsa, Lightgallery'nin kendi mobil stillerini ezmeye çalışalım */
+            .lg-mobile-only .lg-close {
+                display: block !important;
+                opacity: 1 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <img src="/static/images/Logo.png" alt="Fırat Toptan Logo" style="height: 30px; margin-right: 10px; vertical-align: middle;">
+                Fırat Toptan B2b Portalı
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="main-categories-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="#" data-categoryid="all">Tüm Ürünler</a>
+                    </li>
+                    <!-- Ana kategoriler ve alt kategori dropdownları buraya dinamik olarak eklenecek -->
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a href="/cart" class="btn btn-primary position-relative me-2" id="cartLinkButton">
+                            Sepetim
+                            <span id="cartItemCountBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                                0
+                            </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/orders" class="btn btn-info me-2">Siparişlerim</a>
+                    </li>
+                    {% if admin_user %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarUserDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ admin_user }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarUserDropdown">
+                            <li><a class="dropdown-item" href="/admin/me">Admin Paneli</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout">Çıkış Yap</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid"> <!-- Kenar çubuğu kaldırıldığı için ana row yapısı sadeleşti -->
+        <!-- Ana İçerik Alanı -->
+        <main class="px-md-4" style="padding-top: 20px;"> <!-- Kenar çubuğu olmadığı için col sınıfları kaldırıldı, padding eklendi -->
+            <h1 class="page-title text-center">{{ title }}</h1>
+            
+            <div class="row justify-content-center">
+                <div class="col-md-10 col-lg-8">
+                    <input type="search" id="product-search-input" class="form-control" placeholder="Ürünlerde ara (Stok Adı, Kodu, Grup...)...">
+                </div>
+            </div>
+
+            <div id="products-table-container" class="mt-3">
+                <p class="text-center text-muted">Ürünler yükleniyor...</p>
+            </div>
+
+            <!-- Sepet Bölümü -->
+            <div id="cartSection" class="mt-5 p-3 border rounded shadow-sm" style="display:none; background-color: #fff;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2>Sepetim</h2>
+                    <button type="button" class="btn-close" aria-label="Close" onclick="toggleCartView(false)"></button>
+                </div>
+                <div id="cartContent">
+                    <p id="emptyCartMessage" class="text-center text-muted">Sepetinizde henüz ürün bulunmuyor.</p>
+                    <table class="table table-sm table-hover" id="cartTable" style="display:none;">
+                        <thead>
+                            <tr>
+                                <th>Ürün Adı</th>
+                                <th style="width: 100px;">Miktar</th>
+                                <th style="width: 120px;">Birim Fiyat</th>
+                                <th style="width: 120px;">Toplam Fiyat</th>
+                                <th style="width: 80px;">Sil</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cartTableBody">
+                            <!-- Sepet ürünleri buraya eklenecek -->
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="3" class="text-end fs-5">Genel Toplam:</th>
+                                <th id="cartGrandTotal" class="fs-5">0.00 TL</th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <hr/>
+                <div class="row mt-3 align-items-center">
+                    <div class="col-md-5">
+                        <label for="customerName" class="form-label">Cari İsmi:</label>
+                        <input type="text" class="form-control" id="customerName" placeholder="Sipariş veren cari/firma adı">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="exportFormat" class="form-label">İndirme Formatı:</label>
+                        <select class="form-select" id="exportFormat">
+                            <option value="excel" selected>Excel (.xlsx)</option>
+                            <option value="pdf">PDF (.pdf)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end justify-content-end">
+                        <button class="btn btn-success btn-lg w-100" id="downloadOrderButton" onclick="initiateOrderDownload()" disabled>Siparişi İndir</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Sepet Bölümü Sonu -->
+
+        </main>
+    </div>
+
+    <script>
+        const AnaKategoriYapisi = [
+            {
+                ad: "GIDA ÜRÜNLERİ",
+                id: "gida",
+                grupKodlari: ["BAKLIYAT", "MAKARNA", "UN", "CORBA", "BASAK", "KAHVALTI", "COKOKREM", "ETI", "GOFRET", "JELIBON", "LOKUM", "HELVA", "BAYRAM", "KENT", "KONSERVE", "BALIK", "KENTON", "DRO"]
+            },
+            {
+                ad: "İÇECEKLER",
+                id: "icecekler",
+                grupKodlari: ["CAY", "KAHVE", "ICECEK"]
+            },
+            {
+                ad: "TEMİZLİK & K. BAKIM",
+                id: "temizlik",
+                grupKodlari: ["DETERJAN", "KOZMETIK", "PED", "BEZ", "MENDIL", "ISLAK"]
+            },
+            {
+                ad: "EV YAŞAM & GEREÇLERİ",
+                id: "evyasam",
+                grupKodlari: ["BARDAK", "KAGIT"]
+            },
+            {
+                ad: "DİĞER ÜRÜNLER", 
+                id: "diger",
+                grupKodlari: ["01", "DIGER"]
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const productTableContainer = document.getElementById('products-table-container');
+            const searchInput = document.getElementById('product-search-input');
+            const mainCategoriesNav = document.getElementById('main-categories-nav');
+            
+            let allProducts = []; 
+            let activeCategoryStructure = []; 
+            let currentFilteredProducts = []; 
+            let selectedMainCategoryId = 'all'; 
+            let selectedSubCategoryId = null;   
+            let lightGalleryInstance = null;
+
+            const cartItemCountBadge = document.getElementById('cartItemCountBadge');
+
+            function formatCurrency(value) {
+                const formatter = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                return formatter.format(value || 0);
+            }
+            
+            window.promptAddToCart = function(stokKodu, stokAdi, satisFiyat1, bakiye) {
+                satisFiyat1 = parseFloat(satisFiyat1);
+                bakiye = parseFloat(bakiye);
+
+                let quantity = prompt(`"${stokAdi}" için miktar girin (stok: ${bakiye}):`, "1");
+                if (quantity === null) return; 
+                quantity = parseInt(quantity);
+                if (isNaN(quantity) || quantity <= 0) {
+                    alert("Geçersiz miktar girdiniz.");
+                    return;
+                }
+                if (quantity > bakiye) {
+                    alert(`Yetersiz stok! Bu ürün için en fazla ${bakiye} adet sipariş verebilirsiniz.`);
+                    return;
+                }
+
+                let price = prompt(`"${stokAdi}" için birim fiyat girin (önerilen: ${formatCurrency(satisFiyat1)}):`, satisFiyat1.toFixed(2));
+                if (price === null) return; 
+                price = parseFloat(price);
+                if (isNaN(price) || price < 0) { 
+                    alert("Geçersiz fiyat girdiniz.");
+                    return;
+                }
+                addItemToCart(stokKodu, stokAdi, quantity, price, bakiye);
+            }
+
+            function addItemToCart(stokKodu, stokAdi, quantity, price, bakiye) {
+                let cartItems = getCartItemsFromStorage();
+                const existingItemIndex = cartItems.findIndex(item => item.stokKodu === stokKodu);
+                if (existingItemIndex > -1) {
+                    const newQuantity = cartItems[existingItemIndex].quantity + quantity;
+                    if (newQuantity > bakiye) {
+                        alert(`Yetersiz stok! Sepetinizdeki "${stokAdi}" ile birlikte toplam ${newQuantity} adet oluyor, ancak stokta ${bakiye} adet var.`);
+                        return;
+                    }
+                    cartItems[existingItemIndex].quantity = newQuantity;
+                    cartItems[existingItemIndex].price = price; 
+                } else {
+                    cartItems.push({ stokKodu, stokAdi, quantity, price, bakiye });
+                }
+                saveCartItemsToStorage(cartItems);
+                alert(`"${stokAdi}" sepete eklendi.`);
+            }
+            
+            function getCartItemsFromStorage() {
+                const items = localStorage.getItem('b2bCartItems');
+                return items ? JSON.parse(items) : [];
+            }
+
+            function saveCartItemsToStorage(cartItems) {
+                localStorage.setItem('b2bCartItems', JSON.stringify(cartItems));
+                updateCartBadge();
+            }
+
+            function updateCartBadge() {
+                const cartItems = getCartItemsFromStorage();
+                const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+                if (totalItems > 0) {
+                    cartItemCountBadge.textContent = totalItems;
+                    cartItemCountBadge.style.display = 'inline-block';
+                } else {
+                    cartItemCountBadge.style.display = 'none';
+                }
+            }
+
+            function updateActiveCategoriesAndRenderNavbar(products) {
+                const productGrupKodlari = new Set(products.map(p => p.GRUP_KODU).filter(Boolean));
+                activeCategoryStructure = AnaKategoriYapisi.map(mainCat => {
+                    const activeGrupKodlari = mainCat.grupKodlari.filter(grupKod => productGrupKodlari.has(grupKod));
+                    return { ...mainCat, activeGrupKodlari, hasProducts: activeGrupKodlari.length > 0 };
+                }).filter(mainCat => mainCat.hasProducts);
+
+                const allProductsLinkLi = mainCategoriesNav.querySelector('li:first-child');
+                mainCategoriesNav.innerHTML = ''; 
+                if(allProductsLinkLi) mainCategoriesNav.appendChild(allProductsLinkLi); 
+
+                activeCategoryStructure.forEach(mainCat => {
+                    const li = document.createElement('li');
+                    li.className = 'nav-item dropdown';
+
+                    const aToggle = document.createElement('a');
+                    aToggle.className = 'nav-link dropdown-toggle';
+                    aToggle.href = '#';
+                    aToggle.id = `navbarDropdown_${mainCat.id}`;
+                    aToggle.setAttribute('role', 'button');
+                    aToggle.setAttribute('data-bs-toggle', 'dropdown');
+                    aToggle.setAttribute('aria-expanded', 'false');
+                    aToggle.textContent = mainCat.ad;
+                    aToggle.dataset.categoryid = mainCat.id; 
+                    li.appendChild(aToggle);
+
+                    const ulDropdown = document.createElement('ul');
+                    ulDropdown.className = 'dropdown-menu';
+                    ulDropdown.setAttribute('aria-labelledby', `navbarDropdown_${mainCat.id}`);
+
+                    const allSubLi = document.createElement('li');
+                    const allSubA = document.createElement('a');
+                    allSubA.className = 'dropdown-item';
+                    allSubA.href = '#';
+                    allSubA.textContent = `Tümü (${mainCat.ad})`;
+                    allSubA.dataset.categoryid = mainCat.id;
+                    allSubA.dataset.grupkod = 'all_sub'; 
+                    allSubLi.appendChild(allSubA);
+                    ulDropdown.appendChild(allSubLi);
+                    
+                    const dividerLi = document.createElement('li');
+                    const hr = document.createElement('hr');
+                    hr.className = 'dropdown-divider';
+                    dividerLi.appendChild(hr);
+                    ulDropdown.appendChild(dividerLi);
+
+                    mainCat.activeGrupKodlari.forEach(grupKod => {
+                        const subLi = document.createElement('li');
+                        const subA = document.createElement('a');
+                        subA.className = 'dropdown-item';
+                        subA.href = '#';
+                        subA.textContent = grupKod;
+                        subA.dataset.grupkod = grupKod;
+                        subLi.appendChild(subA);
+                        ulDropdown.appendChild(subLi);
+                    });
+                    li.appendChild(ulDropdown);
+                    mainCategoriesNav.appendChild(li);
+                });
+                 updateActiveLinks(); 
+            }
+
+            function filterAndRenderProducts(searchTerm = '', mainCatId = selectedMainCategoryId, subCatId = selectedSubCategoryId) {
+                console.log('[FILTER] Başlangıç:', { mainCatId, subCatId, searchTerm });
+                let filteredProducts = [...allProducts];
+                console.log('[FILTER] Tüm ürünler sayısı:', filteredProducts.length);
+
+                // 1. Ana Kategori Filtresi
+                if (mainCatId && mainCatId !== 'all') {
+                    const mainCategory = activeCategoryStructure.find(mc => mc.id === mainCatId);
+                    console.log('[FILTER] Seçilen Ana Kategori Obj:', mainCategory);
+                    if (mainCategory && mainCategory.activeGrupKodlari) {
+                        filteredProducts = filteredProducts.filter(p => mainCategory.activeGrupKodlari.includes(p.GRUP_KODU));
+                        console.log('[FILTER] Ana Kategori Filtresi Sonrası Ürün Sayısı:', filteredProducts.length, 'Ana Kat. Grupları:', mainCategory.activeGrupKodlari);
+
+                        // 2. Alt Kategori Filtresi (Ana kategori filtresi uygulandıktan SONRA)
+                        if (subCatId && subCatId !== 'all_sub') {
+                            console.log('[FILTER] Alt Kategori Filtresi Uygulanıyor. Seçilen subCatId:', subCatId);
+                            const tempFilteredBySub = filteredProducts.filter(p => p.GRUP_KODU === subCatId);
+                            console.log('[FILTER] Alt Kategori Filtresi Sonrası Ürün Sayısı (geçici):', tempFilteredBySub.length);
+                            filteredProducts = tempFilteredBySub;
+                        } else {
+                            console.log('[FILTER] Alt Kategori Filtresi Atlandı (ya all_sub ya da subCatId yok):', subCatId);
+                        }
+                    } else {
+                        console.log('[FILTER] Geçerli ana kategori bulunamadı veya activeGrupKodlari boş. Ürünler sıfırlandı.');
+                        filteredProducts = [];
+                    }
+                } else {
+                    console.log('[FILTER] Ana Kategori Filtresi Atlandı (Tüm Ürünler).');
+                }
+
+                // 3. Arama Filtresi (En son, o ana kadar filtrelenmiş ürünlere uygulanır)
+                if (searchTerm) {
+                    console.log('[FILTER] Arama Filtresi Uygulanıyor. Terim:', searchTerm);
+                    const lowerSearchTerm = searchTerm.toLocaleLowerCase('tr-TR');
+                    filteredProducts = filteredProducts.filter(p => 
+                        (p.STOK_ADI && p.STOK_ADI.toLocaleLowerCase('tr-TR').includes(lowerSearchTerm)) ||
+                        (p.STOK_KODU && p.STOK_KODU.toLocaleLowerCase('tr-TR').includes(lowerSearchTerm)) ||
+                        (p.GRUP_KODU && p.GRUP_KODU.toLocaleLowerCase('tr-TR').includes(lowerSearchTerm)) ||
+                        (p.BARKOD1 && p.BARKOD1.toLocaleLowerCase('tr-TR').includes(lowerSearchTerm))
+                    );
+                    console.log('[FILTER] Arama Filtresi Sonrası Ürün Sayısı:', filteredProducts.length);
+                } else {
+                    console.log('[FILTER] Arama Filtresi Atlandı.');
+                }
+
+                currentFilteredProducts = filteredProducts; 
+                console.log('[FILTER] Render edilecek ürün sayısı:', currentFilteredProducts.length);
+                renderTable(currentFilteredProducts);
+            }
+            
+            function updateActiveLinks() {
+                document.querySelectorAll('#main-categories-nav > .nav-item > .nav-link').forEach(link => {
+                    link.classList.remove('active', 'active-main-category');
+                    if (link.dataset.categoryid === selectedMainCategoryId && (selectedSubCategoryId === null || selectedSubCategoryId === 'all_sub')) {
+                        link.classList.add('active', 'active-main-category');
+                    }
+                });
+
+                document.querySelectorAll('#main-categories-nav .dropdown-item').forEach(item => {
+                    item.classList.remove('active-sub-category');
+                    if (item.dataset.grupkod === selectedSubCategoryId && selectedSubCategoryId !== 'all_sub') {
+                        item.classList.add('active-sub-category');
+                    }
+                });
+                if (selectedMainCategoryId === 'all') {
+                    const allProductsLink = document.querySelector('#main-categories-nav .nav-link[data-categoryid="all"]');
+                    if (allProductsLink) {
+                        allProductsLink.classList.add('active', 'active-main-category');
+                    }
+                }
+            }
+            
+            function initializeOrRefreshLightGallery() {
+                if (lightGalleryInstance) {
+                    try {
+                        lightGalleryInstance.destroy();
+                    } catch (e) { /* Hata olursa görmezden gel */ }
+                }
+                try {
+                    lightGalleryInstance = lightGallery(productTableContainer, {
+                        selector: '.product-image-clickable',
+                        dynamic: false, 
+                        download: false, 
+                        counter: true, 
+                        plugins: (typeof lgZoom !== 'undefined' ? [lgZoom] : []),
+                    });
+                } catch (e) {
+                    console.error("LightGallery başlatılırken hata oluştu:", e);
+                }
+            }
+
+            function renderTable(productsToRender) {
+                productTableContainer.innerHTML = ''; 
+                if (productsToRender && productsToRender.length > 0) {
+                    const table = document.createElement('table');
+                    table.className = 'table table-striped table-hover table-bordered table-sm'; 
+                    const thead = document.createElement('thead');
+                    thead.className = 'table-light'; 
+                    const tbody = document.createElement('tbody');
+                    const headerRow = document.createElement('tr');
+                    
+                    const headers = ["Resim", "Stok Adı", "Bakiye", "", "Satış Fiyatı", "Grup Kodu", "Barkod", "Stok Kodu"];
+                    const productKeys = ["STOK_ADI", "BAKIYE", "SATIS_FIAT1", "GRUP_KODU", "BARKOD1", "STOK_KODU"];
+
+                    headers.forEach((headerText) => {
+                        const th = document.createElement('th');
+                        th.scope = "col";
+                        th.style.verticalAlign = 'middle';
+                        if (headerText) {
+                            th.textContent = headerText;
+                        }
+                        if (headerText === "Stok Adı") { th.classList.add('col-stok-adi'); }
+                        if (headerText === "") { 
+                            th.classList.add('action-cell');
+                        } 
+                        headerRow.appendChild(th);
+                    });
+                    thead.appendChild(headerRow);
+                    table.appendChild(thead);
+
+                    productsToRender.forEach(product => {
+                        const tr = document.createElement('tr');
+                        
+                        const tdImage = document.createElement('td');
+                        const img = document.createElement('img');
+                        const imgSrc = product.IMAGE_PATH_WEB ? `/static/${product.IMAGE_PATH_WEB}` : '/static/images/image_placeholder.png';
+                        img.src = imgSrc;
+                        img.alt = product.STOK_ADI || product.STOK_KODU;
+                        img.className = 'product-image product-image-clickable';
+                        img.dataset.src = imgSrc; 
+                        img.onerror = function() { this.onerror=null; this.src='/static/images/image_placeholder.png'; this.dataset.src='/static/images/image_placeholder.png';};
+                        tdImage.appendChild(img);
+                        tdImage.style.verticalAlign = 'middle';
+                        tr.appendChild(tdImage);
+
+                        const tdAction = document.createElement('td');
+                        tdAction.className = 'action-cell';
+                        const bakiye = parseFloat(product.BAKIYE || 0);
+                        const satisFiyati = parseFloat(product.SATIS_FIAT1 || 0);
+                        const stokAdiEscaped = product.STOK_ADI ? product.STOK_ADI.replace(/'/g, "\\'").replace(/"/g, "&quot;") : '';
+                        
+                        if (bakiye > 0) {
+                            tdAction.innerHTML = `
+                                <button class="btn btn-sm cart-icon-button" title="Sepete Ekle"
+                                        onclick="promptAddToCart('${product.STOK_KODU}', '${stokAdiEscaped}', ${satisFiyati}, ${bakiye})">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus" viewBox="0 0 16 16">
+                                        <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9V5.5z"/>
+                                        <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                                    </svg>
+                                </button>`;
+                        } else {
+                            tdAction.innerHTML = '<span class="badge bg-danger">Stok Yok</span>';
+                        }
+
+                        const cellDataOrder = [
+                            { key: "STOK_ADI", class: 'col-stok-adi' },
+                            { key: "BAKIYE", format: val => parseFloat(val || 0).toFixed(0), align: 'center' },
+                            "ACTION_CELL_PLACEHOLDER",
+                            { key: "SATIS_FIAT1", format: formatCurrency, align: 'center' },
+                            { key: "GRUP_KODU", align: 'center' },
+                            { key: "BARKOD1" },
+                            { key: "STOK_KODU" }
+                        ];
+
+                        cellDataOrder.forEach(item => {
+                            if (item === "ACTION_CELL_PLACEHOLDER") {
+                                tr.appendChild(tdAction);
+                            } else {
+                                const td = document.createElement('td');
+                                if (item.class) { td.classList.add(item.class); }
+                                
+                                let value = product[item.key];
+                                if (item.format) {
+                                    td.textContent = item.format(value);
+                                } else {
+                                    td.textContent = value || '';
+                                }
+                                
+                                if (item.align) { 
+                                    td.style.textAlign = item.align; 
+                                }
+                                
+                                td.style.verticalAlign = 'middle';
+                                
+                                tr.appendChild(td);
+                            }
+                        });
+                        
+                        tbody.appendChild(tr);
+                    });
+                    table.appendChild(tbody);
+                    const tableWrapper = document.createElement('div');
+                    tableWrapper.className = 'table-responsive-sm';
+                    tableWrapper.appendChild(table);
+                    productTableContainer.appendChild(tableWrapper);
+                    initializeOrRefreshLightGallery();
+                } else {
+                    productTableContainer.innerHTML = '<p class="text-center text-muted mt-4">Aramanızla eşleşen ürün bulunamadı veya seçili kategoride ürün yok.</p>';
+                }
+            }
+
+            searchInput.addEventListener('input', function() {
+                filterAndRenderProducts(this.value.trim(), selectedMainCategoryId, selectedSubCategoryId);
+            });
+            
+            mainCategoriesNav.addEventListener('click', function(event) {
+                const target = event.target.closest('a'); 
+                if (!target) return;
+
+                // Eğer tıklanan element bir dropdown toggle ise, Bootstrap'in kendi işlevini yapmasına izin ver.
+                // Sadece event.preventDefault() çağırarak href="#" yönlendirmesini engelle.
+                if (target.classList.contains('dropdown-toggle') && target.getAttribute('data-bs-toggle') === 'dropdown') {
+                    event.preventDefault();
+                    // Dropdown'ın açılıp kapanması Bootstrap tarafından otomatik olarak yönetilecektir.
+                    // Bu durumda filtreleme veya active link güncellemesi yapmıyoruz.
+                    return; 
+                }
+
+                // Diğer tüm linkler (Tüm Ürünler, dropdown içindeki alt kategori linkleri) için varsayılan davranışı engelle
+                event.preventDefault();
+
+                const mainCatIdFromToggle = target.dataset.maincategoryid; // Dropdown toggle için (yukarıdaki if'e takılmazsa buraya gelmez)
+                const grupKod = target.dataset.grupkod; // Alt kategori için
+                const categoryIdFromLink = target.dataset.categoryid; // "Tüm Ürünler" veya alt kategorinin "Tümü" linki için
+
+                let hideActiveDropdown = true;
+
+                if (categoryIdFromLink) { // "Tüm Ürünler" veya bir ana kategorinin "Tümü (Ana Kategori Adı)" linki
+                    selectedMainCategoryId = categoryIdFromLink;
+                    selectedSubCategoryId = target.dataset.grupkod === 'all_sub' ? 'all_sub' : null;
+                    if (target.dataset.grupkod === 'all_sub') { // "Tümü (Ana Kategori Adı)" tıklandı
+                         // selectedSubCategoryId zaten ayarlandı, dropdown'ı kapat
+                    } else { // "Tüm Ürünler" tıklandı
+                        // selectedSubCategoryId null olarak kalacak.
+                    }
+                } else if (grupKod && target.closest('.dropdown-menu')) { // Dropdown içindeki spesifik bir alt kategori linki
+                    const parentDropdownToggle = target.closest('.dropdown').querySelector('.dropdown-toggle');
+                    if (parentDropdownToggle && parentDropdownToggle.dataset.categoryid) {
+                        selectedMainCategoryId = parentDropdownToggle.dataset.categoryid;
+                        selectedSubCategoryId = grupKod;
+                    } else {
+                        // Bu durum olmamalı, ama bir güvenlik önlemi
+                        console.error("Ana kategori ID'si bulunamadı.");
+                        return;
+                    }
+                } else {
+                    // Tanımlanmayan bir tıklama, hiçbir şey yapma (veya bir log bas)
+                    // veya dropdown açıksa gizleme.
+                    hideActiveDropdown = false; // Belirsiz bir tıklama ise dropdown'ı kapatma
+                }
+                
+                if (hideActiveDropdown) {
+                    const activeDropdown = mainCategoriesNav.querySelector('.dropdown-menu.show');
+                    if (activeDropdown) {
+                        const instance = bootstrap.Dropdown.getInstance(activeDropdown.previousElementSibling);
+                        if (instance) {
+                            instance.hide();
+                        }
+                    }
+                }
+                
+                updateActiveLinks();
+                filterAndRenderProducts(searchInput.value.trim(), selectedMainCategoryId, selectedSubCategoryId);
+
+                // Mobil görünümde, bir seçim yapıldıktan sonra ana navbar'ı kapat
+                const navbarToggler = document.querySelector('.navbar-toggler');
+                const navbarCollapse = document.getElementById('navbarNav');
+                // Toggler görünürse (yani mobil moddaysak) ve navbar açıksa, kapat.
+                if (navbarToggler && getComputedStyle(navbarToggler).display !== 'none' && navbarCollapse.classList.contains('show')) {
+                    const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
+                    if (bsCollapse) {
+                        bsCollapse.hide();
+                    }
+                }
+            });
+
+            fetch('/api/products')
+                .then(response => response.json())
+                .then(products => {
+                    allProducts = products;
+                    updateActiveCategoriesAndRenderNavbar(allProducts); 
+                    filterAndRenderProducts(); 
+                    updateActiveLinks(); 
+                    updateCartBadge(); // Sayfa ilk ürünleri yüklediğinde de badge güncellensin.
+                })
+                .catch(error => {
+                    console.error('Ürünler yüklenirken hata oluştu:', error);
+                    productTableContainer.innerHTML = '<p class="text-danger text-center">Ürünler yüklenirken bir sorun oluştu. Lütfen daha sonra tekrar deneyin.</p>';
+                });
+            
+            updateCartBadge(); // Sayfa ilk yüklendiğinde badge için (fetch öncesi)
+        });
+    </script>
+
+    <!-- Bootstrap JS and Popper.js (Bundle) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Lightgallery JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/lightgallery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/plugins/zoom/lg-zoom.min.js"></script>
+</body>
+</html> 
