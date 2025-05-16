@@ -133,6 +133,13 @@ class MainWindow(QMainWindow):
         form_layout.addRow(QLabel("Kullanıcı Adı:"), self.username_input)
         form_layout.addRow(QLabel("Şifre:"), self.password_input)
         form_layout.addRow(QLabel("Veritabanı Adı:"), db_layout)
+
+        # API Anahtarı Giriş Alanı
+        self.api_key_input = QLineEdit()
+        self.api_key_input.setEchoMode(QLineEdit.EchoMode.Password)
+        self.api_key_input.setPlaceholderText("Web API için ürünler API anahtarınızı girin")
+        form_layout.addRow(QLabel("Ürünler API Anahtarı:"), self.api_key_input)
+
         right_panel_layout.addLayout(form_layout)
 
         # --- Zamanlayıcı Ayarları (Bağlantı Ayarlarının Altına) ---
@@ -286,7 +293,7 @@ class MainWindow(QMainWindow):
     def load_settings(self):
         '''
         Kaydedilmiş ayarları settings.json ve keyring'den yükler.
-        Kullanıcı tercihleri (hariç tutulan grup kodları) ve zamanlayıcı ayarlarını da yükler.
+        Kullanıcı tercihleri (hariç tutulan grup kodları), zamanlayıcı ve API anahtarı ayarlarını da yükler.
         Ayrıca, mümkünse son önizlenen JSON'dan grup filtresini doldurur.
         '''
         try:
@@ -299,6 +306,10 @@ class MainWindow(QMainWindow):
                     if self.db_name_combo.findText(saved_db_name) == -1:
                         self.db_name_combo.addItem(saved_db_name)
                     self.db_name_combo.setCurrentText(saved_db_name)
+                
+                # API Anahtarını yükle
+                self.api_key_input.setText(settings_data.get("products_api_key", ""))
+
                 username_for_keyring = settings_data.get("username")
                 if username_for_keyring:
                     password = keyring.get_password(SERVICE_NAME, username_for_keyring)
@@ -464,13 +475,14 @@ class MainWindow(QMainWindow):
 
     def save_settings(self):
         '''
-        Bağlantı ayarlarını, zamanlayıcı ayarlarını ve kullanıcı filtre tercihlerini settings.json dosyasına 
-        ve şifreyi keyring'e kaydeder.
+        Bağlantı ayarlarını, zamanlayıcı ayarlarını, kullanıcı filtre tercihlerini ve API anahtarını 
+        settings.json dosyasına ve şifreyi keyring'e kaydeder.
         '''
         server_address = self.server_address_input.text()
         username = self.username_input.text()
         password = self.password_input.text()
         db_name = self.db_name_combo.currentText()
+        api_key = self.api_key_input.text().strip() # API anahtarını al ve boşlukları temizle
 
         if not server_address or not username:
             QMessageBox.warning(self, "Eksik Bilgi", "Sunucu Adresi ve Kullanıcı Adı boş bırakılamaz.")
@@ -484,6 +496,7 @@ class MainWindow(QMainWindow):
             "server_address": server_address,
             "username": username,
             "db_name": db_name,
+            "products_api_key": api_key, # API anahtarını kaydet
             "scheduler_settings": {
                 "enabled": self.scheduler_enabled_checkbox.isChecked(),
                 "interval_minutes": self.scheduler_interval_spinbox.value()

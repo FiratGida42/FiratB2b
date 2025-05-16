@@ -1,10 +1,12 @@
 import json
 import getpass
 from passlib.context import CryptContext
+import os # os modülünü import et
 
 # Şifre hash'leme için context (bcrypt algoritmasını kullanacağız)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-CONFIG_FILE = "admin_config.json"
+# CONFIG_FILE'ı ortam değişkeninden al, yoksa varsayılanı kullan
+CONFIG_FILE = os.getenv("ADMIN_CONFIG_PATH", "admin_config.json")
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)

@@ -67,7 +67,8 @@ class OrderStatusUpdate(BaseModel):
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 STATIC_DIR = os.path.join(BASE_DIR, "static")
-ADMIN_CONFIG_FILE = os.path.join(os.path.dirname(BASE_DIR), "admin_config.json")
+# ADMIN_CONFIG_FILE yolunu ortam değişkeninden al, yoksa varsayılanı kullan
+ADMIN_CONFIG_FILE = os.getenv("ADMIN_CONFIG_PATH", os.path.join(os.path.dirname(BASE_DIR), "admin_config.json"))
 
 # --- API Anahtarı Ayarı (Ortam Değişkeninden Oku) ---
 PRODUCTS_API_KEY_VALUE = os.environ.get("PRODUCTS_API_KEY")
@@ -98,8 +99,8 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 # Jinja2Templates örneğini oluştur
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
-# Gelen ürün verilerini saklamak için geçici bir dosya yolu
-PRODUCTS_FILE = "received_products.json"
+# Gelen ürün verilerini saklamak için dosya yolunu ortam değişkeninden al, yoksa varsayılanı kullan
+PRODUCTS_FILE = os.getenv("PRODUCTS_FILE_PATH", "received_products.json")
 
 # --- Admin Auth Başlangıcı ---
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -119,16 +120,20 @@ def get_admin_credentials() -> Optional[dict]:
     Başarılı olursa bir sözlük, hata durumunda None döndürür.
     """
     if not os.path.exists(ADMIN_CONFIG_FILE):
-        print(f"HATA: Admin yapılandırma dosyası bulunamadı: {ADMIN_CONFIG_FILE}")
+        # Eğer ADMIN_CONFIG_FILE ortam değişkeninden geliyorsa ve dosya yoksa, 
+        # bu, create_admin.py'nin henüz çalıştırılmadığı anlamına gelebilir.
+        # Veya yol yanlışsa. Yolun doğruluğu create_admin.py ve ortam değişkeni ayarıyla sağlanmalı.
+        print(f"UYARI: Admin yapılandırma dosyası ({ADMIN_CONFIG_FILE}) bulunamadı. Admin girişi çalışmayacak.")
+        print("Lütfen `create_admin.py` script'ini çalıştırarak bir admin kullanıcısı oluşturun.")
         return None
     try:
         with open(ADMIN_CONFIG_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
             # Beklenen anahtarların varlığını kontrol edebiliriz
-            if "username" in data and "hashed_password" in data:
+            if "admin_username" in data and "admin_hashed_password" in data: # Anahtar isimlerini admin_config.json'daki ile eşleştir
                 return data
             else:
-                print(f"HATA: Admin yapılandırma dosyasında beklenen anahtarlar ('username', 'hashed_password') eksik: {ADMIN_CONFIG_FILE}")
+                print(f"HATA: Admin yapılandırma dosyasında beklenen anahtarlar ('admin_username', 'admin_hashed_password') eksik: {ADMIN_CONFIG_FILE}")
                 return None
     except json.JSONDecodeError:
         print(f"HATA: Admin yapılandırma dosyası bozuk (JSON Decode Hatası): {ADMIN_CONFIG_FILE}")
@@ -182,13 +187,14 @@ async def receive_products_api(products: List[Dict]):
     Yeni ürün verilerini alır ve sunucu tarafında bir JSON dosyasına kaydeder.
     Masaüstü uygulamasından gelen ürün listesini kabul eder.
     """
+    products_file_path = os.getenv("PRODUCTS_FILE_PATH", "received_products.json") # Tekrar alıyoruz çünkü global PRODUCTS_FILE değişmeyebilir
     if not products:
         raise HTTPException(status_code=400, detail="Ürün listesi boş olamaz.")
     try:
         # Gelen veriyi doğrudan JSON dosyasına yazalım (var olanın üzerine yazar)
-        with open(PRODUCTS_FILE, "w", encoding="utf-8") as f:
+        with open(products_file_path, "w", encoding="utf-8") as f: # products_file_path kullan
             json.dump(products, f, ensure_ascii=False, indent=4)
-        print(f"{len(products)} adet ürün verisi alındı ve {PRODUCTS_FILE} dosyasına kaydedildi.")
+        print(f"{len(products)} adet ürün verisi alındı ve {products_file_path} dosyasına kaydedildi.") # products_file_path kullan
         return {"message": f"{len(products)} adet ürün başarıyla alındı ve kaydedildi."}
     except Exception as e:
         print(f"Veri kaydedilirken hata oluştu: {e}")
@@ -199,12 +205,13 @@ async def get_products_api(current_user: str = Depends(get_current_admin_user_fo
     """
     Kaydedilmiş ürün verilerini sunar. Giriş yapmış admin kullanıcısı gerektirir.
     """
+    products_file_path = os.getenv("PRODUCTS_FILE_PATH", "received_products.json") # Tekrar alıyoruz
     try:
-        with open(PRODUCTS_FILE, "r", encoding="utf-8") as f:
+        with open(products_file_path, "r", encoding="utf-8") as f: # products_file_path kullan
             products = json.load(f)
         return products
     except FileNotFoundError:
-        print(f"'{PRODUCTS_FILE}' bulunamadı. Boş ürün listesi döndürülüyor.")
+        print(f"'{products_file_path}' bulunamadı. Boş ürün listesi döndürülüyor.") # products_file_path kullan
         return []
     except Exception as e:
         print(f"Veri okunurken hata oluştu: {e}")
@@ -262,8 +269,8 @@ async def login_submit(request: Request, username: str = Form(...), password: st
     error_message = "Kullanıcı adı veya şifre hatalı."
 
     if admin_creds_dict:
-        stored_username = admin_creds_dict.get("username")
-        hashed_password = admin_creds_dict.get("hashed_password")
+        stored_username = admin_creds_dict.get("admin_username")
+        hashed_password = admin_creds_dict.get("admin_hashed_password")
         if stored_username == username and hashed_password and verify_password(password, hashed_password):
             request.session["admin_user"] = username
             # Başarılı giriş sonrası / (ana sayfaya) yönlendir
@@ -294,7 +301,7 @@ async def startup_event():
     else:
         admin_check = get_admin_credentials()
         if admin_check:
-            print(f"'{ADMIN_CONFIG_FILE}' bulundu ve geçerli. Admin: {admin_check.get('username')}")
+            print(f"'{ADMIN_CONFIG_FILE}' bulundu ve geçerli. Admin: {admin_check.get('admin_username')}")
         else:
             print(f"UYARI: '{ADMIN_CONFIG_FILE}' bulundu ancak okunamadı veya formatı bozuk.")
 

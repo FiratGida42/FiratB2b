@@ -126,8 +126,8 @@ settings.json
 admin_config.json
 received_products.json
 *.sqlite3
-alembic.ini
-alembic/
+#alembic.ini
+#alembic/
 
 # Log dosyaları (ana log ve scheduler logu)
 b2b_web_app/logs/*.log

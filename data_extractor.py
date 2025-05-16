@@ -124,7 +124,7 @@ def get_db_connection():
         print(f"Bağlantı sırasında beklenmedik bir hata oluştu: {e}")
         return None
 
-DEFAULT_API_URL = "http://127.0.0.1:8000/api/products"
+DEFAULT_API_URL = "https://firatb2b.onrender.com/api/products"
 
 def fetch_product_data(connection, excluded_groups=None):
     '''
@@ -334,15 +334,18 @@ def save_data_to_json(data, filename="urun_verileri_onizleme.json"):
         return False # Hata durumunda False döndür
 
 def send_data_to_web_api(product_data: list, api_url: str = DEFAULT_API_URL) -> tuple[bool, str]:
-    # --- API Anahtarı Ayarı (Ortam Değişkeninden Oku) ---
-    PRODUCTS_API_KEY_VALUE = os.environ.get("PRODUCTS_API_KEY")
+    settings = load_settings() # Ayarları yükle
+    PRODUCTS_API_KEY_VALUE = settings.get("products_api_key") # settings.json'dan oku
+
     if not PRODUCTS_API_KEY_VALUE:
-        logging.warning("UYARI: PRODUCTS_API_KEY ortam değişkeni data_extractor.py içinde bulunamadı.")
-        logging.warning("Güvenlik için bu değişkenin ayarlanması ŞİDDETLE tavsiye edilir.")
-        logging.warning("Geçici, geliştirme amaçlı bir anahtar kullanılacak. Lütfen üretimde bunu KULLANMAYIN ve web API'deki ile aynı olduğundan emin olun!")
-        PRODUCTS_API_KEY_VALUE = "dev-temporary-products-api-key-replace-me" # FastAPI main.py'deki ile aynı olmalı
-        logging.info(f"Geliştirme için kullanılan geçici PRODUCTS_API_KEY: {PRODUCTS_API_KEY_VALUE}")
-    # --- API Anahtarı Ayarı Sonu ---
+        logging.error("KRİTİK HATA: PRODUCTS_API_KEY, settings.json dosyasında bulunamadı veya boş.")
+        logging.warning("Lütfen settings.json dosyasına 'products_api_key': 'DEĞERİNİZ' şeklinde ekleyin.")
+        # Ortam değişkeni fallback'ini kaldırabilir veya bırakabilirsiniz, ama settings.json öncelikli olmalı.
+        # PRODUCTS_API_KEY_VALUE = os.environ.get("PRODUCTS_API_KEY") # Fallback
+        # if not PRODUCTS_API_KEY_VALUE:
+        #     logging.warning("Ortam değişkeni olarak da PRODUCTS_API_KEY bulunamadı.")
+        #     PRODUCTS_API_KEY_VALUE = "dev-temporary-products-api-key-replace-me"
+        return False, "API Anahtarı settings.json dosyasında bulunamadı. Lütfen ayarları kontrol edin."
 
     if not product_data:
         message = "Gönderilecek ürün verisi bulunmuyor."
