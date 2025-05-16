@@ -698,6 +698,12 @@
             fetch('/api/products')
                 .then(response => response.json())
                 .then(products => {
+                    // STOK_ADI'na göre Türkçe karakterleri dikkate alarak sırala
+                    products.sort((a, b) => {
+                        const nameA = a.STOK_ADI || ''; // STOK_ADI yoksa boş string kullan
+                        const nameB = b.STOK_ADI || ''; // STOK_ADI yoksa boş string kullan
+                        return nameA.localeCompare(nameB, 'tr', { sensitivity: 'base' });
+                    });
                     allProducts = products;
                     updateActiveCategoriesAndRenderNavbar(allProducts); 
                     filterAndRenderProducts(); 
