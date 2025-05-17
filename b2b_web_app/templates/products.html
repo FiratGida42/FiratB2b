@@ -127,6 +127,12 @@
                 display: block !important;
                 opacity: 1 !important;
             }
+
+            /* Mobil cihazlarda navbar dropdown menüleri için kaydırma */
+            .navbar-nav .dropdown-menu {
+                max-height: 250px; /* Ya da 60vh gibi göreceli bir birim deneyebilirsiniz */
+                overflow-y: auto;
+            }
         }
     </style>
 </head>
