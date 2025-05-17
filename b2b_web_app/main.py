@@ -21,9 +21,7 @@ from . import models # models.py dosyamızı import ediyoruz
 from .database import engine, SessionLocal, get_db # database.py'den engine, SessionLocal ve get_db'yi import ediyoruz
 
 # Uygulama başlangıcında veritabanı tablolarını oluştur (eğer yoksa)
-# ÖNEMLİ: Alembic kullanıyorsanız, tablo oluşturma işlemini Alembic üzerinden yönetmek daha iyidir.
-# Şimdilik basitlik için create_all kullanıyoruz. Eğer Alembic ile migration yapılacaksa bu satır kaldırılabilir.
-# models.Base.metadata.create_all(bind=engine)
+models.Base.metadata.create_all(bind=engine)
 
 # --- Pydantic Şemaları (Schemas) Başlangıcı ---
 class OrderItemBase(BaseModel):
