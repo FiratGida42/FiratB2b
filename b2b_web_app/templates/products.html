@@ -734,6 +734,73 @@
             
             updateCartBadge(); // Sayfa ilk yüklendiğinde badge için (fetch öncesi)
         });
+
+        window.initiateOrderDownload = function() {
+            const cartItems = getCartItemsFromStorage();
+            if (cartItems.length === 0) {
+                alert("Dışa aktarılacak ürün bulunmuyor.");
+                return;
+            }
+
+            const customerName = document.getElementById('customerName').value.trim() || "Bilinmeyen Cari";
+            const exportFormat = document.getElementById('exportFormat').value; // Şimdilik excel (csv) destekli
+
+            let dataToExport = [];
+            // Başlık satırı
+            dataToExport.push(["Stok Kodu", "Barkod", "Ürün Adı", "Miktar", "Birim Fiyat (TL)", "Toplam Fiyat (TL)"]);
+
+            cartItems.forEach(item => {
+                // Tam ürün bilgisini allProducts listesinden bulalım (barkod için)
+                const productInfo = allProducts.find(p => p.STOK_KODU === item.stokKodu);
+                const barkod = productInfo ? (productInfo.BARKOD1 || '') : ''; // Barkod varsa al, yoksa boş string
+                
+                dataToExport.push([
+                    item.stokKodu,
+                    barkod,
+                    item.stokAdi,
+                    item.quantity,
+                    formatCurrency(item.price), // Birim fiyatı formatla
+                    formatCurrency(item.quantity * item.price) // Toplam fiyatı formatla
+                ]);
+            });
+
+            // Genel Toplamı ekleyebiliriz (isteğe bağlı)
+            const grandTotal = cartItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+            dataToExport.push([]); // Boş satır
+            dataToExport.push(["", "", "", "", "Genel Toplam:", formatCurrency(grandTotal)]);
+
+            if (exportFormat === 'excel') { // CSV olarak dışa aktar
+                // UTF-8 BOM (Byte Order Mark) Türkçe karakterlerin Excel'de doğru görüntülenmesi için.
+                // https://stackoverflow.com/questions/17879198/adding-utf-8-bom-to-string-blob
+                let csvContent = '\\uFEFF'; // UTF-8 BOM
+
+                dataToExport.forEach(function(rowArray) {
+                    let row = rowArray.map(function(val) {
+                        // Değeri string'e çevir, içindeki çift tırnakları iki çift tırnakla değiştir
+                        // ve tüm değeri çift tırnak içine al.
+                        let cell = String(val);
+                        cell = cell.replace(/"/g, '""'); 
+                        return '"' + cell + '"';
+                    }).join(",");
+                    csvContent += row + "\\r\\n";
+                });
+
+                const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                const safeCustomerName = customerName.replace(/[^a-z0-9_\\-]/gi, '_').substring(0, 50);
+                const fileName = `Siparis_${safeCustomerName}_${new Date().toISOString().slice(0,10)}.csv`;
+                link.setAttribute("download", fileName);
+                document.body.appendChild(link); 
+                link.click();
+                document.body.removeChild(link);
+                alert("Sipariş CSV olarak indirildi: " + fileName);
+            } else if (exportFormat === 'pdf') {
+                alert("PDF dışa aktarma özelliği henüz geliştirilmemiştir.");
+                // TODO: jsPDF veya benzeri bir kütüphane ile PDF oluşturma mantığı buraya eklenebilir.
+                // Bu, daha karmaşık bir işlemdir.
+            }
+        }
     </script>
 
     <!-- Bootstrap JS and Popper.js (Bundle) -->
