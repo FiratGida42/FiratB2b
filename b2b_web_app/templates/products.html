@@ -287,6 +287,16 @@
 
             const cartItemCountBadge = document.getElementById('cartItemCountBadge');
 
+            // Debounce fonksiyonu
+            function debounce(func, delay) {
+                let timeout;
+                return function(...args) {
+                    const context = this;
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(context, args), delay);
+                };
+            }
+
             function formatCurrency(value) {
                 const formatter = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 return formatter.format(value || 0);
@@ -620,9 +630,9 @@
                 }
             }
 
-            searchInput.addEventListener('input', function() {
+            searchInput.addEventListener('input', debounce(function() {
                 filterAndRenderProducts(this.value.trim(), selectedMainCategoryId, selectedSubCategoryId);
-            });
+            }, 300)); // 300ms gecikme ile debounce uygula
             
             mainCategoriesNav.addEventListener('click', function(event) {
                 const target = event.target.closest('a'); 
