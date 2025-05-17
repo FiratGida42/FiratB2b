@@ -29,6 +29,7 @@ from .database import engine, SessionLocal, get_db # database.py'den engine, Ses
 class OrderItemBase(BaseModel):
     product_code: str
     product_name: str # Frontend'den bu bilgi de gelecek
+    barcode: Optional[str] = None # Barkod alanı eklendi
     quantity: int
     unit_price: float
 
@@ -38,6 +39,7 @@ class OrderItemCreate(OrderItemBase):
 class OrderItemResponse(OrderItemBase):
     id: int
     order_id: int
+    # barcode alanı OrderItemBase'den miras alınacak
 
     class Config:
         orm_mode = True # SQLAlchemy modelleri ile uyumluluk için
@@ -342,6 +344,18 @@ async def create_order(
     calculated_total_amount = 0.0
     order_items_to_create = []
 
+    # Ürünlerin barkodlarını almak için product_file_path'ı kullan
+    # Bu, her sipariş oluşturmada dosyayı okuyacaktır, büyük veri setlerinde optimize edilebilir (örn. başlangıçta yükle)
+    products_data_for_barcode = []
+    products_file_path = os.getenv("PRODUCTS_FILE_PATH", "received_products.json")
+    if os.path.exists(products_file_path):
+        try:
+            with open(products_file_path, "r", encoding="utf-8") as f_products:
+                products_data_for_barcode = json.load(f_products)
+        except Exception as e_read_products:
+            print(f"Barkodları almak için ürünler dosyası ({products_file_path}) okunurken hata: {e_read_products}")
+            # Hata durumunda barkodlar boş kalır ama sipariş oluşturmaya devam eder
+
     for item_data in order_data.items:
         if item_data.quantity <= 0 or item_data.unit_price < 0:
             raise HTTPException(
@@ -352,9 +366,17 @@ async def create_order(
         item_total = item_data.quantity * item_data.unit_price
         calculated_total_amount += item_total
         
+        # Ürünün barkodunu bul
+        found_barcode = None
+        if products_data_for_barcode:
+            product_in_file = next((p for p in products_data_for_barcode if p.get("STOK_KODU") == item_data.product_code), None)
+            if product_in_file:
+                found_barcode = product_in_file.get("BARKOD1") # received_products.json'daki barkod alanı adı
+
         db_order_item = models.OrderItem(
             product_code=item_data.product_code,
             product_name=item_data.product_name,
+            barcode=found_barcode, # Bulunan barkodu ata
             quantity=item_data.quantity,
             unit_price=item_data.unit_price
             # order_id ataması, db_order veritabanına eklendikten sonra

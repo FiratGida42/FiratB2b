@@ -150,9 +150,10 @@
                 ["Genel Toplam:", formatCurrency(orderData.total_amount)],
                 [] 
             ];
-            const productHeader = ["Stok Kodu", "Ürün Adı", "Miktar", "Birim Fiyat", "Toplam Fiyat"];
+            const productHeader = ["Stok Kodu", "Barkod", "Ürün Adı", "Miktar", "Birim Fiyat", "Toplam Fiyat"];
             const productRows = orderData.items.map(item => ([
                 item.product_code,
+                item.barcode || '',
                 item.product_name,
                 item.quantity,
                 parseFloat(item.unit_price || 0), 
@@ -161,7 +162,7 @@
             const ws_data = [ ...orderInfo, ["Ürün Listesi:"], productHeader, ...productRows ];
             const ws = XLSX.utils.aoa_to_sheet(ws_data);
             
-            ws['!cols'] = [ { wch: 15 }, { wch: 40 }, { wch: 10 }, { wch: 15 }, { wch: 18 } ];
+            ws['!cols'] = [ { wch: 15 }, { wch: 25 }, { wch: 40 }, { wch: 10 }, { wch: 15 }, { wch: 18 } ];
             
             const currencyStyle = { t: 'n', z: '#,##0.00 "TL"' };
             for (let R = orderInfo.length + 1 + 1; R < ws_data.length; ++R) {
@@ -220,9 +221,10 @@
             doc.text(replaceTrChars(`Durum: ${OrderStatusEnum[orderData.status] || orderData.status}`), pageWidth - margin, yPos, { align: "right" });
             yPos += 10;
 
-            const tableColumn = ["Stok Kodu", "Ürün Adı", "Miktar", "Birim Fiyat", "Toplam Fiyat"].map(replaceTrChars);
+            const tableColumn = ["Stok Kodu", "Barkod", "Ürün Adı", "Miktar", "Birim Fiyat", "Toplam Fiyat"].map(replaceTrChars);
             const tableRows = orderData.items.map(item => ([
                 replaceTrChars(item.product_code),
+                replaceTrChars(item.barcode || ''),
                 replaceTrChars(item.product_name), 
                 item.quantity,
                 parseFloat(item.unit_price || 0).toFixed(2) + " TL",
@@ -238,10 +240,11 @@
                 headStyles: { fillColor: [33, 37, 41], textColor: 255, fontStyle: 'bold', font: "helvetica", fontSize: 8, halign: 'center' },
                 columnStyles: {
                     0: { cellWidth: 25, halign: 'left' },    
-                    1: { cellWidth: 'auto' },             
-                    2: { halign: 'center', cellWidth: 15 },
-                    3: { halign: 'right', cellWidth: 25 }, 
-                    4: { halign: 'right', cellWidth: 30 }  
+                    1: { cellWidth: 25, halign: 'left' },
+                    2: { cellWidth: 'auto' },             
+                    3: { halign: 'center', cellWidth: 15 },
+                    4: { halign: 'right', cellWidth: 25 }, 
+                    5: { halign: 'right', cellWidth: 30 }  
                 },
                 tableWidth: 'auto', 
                 margin: { top: 0, right: margin, bottom: 25, left: margin }, 
@@ -389,6 +392,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th>Stok Kodu</th>
+                                <th>Barkod</th>
                                 <th>Ürün Adı</th>
                                 <th class="text-center">Miktar</th>
                                 <th class="text-end">Birim Fiyat</th>
@@ -399,6 +403,7 @@
                             ${order.items.map(p_item => `
                                 <tr>
                                     <td>${p_item.product_code}</td>
+                                    <td>${p_item.barcode || ''}</td>
                                     <td>${p_item.product_name}</td>
                                     <td class="text-center">${p_item.quantity}</td>
                                     <td class="text-end">${formatCurrency(p_item.unit_price)}</td>

@@ -40,6 +40,7 @@ class OrderItem(Base):
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
     product_code = Column(String(100), nullable=False, index=True)
     product_name = Column(String(255), nullable=False) # Ürün adını da saklayalım
+    barcode = Column(String(255), nullable=True) # Barkod alanı eklendi
     quantity = Column(Integer, nullable=False)
     unit_price = Column(Float, nullable=False)
 
