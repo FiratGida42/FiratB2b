@@ -748,11 +748,16 @@
             let dataToExport = [];
             // Başlık satırı
             dataToExport.push(["Stok Kodu", "Barkod", "Ürün Adı", "Miktar", "Birim Fiyat (TL)", "Toplam Fiyat (TL)"]);
+            console.log("allProducts içeriği (ilk 5 ürün):", allProducts.slice(0, 5)); // allProducts kontrolü
 
             cartItems.forEach(item => {
+                console.log("Sepetteki ürün (item):", item);
                 // Tam ürün bilgisini allProducts listesinden bulalım (barkod için)
                 const productInfo = allProducts.find(p => p.STOK_KODU === item.stokKodu);
+                console.log(`Stok Kodu "${item.stokKodu}" için bulunan productInfo:`, productInfo);
+
                 const barkod = productInfo ? (productInfo.BARKOD1 || '') : ''; // Barkod varsa al, yoksa boş string
+                console.log(`Elde edilen barkod: "${barkod}"`);
                 
                 dataToExport.push([
                     item.stokKodu,
@@ -772,7 +777,7 @@
             if (exportFormat === 'excel') { // CSV olarak dışa aktar
                 // UTF-8 BOM (Byte Order Mark) Türkçe karakterlerin Excel'de doğru görüntülenmesi için.
                 // https://stackoverflow.com/questions/17879198/adding-utf-8-bom-to-string-blob
-                let csvContent = '\\uFEFF'; // UTF-8 BOM
+                let csvContent = '\uFEFF'; // UTF-8 BOM
 
                 dataToExport.forEach(function(rowArray) {
                     let row = rowArray.map(function(val) {
@@ -782,13 +787,13 @@
                         cell = cell.replace(/"/g, '""'); 
                         return '"' + cell + '"';
                     }).join(",");
-                    csvContent += row + "\\r\\n";
+                    csvContent += row + "\r\n";
                 });
 
                 const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
                 const link = document.createElement("a");
                 link.setAttribute("href", encodedUri);
-                const safeCustomerName = customerName.replace(/[^a-z0-9_\\-]/gi, '_').substring(0, 50);
+                const safeCustomerName = customerName.replace(/[^a-z0-9_\-]/gi, '_').substring(0, 50);
                 const fileName = `Siparis_${safeCustomerName}_${new Date().toISOString().slice(0,10)}.csv`;
                 link.setAttribute("download", fileName);
                 document.body.appendChild(link); 
