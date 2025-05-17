@@ -21,7 +21,7 @@ from . import models # models.py dosyamızı import ediyoruz
 from .database import engine, SessionLocal, get_db # database.py'den engine, SessionLocal ve get_db'yi import ediyoruz
 
 # Uygulama başlangıcında veritabanı tablolarını oluştur (eğer yoksa)
-models.Base.metadata.create_all(bind=engine)
+# models.Base.metadata.create_all(bind=engine) # ALEMBIC KULLANILDIĞI İÇİN BU SATIR YORUMA ALINDI
 
 # --- Pydantic Şemaları (Schemas) Başlangıcı ---
 class OrderItemBase(BaseModel):
@@ -40,7 +40,7 @@ class OrderItemResponse(OrderItemBase):
     # barcode alanı OrderItemBase'den miras alınacak
 
     class Config:
-        orm_mode = True # SQLAlchemy modelleri ile uyumluluk için
+        from_attributes = True # Pydantic V2 için orm_mode yerine
 
 class OrderBase(BaseModel):
     customer_name: Optional[str] = None
@@ -56,7 +56,7 @@ class OrderResponse(OrderBase):
     items: List[OrderItemResponse] = []
 
     class Config:
-        orm_mode = True # Pydantic V2 için from_attributes=True daha uygun
+        from_attributes = True # Pydantic V2 için orm_mode yerine
         # arbitrary_types_allowed = True # Artık gerekmeyebilir
 
 class OrderStatusUpdate(BaseModel):
