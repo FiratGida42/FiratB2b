@@ -37,6 +37,9 @@ print(f"DEBUG: target_metadata tables: {target_metadata.tables.keys() if target_
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
+db_url = os.getenv("DATABASE_URL", config.get_main_option("sqlalchemy.url"))
+if db_url:
+    config.set_main_option("sqlalchemy.url", db_url)
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
