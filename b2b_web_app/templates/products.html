@@ -130,8 +130,9 @@
 
             /* Mobil cihazlarda navbar dropdown menüleri için kaydırma */
             .navbar-nav .dropdown-menu {
-                max-height: 250px; /* Ya da 60vh gibi göreceli bir birim deneyebilirsiniz */
-                overflow-y: auto;
+                max-height: 45vh;  /* Ekran yüksekliğinin %45'i. Bu değeri ihtiyaca göre artırıp azaltabilirsiniz (örn: 40vh, 50vh). */
+                overflow-y: auto !important; /* Dikey kaydırma çubuğu, içerik sığmazsa çıkar. !important ekledik. */
+                -webkit-overflow-scrolling: touch; /* iOS için daha akıcı kaydırma (isteğe bağlı ama önerilir) */
             }
         }
     </style>
