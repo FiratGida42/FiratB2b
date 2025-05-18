@@ -10,7 +10,7 @@ import datetime # datetime importu eklendi
 import secrets # Güçlü anahtar üretimi için eklendi
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session # SQLAlchemy Session importu eklendi
-from pydantic import BaseModel # Pydantic BaseModel importu eklendi
+from pydantic import BaseModel, field_validator # Pydantic BaseModel importu eklendi, field_validator eklendi
 from dotenv import load_dotenv # EKLENDİ
 
 # .env dosyasındaki değişkenleri yükle (uygulama başlamadan önce)
@@ -45,8 +45,25 @@ class OrderItemResponse(OrderItemBase):
 class OrderBase(BaseModel):
     customer_name: str # Optional kaldırıldı, artık zorunlu
 
+    @field_validator('customer_name', mode='before')
+    @classmethod
+    def set_customer_name_if_none(cls, value):
+        if value is None:
+            return "Bilinmeyen Cari" # None ise varsayılan bir değer ata
+        if isinstance(value, str) and not value.strip(): # Ek kontrol: Boş string veya sadece boşluklardan oluşuyorsa
+            return "Bilinmeyen Cari" # Onu da varsayılan değere ata
+        return value
+
 class OrderCreate(OrderBase):
     items: List[OrderItemCreate]
+
+    # OrderCreate için de customer_name'in boş olmamasını sağlayalım
+    @field_validator('customer_name', mode='before') # 'before' ile ham değeri al
+    @classmethod
+    def customer_name_must_not_be_empty_for_create(cls, value):
+        if not value or (isinstance(value, str) and not value.strip()):
+            raise ValueError('Cari adı boş olamaz veya sadece boşluk içeremez.')
+        return value
 
 class OrderResponse(OrderBase):
     id: int
