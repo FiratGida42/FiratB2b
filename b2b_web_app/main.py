@@ -43,7 +43,7 @@ class OrderItemResponse(OrderItemBase):
         from_attributes = True # Pydantic V2 için orm_mode yerine
 
 class OrderBase(BaseModel):
-    customer_name: Optional[str] = None
+    customer_name: str # Optional kaldırıldı, artık zorunlu
 
 class OrderCreate(OrderBase):
     items: List[OrderItemCreate]

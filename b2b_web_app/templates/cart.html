@@ -242,14 +242,17 @@
                     alert("Sepetiniz boş. Lütfen ürün ekleyin.");
                     return;
                 }
-                // Cari ismi artık opsiyonel olduğu için zorunlu kontrolü kaldırabiliriz veya sunucuya bırakabiliriz.
-                // Şimdilik frontend'de zorunlu bırakmayalım, Pydantic modelinde opsiyonel (customer_name: Optional[str]).
-                // if (!customerName) {
-                //     alert("Lütfen sipariş için bir Cari İsmi girin.");
-                //     customerNameInput.focus();
-                //     return;
-                // }
                 
+                // Cari ismi backend'de zorunlu hale getirildiği için frontend'de de kontrol ekleyelim.
+                if (!customerName) {
+                    alert("Lütfen siparişi tamamlamak için Cari Adı giriniz.");
+                    customerNameInput.classList.add('is-invalid'); // Hata stili ekle
+                    customerNameInput.focus();
+                    return;
+                } else {
+                    customerNameInput.classList.remove('is-invalid'); // Hata stilini kaldır (eğer varsa)
+                }
+
                 const orderPayload = {
                     customer_name: customerName || null, // Boşsa null gönder
                     items: cartItems.map(item => ({
