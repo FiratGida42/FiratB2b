@@ -754,7 +754,7 @@
                     item.stokKodu,
                     barkod,
                     item.stokAdi,
-                    "'" + item.quantity, // Miktarın başına tek tırnak ekle
+                    "'" + String(item.quantity), // Miktarın başına tek tırnak ekle ve string olarak aktar
                     formatCurrency(item.price),
                     formatCurrency(item.quantity * item.price)
                 ]);
