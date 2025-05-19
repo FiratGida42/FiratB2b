@@ -313,15 +313,11 @@
                 satisFiyat1 = parseFloat(satisFiyat1);
                 bakiye = parseFloat(bakiye);
 
-                let quantity = prompt(`"${stokAdi}" için miktar girin (stok: ${bakiye}):`, "1");
+                let quantity = prompt(`"${stokAdi}" için miktar girin:`, "1");
                 if (quantity === null) return; 
                 quantity = parseInt(quantity);
                 if (isNaN(quantity) || quantity <= 0) {
                     alert("Geçersiz miktar girdiniz.");
-                    return;
-                }
-                if (quantity > bakiye) {
-                    alert(`Yetersiz stok! Bu ürün için en fazla ${bakiye} adet sipariş verebilirsiniz.`);
                     return;
                 }
 
@@ -339,12 +335,7 @@
                 let cartItems = getCartItemsFromStorage();
                 const existingItemIndex = cartItems.findIndex(item => item.stokKodu === stokKodu);
                 if (existingItemIndex > -1) {
-                    const newQuantity = cartItems[existingItemIndex].quantity + quantity;
-                    if (newQuantity > bakiye) {
-                        alert(`Yetersiz stok! Sepetinizdeki "${stokAdi}" ile birlikte toplam ${newQuantity} adet oluyor, ancak stokta ${bakiye} adet var.`);
-                        return;
-                    }
-                    cartItems[existingItemIndex].quantity = newQuantity;
+                    cartItems[existingItemIndex].quantity = cartItems[existingItemIndex].quantity + quantity;
                     cartItems[existingItemIndex].price = price; 
                 } else {
                     cartItems.push({ stokKodu, stokAdi, quantity, price, bakiye });
