@@ -41,7 +41,7 @@ logging.basicConfig(
 # db_connection_ui.py'deki sabitlerle aynı olmalı veya merkezi bir yerden alınmalı
 SERVICE_NAME = "B2B_App_DB_Credentials"
 SETTINGS_FILE = "settings.json"
-DEFAULT_PLACEHOLDER_IMAGE = "images/image_placeholder.png" # Varsayılan yer tutucu resim yolu
+DEFAULT_PLACEHOLDER_IMAGE = "images/urun_yok.png" # Varsayılan yer tutucu resim yolu
 
 # Türkçe karakter düzeltme eşlemesi
 CHAR_CORRECTION_MAP = {
@@ -204,7 +204,7 @@ def fetch_product_data(connection, excluded_groups=None):
             image_path_web = image_processor.download_and_save_image(None, stok_kodu_str)
             
             if not image_path_web:
-                image_path_web = DEFAULT_PLACEHOLDER_IMAGE # images/image_placeholder.png
+                image_path_web = DEFAULT_PLACEHOLDER_IMAGE # images/urun_yok.png
             
             converted_row_dict['IMAGE_PATH_WEB'] = image_path_web
             results.append(converted_row_dict)

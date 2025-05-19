@@ -32,10 +32,15 @@ from PySide6.QtWidgets import (
     QSpinBox,
     QStackedWidget,
     QStyle,
-    QDialog # QDialog eklendi (büyütme için sonra kullanılacak)
+    QDialog, # QDialog eklendi (büyütme için sonra kullanılacak)
+    QTreeWidget,
+    QTreeWidgetItem,
+    QMenu,
+    QDialogButtonBox
 )
 from PySide6.QtGui import QIcon, QFont, QScreen, QAction, QColor, QPixmap # QPixmap eklendi
 from PySide6.QtCore import Qt, QSize, Signal, QThread, QObject # QThread, QObject tekrar eklendi
+import requests
 
 # Stil ve yardımcı fonksiyonları import et
 from ui_styles import MODERN_STYLESHEET, FONT_NAME, FONT_SIZE 
@@ -70,6 +75,38 @@ UNCHECKED_ITEM_COLOR = QColor("gray")     # İşaretsiz öğeler için gri renk
 
 # JSON dosyasının adı (data_extractor.py'deki ile aynı olmalı)
 LAST_PREVIEWED_JSON_FILE = "onizlenen_filtrelenmis_urunler.json"
+
+# Dosyanın başına ekle
+KATEGORI_AGACI = [
+    {
+        "ad": "GIDA ÜRÜNLERİ",
+        "id": "gida",
+        "grupKodlari": ["BAKLIYAT", "MAKARNA", "UN", "CORBA", "BASAK", "KAHVALTI", "COKOKREM", "ETI", "GOFRET", "JELIBON", "LOKUM", "HELVA", "BAYRAM", "KENT", "KONSERVE", "BALIK", "KENTON", "DRO"]
+    },
+    {
+        "ad": "İÇECEKLER",
+        "id": "icecekler",
+        "grupKodlari": ["CAY", "KAHVE", "ICECEK"]
+    },
+    {
+        "ad": "TEMİZLİK & K. BAKIM",
+        "id": "temizlik",
+        "grupKodlari": ["DETERJAN", "KOZMETIK", "PED", "BEZ", "MENDIL", "ISLAK"]
+    },
+    {
+        "ad": "EV YAŞAM & GEREÇLERİ",
+        "id": "evyasam",
+        "grupKodlari": ["BARDAK", "KAGIT"]
+    },
+    {
+        "ad": "DİĞER ÜRÜNLER",
+        "id": "diger",
+        "grupKodlari": ["01", "DIGER"]
+    }
+]
+
+# Kategoriler sayfasında bu sabit yapıdan sadece gösterim/filtreleme yap.
+# Kategori ekle/sil/düzenle fonksiyonlarını ve butonlarını kaldır.
 
 # --- Yardımcı Sınıflar (Dialoglar) ---
 
@@ -205,87 +242,47 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Veritabanı Yönetim Paneli")
-        self.all_fetched_product_data = None # Veritabanından çekilen tüm ham ürünler
-        self.current_product_data = None     # Filtrelenmiş, tabloda gösterilen ve işlem yapılacak ürünler
+        self.all_fetched_product_data = None
+        self.current_product_data = None
         self.excluded_group_codes_pref = []
-        self.image_preview_dialog = None # Resim önizleme diyaloğu için referans
-        self.product_load_thread = None # Ürün yükleme thread'i için referans
-        self.product_loader_worker = None # Ürün yükleme worker'ı için referans
-
+        self.image_preview_dialog = None
+        self.product_load_thread = None
+        self.product_loader_worker = None
         self.setup_ui_appearance()
         self._create_menu_bar()
-
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
-        
         main_app_layout = QHBoxLayout(central_widget)
         main_app_layout.setContentsMargins(10, 10, 10, 10)
         main_app_layout.setSpacing(10)
-
-        # --- Sol Menü Paneli ---
         self.menu_list_widget = QListWidget()
         self.menu_list_widget.setMinimumWidth(180)
-        self.menu_list_widget.setMaximumWidth(200) # Sol menüye bir genişlik sınırı
-
-        # Standart ikonları al
-        settings_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_FileDialogDetailedView) # Ayarlar için daha genel bir ikon
-        products_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_DirIcon) # Ürünler için klasör ikonu
-        categories_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_DirLinkIcon) # Kategoriler için farklı bir klasör/bağlantı ikonu
-
+        self.menu_list_widget.setMaximumWidth(200)
+        settings_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_FileDialogDetailedView)
+        products_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_DirIcon)
+        categories_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_DirLinkIcon)
         ayarlar_item = QListWidgetItem("Ayarlar")
         ayarlar_item.setIcon(settings_icon)
         self.menu_list_widget.addItem(ayarlar_item)
-
         urunler_item = QListWidgetItem("Ürünler")
         urunler_item.setIcon(products_icon)
         self.menu_list_widget.addItem(urunler_item)
-
         kategoriler_item = QListWidgetItem("Kategoriler")
         kategoriler_item.setIcon(categories_icon)
         self.menu_list_widget.addItem(kategoriler_item)
-        
-        # self.menu_list_widget.addItem("Siparişler") # Gelecekte eklenebilir
-        # self.menu_list_widget.addItem("Müşteriler") # Gelecekte eklenebilir
         self.menu_list_widget.currentItemChanged.connect(self.change_view)
-        main_app_layout.addWidget(self.menu_list_widget, 0) # Sol panel genişlemesin
-
-        # --- Sağ İçerik Alanı (QStackedWidget) ---
+        main_app_layout.addWidget(self.menu_list_widget, 0)
         self.stacked_widget = QStackedWidget()
-        main_app_layout.addWidget(self.stacked_widget, 1) # Sağ panel genişlesin
-
-        # Sayfaları oluştur ve stacked widget'a ekle
+        main_app_layout.addWidget(self.stacked_widget, 1)
         self._create_settings_page()
         self._create_products_page()
-        self._create_categories_page() # Örnek sayfa
-
-        # Başlangıçta Ayarlar sayfasını göster
+        self._create_categories_page()
         self.menu_list_widget.setCurrentRow(0)
-
-        # Durum Çubuğu (QMainWindow'a ait, layout'a eklenmez)
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
         self.status_bar.showMessage("Hazır.")
-
         self.load_settings()
-        
-        # Başlangıçta tam ekran yerine normal boyutta ve ortalanmış göster
-        self.show() # Önce pencereyi göster
-        screen = QApplication.primaryScreen()
-        if screen:
-            available_geometry = screen.availableGeometry()
-            # Varsayılan bir başlangıç boyutu (örneğin, setup_ui_appearance içindeki minimum boyutlar veya kullanılabilir alanın bir yüzdesi)
-            # self.setMinimumSize(1000, 700) zaten setup_ui_appearance içinde ayarlı
-            # İstersek buradaki minimum boyutları kullanabilir veya yeni bir yüzde belirleyebiliriz.
-            initial_width = self.minimumWidth() # veya int(available_geometry.width() * 0.75)
-            initial_height = self.minimumHeight() # veya int(available_geometry.height() * 0.75)
-            self.resize(initial_width, initial_height)
-            
-            frame_geometry = self.frameGeometry()
-            frame_geometry.moveCenter(available_geometry.center())
-            self.move(frame_geometry.topLeft())
-        else: # Ekran bilgisi alınamazsa, sadece göster
-            self.resize(1000,700) # Varsayılan bir boyut
-            # self.show() zaten yukarıda çağrıldı.
+        self.showFullScreen()  # Uygulama başlarken tam ekran aç
 
     def setup_ui_appearance(self):
         self.setMinimumSize(1000, 700) # Yeni layout için genişletildi
@@ -505,11 +502,238 @@ class MainWindow(QMainWindow):
     def _create_categories_page(self):
         self.categories_page_widget = QWidget()
         layout = QVBoxLayout(self.categories_page_widget)
-        label = QLabel("Kategoriler bölümü yapım aşamasındadır.")
-        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        label = QLabel("Kategori Ağacı (Sadece Okunabilir)")
+        label.setStyleSheet("font-weight: bold; font-size: 16px; margin-bottom: 10px;")
         layout.addWidget(label)
+        self.categories_tree = QTreeWidget()
+        self.categories_tree.setHeaderLabels(["Ana Kategori", "Grup Kodu"])
+        self.categories_tree.setColumnWidth(0, 250)
+        self.categories_tree.setAlternatingRowColors(True)
+        layout.addWidget(self.categories_tree)
         self.stacked_widget.addWidget(self.categories_page_widget)
+        self._populate_static_category_tree()
+
+    def _populate_static_category_tree(self):
+        self.categories_tree.clear()
+        for ana_kat in KATEGORI_AGACI:
+            ana_item = QTreeWidgetItem([ana_kat["ad"], ""])
+            for grup_kod in ana_kat["grupKodlari"]:
+                alt_item = QTreeWidgetItem(["", grup_kod])
+                ana_item.addChild(alt_item)
+            self.categories_tree.addTopLevelItem(ana_item)
+        self.categories_tree.expandAll()
+
+    def _load_categories(self):
+        """Web API'den kategori ağacını yükler."""
+        try:
+            # API URL'sini settings.json'dan al
+            api_url = DEFAULT_API_URL.replace("/products", "/categories")
+            self.categories_status_label.setText("Kategoriler yükleniyor...")
+            QApplication.processEvents()
+
+            # API anahtarını ayarlardan al
+            api_key = self.api_key_input.text().strip()
+            headers = {"X-API-Key": api_key} if api_key else {}
+
+            # API URL'sini kontrol et
+            if not api_url:
+                raise ValueError("API URL'si bulunamadı. Lütfen ayarları kontrol edin.")
+            print(f"API URL: {api_url}")  # Debug için URL'yi yazdır
+
+            response = requests.get(api_url, headers=headers, timeout=10)  # 10 saniye timeout ekle
+            if response.status_code == 200:
+                categories = response.json()
+                print("API'den dönen veri:", categories)  # Debug için
+                self._populate_category_tree(categories)
+                self.categories_status_label.setText(f"Toplam {self.categories_tree.topLevelItemCount()} kategori yüklendi.")
+                self.save_categories_button.setEnabled(True)
+            else:
+                error_msg = f"Hata: {response.status_code} - {response.text}"
+                self.categories_status_label.setText(error_msg)
+                print(f"API Hatası: {error_msg}")  # Debug için hatayı yazdır
+                QMessageBox.warning(self, "Hata", f"Kategoriler yüklenirken bir hata oluştu:\n{error_msg}")
+        except requests.exceptions.ConnectionError:
+            error_msg = "API sunucusuna bağlanılamadı. Lütfen internet bağlantınızı ve API URL'sini kontrol edin."
+            self.categories_status_label.setText(error_msg)
+            print(f"Bağlantı Hatası: {error_msg}")  # Debug için hatayı yazdır
+            QMessageBox.critical(self, "Bağlantı Hatası", error_msg)
+        except requests.exceptions.Timeout:
+            error_msg = "API sunucusu yanıt vermedi. Lütfen daha sonra tekrar deneyin."
+            self.categories_status_label.setText(error_msg)
+            print(f"Zaman Aşımı: {error_msg}")  # Debug için hatayı yazdır
+            QMessageBox.critical(self, "Zaman Aşımı", error_msg)
+        except Exception as e:
+            error_msg = f"Beklenmeyen bir hata oluştu: {str(e)}"
+            self.categories_status_label.setText(error_msg)
+            print(f"Genel Hata: {error_msg}")  # Debug için hatayı yazdır
+            QMessageBox.critical(self, "Hata", error_msg)
+
+    def _populate_category_tree(self, categories, parent_item=None):
+        """Kategori ağacını doldurur."""
+        if parent_item is None:
+            self.categories_tree.clear()
+        for category in categories:
+            # Anahtarları esnek yap
+            name = category.get('name') or category.get('ad', '')
+            code = category.get('code') or category.get('id', '')
+            item = QTreeWidgetItem(parent_item if parent_item else self.categories_tree)
+            item.setText(0, name)
+            item.setText(1, code)
+            item.setData(0, Qt.ItemDataRole.UserRole, category)  # Tüm kategori verisini sakla
+            # Alt kategorileri varsa onları da ekle
+            children = category.get('children') or category.get('altKategoriler') or []
+            if children:
+                self._populate_category_tree(children, item)
+            # Alt kategorileri genişlet
+            item.setExpanded(True)
+
+    def _show_category_context_menu(self, position):
+        """Kategori ağacı için bağlam menüsünü gösterir."""
+        menu = QMenu()
         
+        add_action = menu.addAction("Yeni Kategori Ekle")
+        edit_action = menu.addAction("Düzenle")
+        delete_action = menu.addAction("Sil")
+        
+        # Seçili öğe yoksa bazı aksiyonları devre dışı bırak
+        current_item = self.categories_tree.currentItem()
+        if not current_item:
+            edit_action.setEnabled(False)
+            delete_action.setEnabled(False)
+        
+        action = menu.exec(self.categories_tree.mapToGlobal(position))
+        
+        if action == add_action:
+            self._add_new_category(current_item)
+        elif action == edit_action and current_item:
+            self._edit_category(current_item)
+        elif action == delete_action and current_item:
+            self._delete_category(current_item)
+
+    def _add_new_category(self, parent_item=None):
+        """Yeni kategori ekler."""
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Yeni Kategori")
+        layout = QFormLayout(dialog)
+        
+        name_edit = QLineEdit()
+        code_edit = QLineEdit()
+        
+        layout.addRow("Kategori Adı:", name_edit)
+        layout.addRow("Kategori Kodu:", code_edit)
+        
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Ok | 
+            QDialogButtonBox.StandardButton.Cancel
+        )
+        buttons.accepted.connect(dialog.accept)
+        buttons.rejected.connect(dialog.reject)
+        layout.addRow(buttons)
+        
+        if dialog.exec() == QDialog.DialogCode.Accepted:
+            new_item = QTreeWidgetItem(parent_item if parent_item else self.categories_tree)
+            new_item.setText(0, name_edit.text())
+            new_item.setText(1, code_edit.text())
+            self.save_categories_button.setEnabled(True)
+
+    def _edit_category(self, item):
+        """Kategoriyi düzenler."""
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Kategori Düzenle")
+        layout = QFormLayout(dialog)
+        
+        name_edit = QLineEdit(item.text(0))
+        code_edit = QLineEdit(item.text(1))
+        
+        layout.addRow("Kategori Adı:", name_edit)
+        layout.addRow("Kategori Kodu:", code_edit)
+        
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Ok | 
+            QDialogButtonBox.StandardButton.Cancel
+        )
+        buttons.accepted.connect(dialog.accept)
+        buttons.rejected.connect(dialog.reject)
+        layout.addRow(buttons)
+        
+        if dialog.exec() == QDialog.DialogCode.Accepted:
+            item.setText(0, name_edit.text())
+            item.setText(1, code_edit.text())
+            self.save_categories_button.setEnabled(True)
+
+    def _delete_category(self, item):
+        """Kategoriyi siler."""
+        reply = QMessageBox.question(
+            self, 
+            "Kategori Sil",
+            f"'{item.text(0)}' kategorisini silmek istediğinizden emin misiniz?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+        
+        if reply == QMessageBox.StandardButton.Yes:
+            parent = item.parent()
+            if parent:
+                parent.removeChild(item)
+            else:
+                self.categories_tree.takeTopLevelItem(self.categories_tree.indexOfTopLevelItem(item))
+            self.save_categories_button.setEnabled(True)
+
+    def _save_categories(self):
+        """Kategori ağacını web API'ye kaydeder."""
+        try:
+            # Kategori ağacını JSON formatına dönüştür
+            categories = self._tree_to_json()
+            
+            # API URL'sini settings.json'dan al
+            api_url = DEFAULT_API_URL.replace("/products", "/categories")
+            
+            self.categories_status_label.setText("Kategoriler kaydediliyor...")
+            QApplication.processEvents()
+            
+            response = requests.post(api_url, json=categories)
+            if response.status_code == 200:
+                self.categories_status_label.setText("Kategoriler başarıyla kaydedildi.")
+                self.save_categories_button.setEnabled(False)
+                QMessageBox.information(self, "Başarılı", "Kategoriler başarıyla kaydedildi.")
+            else:
+                self.categories_status_label.setText(f"Hata: {response.status_code} - {response.text}")
+                QMessageBox.warning(self, "Hata", f"Kategoriler kaydedilirken bir hata oluştu: {response.text}")
+        except Exception as e:
+            self.categories_status_label.setText(f"Hata: {str(e)}")
+            QMessageBox.critical(self, "Hata", f"Kategoriler kaydedilirken bir hata oluştu: {str(e)}")
+
+    def _tree_to_json(self, parent_item=None):
+        """Kategori ağacını JSON formatına dönüştürür."""
+        result = []
+        
+        if parent_item is None:
+            # Kök seviyesindeki öğeler
+            for i in range(self.categories_tree.topLevelItemCount()):
+                item = self.categories_tree.topLevelItem(i)
+                result.append(self._item_to_json(item))
+        else:
+            # Alt öğeler
+            for i in range(parent_item.childCount()):
+                item = parent_item.child(i)
+                result.append(self._item_to_json(item))
+                
+        return result
+
+    def _item_to_json(self, item):
+        """Tek bir ağaç öğesini JSON formatına dönüştürür."""
+        category = {
+            'name': item.text(0),
+            'code': item.text(1),
+            'children': []
+        }
+        
+        # Alt kategorileri ekle
+        for i in range(item.childCount()):
+            child = item.child(i)
+            category['children'].append(self._item_to_json(child))
+            
+        return category
+
     def change_view(self, current, previous):
         if not current: # Eğer bir şekilde current None ise (örn. liste boşsa)
             return
@@ -1044,80 +1268,24 @@ class MainWindow(QMainWindow):
         super().closeEvent(event)
 
     def _populate_product_table(self, product_list):
-        self.product_table.setRowCount(0) # Tabloyu temizle
+        self.product_table.setRowCount(0)
         if not product_list:
             self.status_bar.showMessage("Tabloda gösterilecek ürün bulunamadı.", 3000)
             return
-
-        self.product_table.setColumnCount(len(PRODUCT_DATA_HEADERS))
-        self.product_table.setHorizontalHeaderLabels(PRODUCT_DATA_HEADERS)
-        self.product_table.setColumnWidth(0, 60) # Resim sütun genişliği (50 + biraz boşluk)
-        self.product_table.setColumnWidth(1, 120) # Otomatik Resim Butonu
-        self.product_table.setColumnWidth(3, 250) # Stok Adı daha geniş
-
-        image_base_dir = os.path.join("b2b_web_app", "static", "images")
-        common_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp']
-
+        headers = ["Stok Kodu", "Stok Adı", "Bakiye", "Satış Fiyatı 1", "Grup Kodu", "Barkod 1"]
+        self.product_table.setColumnCount(len(headers))
+        self.product_table.setHorizontalHeaderLabels(headers)
         for row_idx, product_data in enumerate(product_list):
             self.product_table.insertRow(row_idx)
-            self.product_table.setRowHeight(row_idx, 55) # Satır yüksekliğini 50px resim için ayarla (örn: 55)
-
-            # 1. Resim Sütunu
-            stok_kodu = product_data.get('STOK_KODU', '')
-            stok_adi = product_data.get('STOK_ADI', '') # Tooltip için
-            
-            image_path_found = None
-            if stok_kodu:
-                safe_stok_kodu = re.sub(r'[^a-zA-Z0-9_.-]', '_', stok_kodu)
-                for ext in common_extensions:
-                    potential_path = os.path.join(image_base_dir, f"product_{safe_stok_kodu}.{ext}")
-                    if os.path.exists(potential_path):
-                        image_path_found = potential_path
-                        break
-            
-            if image_path_found:
-                pixmap = QPixmap(image_path_found)
-                if not pixmap.isNull():
-                    # ClickableImageLabel kullanarak resmi ekle
-                    clickable_label = ClickableImageLabel(image_path_found, stok_kodu, stok_adi)
-                    clickable_label.setFixedSize(50, 50) # Label boyutunu sabitle
-                    clickable_label.setPixmap(pixmap.scaled(50, 50, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
-                    clickable_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                    clickable_label.clicked.connect(self._show_enlarged_image)
-                    self.product_table.setCellWidget(row_idx, 0, clickable_label)
-                else:
-                    self.product_table.setItem(row_idx, 0, QTableWidgetItem("Hatalı Resim"))
-            else:
-                # Resim yoksa, hücreyi boş bırak veya bir placeholder metin ekle
-                no_image_label = QLabel("Resim Yok")
-                no_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                self.product_table.setCellWidget(row_idx, 0, no_image_label)
-
-
-            # 2. Otomatik Resim Butonu Sütunu
-            btn_find_save = QPushButton("Bul ve Kaydet")
-            btn_find_save.setToolTip(f"{stok_kodu} için otomatik resim bul ve indir.")
-            # Butona ürün bilgileriniPartial kullanarak aktar
-            btn_find_save.clicked.connect(
-                lambda checked=False, sk=stok_kodu, sa=stok_adi, barkod=product_data.get('BARKOD1', ''): 
-                self._find_download_and_save_image(sk, sa, barkod)
-            )
-            self.product_table.setCellWidget(row_idx, 1, btn_find_save)
-
-            # Diğer Sütunlar
             col_map = {
                 "Stok Kodu": product_data.get('STOK_KODU', ''),
                 "Stok Adı": product_data.get('STOK_ADI', ''),
                 "Bakiye": to_decimal(product_data.get('BAKIYE', 0)),
-                "Satış Fiyatı 1": format_currency_tr(to_decimal(product_data.get('SATIS_FIYATI1', 0))),
+                "Satış Fiyatı 1": format_currency_tr(to_decimal(product_data.get('SATIS_FIAT1', 0))),
                 "Grup Kodu": product_data.get('GRUP_KODU', ''),
                 "Barkod 1": product_data.get('BARKOD1', '')
             }
-
-            for col_idx, header in enumerate(PRODUCT_DATA_HEADERS):
-                if header == "Resim" or header == "Otomatik Resim": # Bu sütunlar zaten işlendi
-                    continue
-                
+            for col_idx, header in enumerate(headers):
                 item_value = col_map.get(header, '')
                 item = QTableWidgetItem(str(item_value))
                 if header == "Bakiye" or header == "Satış Fiyatı 1":
@@ -1125,11 +1293,7 @@ class MainWindow(QMainWindow):
                 else:
                     item.setTextAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
                 self.product_table.setItem(row_idx, col_idx, item)
-        
         self.product_table.resizeColumnsToContents()
-        self.product_table.setColumnWidth(0, 60) # Resim sütun genişliği (50 + biraz boşluk) - Tekrar ayarla
-        self.product_table.setColumnWidth(1, 120)
-        self.product_table.setColumnWidth(3, 250)
         if self.product_table.rowCount() > 0:
             self.product_table.scrollToTop()
 
