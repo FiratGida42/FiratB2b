@@ -738,7 +738,7 @@
 
             let dataToExport = [];
             // Başlık satırı
-            dataToExport.push(["Stok Kodu", "Barkod", "Ürün Adı", "Miktar", "Birim Fiyat (TL)", "Toplam Fiyat (TL)"]);
+            dataToExport.push(["Stok Kodu", "Barkod", "Ürün Adı", "Miktar", "Birim Fiyat", "Toplam Fiyat"]);
             console.log("allProducts içeriği (ilk 5 ürün):", allProducts.slice(0, 5)); // allProducts kontrolü
 
             cartItems.forEach(item => {
@@ -754,9 +754,9 @@
                     item.stokKodu,
                     barkod,
                     item.stokAdi,
-                    item.quantity,
-                    formatCurrency(item.price), // Birim fiyatı formatla
-                    formatCurrency(item.quantity * item.price) // Toplam fiyatı formatla
+                    item.quantity, // Sadece sayı, TL yok
+                    formatCurrency(item.price), // Sadece rakam, TL yok
+                    formatCurrency(item.quantity * item.price) // Sadece rakam, TL yok
                 ]);
             });
 

@@ -81,7 +81,7 @@
         "STOK_KODU": "057"
     },
     {
-        "BAKIYE": "192",
+        "BAKIYE": "168",
         "BARKOD1": "8695975002047",
         "GRUP_KODU": "BAKLIYAT",
         "IMAGE_PATH_WEB": "images/product_058.jpg",
@@ -120,7 +120,7 @@
         "BAKIYE": "120",
         "BARKOD1": "8695975001019",
         "GRUP_KODU": "BAKLIYAT",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "37.50000000",
         "STOK_ADI": "ALTINYILDIZ İRMİK 1 KG*12",
         "STOK_KODU": "063"
@@ -147,13 +147,13 @@
         "BAKIYE": "132",
         "BARKOD1": "8695975002016",
         "GRUP_KODU": "BAKLIYAT",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "34.00000000",
         "STOK_ADI": "ALTINYILDIZ MISIR NİŞASTA 1 KG*12",
         "STOK_KODU": "066"
     },
     {
-        "BAKIYE": "96",
+        "BAKIYE": "72",
         "BARKOD1": "8695975002023",
         "GRUP_KODU": "BAKLIYAT",
         "IMAGE_PATH_WEB": "images/product_067.jpg",
@@ -333,7 +333,7 @@
         "STOK_KODU": "343"
     },
     {
-        "BAKIYE": "278",
+        "BAKIYE": "266",
         "BARKOD1": "8691440301004",
         "GRUP_KODU": "BAKLIYAT",
         "IMAGE_PATH_WEB": "images/product_345.jpg",
@@ -369,7 +369,7 @@
         "STOK_KODU": "349"
     },
     {
-        "BAKIYE": "22",
+        "BAKIYE": "21",
         "BARKOD1": "8691440500025",
         "GRUP_KODU": "BAKLIYAT",
         "IMAGE_PATH_WEB": "images/product_350.jpg",
@@ -387,7 +387,7 @@
         "STOK_KODU": "351"
     },
     {
-        "BAKIYE": "36",
+        "BAKIYE": "24",
         "BARKOD1": "8691440710578",
         "GRUP_KODU": "BAKLIYAT",
         "IMAGE_PATH_WEB": "images/product_354.jpg",
@@ -396,10 +396,10 @@
         "STOK_KODU": "354"
     },
     {
-        "BAKIYE": "108",
+        "BAKIYE": "84",
         "BARKOD1": "8691440710455",
         "GRUP_KODU": "BAKLIYAT",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "43.50000000",
         "STOK_ADI": "DURU B PATLAYAN MISIR 1 KG*12",
         "STOK_KODU": "356"
@@ -435,7 +435,7 @@
         "BAKIYE": "76",
         "BARKOD1": "8691440309529",
         "GRUP_KODU": "BAKLIYAT",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "88.50000000",
         "STOK_ADI": "DURU B PİLAVLIK BULGUR 2 KG *8*",
         "STOK_KODU": "16955"
@@ -489,7 +489,7 @@
         "BAKIYE": "870",
         "BARKOD1": "8691440101000",
         "GRUP_KODU": "BAKLIYAT",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "39.50000000",
         "STOK_ADI": "DURU B PİLAVLIK BULGUR 1 KG*12",
         "STOK_KODU": "D101"
@@ -540,7 +540,7 @@
         "STOK_KODU": "613"
     },
     {
-        "BAKIYE": "1140",
+        "BAKIYE": "1079",
         "BARKOD1": null,
         "GRUP_KODU": "BARDAK",
         "IMAGE_PATH_WEB": "images/product_632.jpg",
@@ -585,7 +585,7 @@
         "STOK_KODU": "119"
     },
     {
-        "BAKIYE": "32",
+        "BAKIYE": "31",
         "BARKOD1": "8690906900362",
         "GRUP_KODU": "BASAK",
         "IMAGE_PATH_WEB": "images/product_120.jpg",
@@ -612,7 +612,7 @@
         "STOK_KODU": "557"
     },
     {
-        "BAKIYE": "10544",
+        "BAKIYE": "10394",
         "BARKOD1": "7622210842954",
         "GRUP_KODU": "BAYRAM",
         "IMAGE_PATH_WEB": "images/product_1509.png",
@@ -703,7 +703,7 @@
     },
     {
         "BAKIYE": "120",
-        "BARKOD1": "",
+        "BARKOD1": "8682397545153",
         "GRUP_KODU": "CAY",
         "IMAGE_PATH_WEB": "images/product_0666-01.jpg",
         "SATIS_FIAT1": "130.00000000",
@@ -729,7 +729,7 @@
         "STOK_KODU": "256"
     },
     {
-        "BAKIYE": "20",
+        "BAKIYE": "5",
         "BARKOD1": "8690105002447",
         "GRUP_KODU": "CAY",
         "IMAGE_PATH_WEB": "images/product_258.jpg",
@@ -748,7 +748,7 @@
     },
     {
         "BAKIYE": "71",
-        "BARKOD1": "",
+        "BARKOD1": "8690719102168",
         "GRUP_KODU": "CAY",
         "IMAGE_PATH_WEB": "images/product_2610-03.png",
         "SATIS_FIAT1": "35.50000000",
@@ -757,7 +757,7 @@
     },
     {
         "BAKIYE": "102",
-        "BARKOD1": "",
+        "BARKOD1": "8690719102151",
         "GRUP_KODU": "CAY",
         "IMAGE_PATH_WEB": "images/product_2610-04.png",
         "SATIS_FIAT1": "35.50000000",
@@ -766,7 +766,7 @@
     },
     {
         "BAKIYE": "56",
-        "BARKOD1": "",
+        "BARKOD1": "8690719103783",
         "GRUP_KODU": "CAY",
         "IMAGE_PATH_WEB": "images/product_2610-05.jpg",
         "SATIS_FIAT1": "35.50000000",
@@ -775,7 +775,7 @@
     },
     {
         "BAKIYE": "27",
-        "BARKOD1": "",
+        "BARKOD1": "8690719102137",
         "GRUP_KODU": "CAY",
         "IMAGE_PATH_WEB": "images/product_2610-06.jpg",
         "SATIS_FIAT1": "35.50000000",
@@ -784,7 +784,7 @@
     },
     {
         "BAKIYE": "45",
-        "BARKOD1": "",
+        "BARKOD1": "8690719102250",
         "GRUP_KODU": "CAY",
         "IMAGE_PATH_WEB": "images/product_2610-09.jpg",
         "SATIS_FIAT1": "35.50000000",
@@ -793,7 +793,7 @@
     },
     {
         "BAKIYE": "94",
-        "BARKOD1": "",
+        "BARKOD1": "8690719102106",
         "GRUP_KODU": "CAY",
         "IMAGE_PATH_WEB": "images/product_2610-11.png",
         "SATIS_FIAT1": "35.50000000",
@@ -802,7 +802,7 @@
     },
     {
         "BAKIYE": "113",
-        "BARKOD1": "",
+        "BARKOD1": "8690719102120",
         "GRUP_KODU": "CAY",
         "IMAGE_PATH_WEB": "images/product_2610-12.jpg",
         "SATIS_FIAT1": "35.50000000",
@@ -811,7 +811,7 @@
     },
     {
         "BAKIYE": "60",
-        "BARKOD1": "",
+        "BARKOD1": "8690719105435",
         "GRUP_KODU": "CAY",
         "IMAGE_PATH_WEB": "images/product_2610-19.png",
         "SATIS_FIAT1": "35.50000000",
@@ -864,7 +864,7 @@
         "STOK_KODU": "271"
     },
     {
-        "BAKIYE": "803",
+        "BAKIYE": "793",
         "BARKOD1": "8690105000115",
         "GRUP_KODU": "CAY",
         "IMAGE_PATH_WEB": "images/product_272.jpg",
@@ -882,7 +882,7 @@
         "STOK_KODU": "275"
     },
     {
-        "BAKIYE": "136",
+        "BAKIYE": "121",
         "BARKOD1": "8690105000719",
         "GRUP_KODU": "CAY",
         "IMAGE_PATH_WEB": "images/product_276.jpg",
@@ -910,7 +910,7 @@
     },
     {
         "BAKIYE": "119",
-        "BARKOD1": "",
+        "BARKOD1": "8697631440026",
         "GRUP_KODU": "CAY",
         "IMAGE_PATH_WEB": "images/product_441.webp",
         "SATIS_FIAT1": "120.00000000",
@@ -928,7 +928,7 @@
     },
     {
         "BAKIYE": "92",
-        "BARKOD1": "",
+        "BARKOD1": "8692423020363",
         "GRUP_KODU": "CAY",
         "IMAGE_PATH_WEB": "images/product_577.jpg",
         "SATIS_FIAT1": "142.50000000",
@@ -936,7 +936,7 @@
         "STOK_KODU": "577"
     },
     {
-        "BAKIYE": "296",
+        "BAKIYE": "281",
         "BARKOD1": "8690105000122",
         "GRUP_KODU": "CAY",
         "IMAGE_PATH_WEB": "images/product_7222.jpg",
@@ -954,7 +954,7 @@
         "STOK_KODU": "725"
     },
     {
-        "BAKIYE": "338",
+        "BAKIYE": "302",
         "BARKOD1": "8690368003045",
         "GRUP_KODU": "CAY",
         "IMAGE_PATH_WEB": "images/product_809.png",
@@ -963,7 +963,7 @@
         "STOK_KODU": "809"
     },
     {
-        "BAKIYE": "1164",
+        "BAKIYE": "1140",
         "BARKOD1": "8690368003038",
         "GRUP_KODU": "CAY",
         "IMAGE_PATH_WEB": "images/product_810.jpg",
@@ -990,7 +990,7 @@
         "STOK_KODU": "1617"
     },
     {
-        "BAKIYE": "128",
+        "BAKIYE": "127",
         "BARKOD1": "8690105002973",
         "GRUP_KODU": "CAY",
         "IMAGE_PATH_WEB": "images/product_1738.png",
@@ -1008,7 +1008,7 @@
         "STOK_KODU": "2152"
     },
     {
-        "BAKIYE": "819",
+        "BAKIYE": "782",
         "BARKOD1": "8690368043102",
         "GRUP_KODU": "CAY",
         "IMAGE_PATH_WEB": "images/product_2154.png",
@@ -1116,7 +1116,7 @@
         "STOK_KODU": "655"
     },
     {
-        "BAKIYE": "10",
+        "BAKIYE": "9",
         "BARKOD1": "8690701009857",
         "GRUP_KODU": "CORBA",
         "IMAGE_PATH_WEB": "images/product_656.png",
@@ -1152,7 +1152,7 @@
         "STOK_KODU": "666"
     },
     {
-        "BAKIYE": "387",
+        "BAKIYE": "351",
         "BARKOD1": "8690637812316",
         "GRUP_KODU": "CORBA",
         "IMAGE_PATH_WEB": "images/product_668.jpg",
@@ -1195,15 +1195,6 @@
         "SATIS_FIAT1": "35.00000000",
         "STOK_ADI": "ACE ÇAMAŞIR SUYU 1100 ML *18",
         "STOK_KODU": "037"
-    },
-    {
-        "BAKIYE": "10",
-        "BARKOD1": "8001480021792",
-        "GRUP_KODU": "DETERJAN",
-        "IMAGE_PATH_WEB": "images/product_038.jpg",
-        "SATIS_FIAT1": "67.50000000",
-        "STOK_ADI": "ACE ÇAMAŞIR SUYU 2200 ML *10",
-        "STOK_KODU": "038"
     },
     {
         "BAKIYE": "85",
@@ -1261,7 +1252,7 @@
     },
     {
         "BAKIYE": "144",
-        "BARKOD1": "",
+        "BARKOD1": "8697713838000",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_1241.jpg",
         "SATIS_FIAT1": "89.00000000",
@@ -1270,7 +1261,7 @@
     },
     {
         "BAKIYE": "36",
-        "BARKOD1": "",
+        "BARKOD1": "86977713838017",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_1241-01.jpg",
         "SATIS_FIAT1": "89.00000000",
@@ -1279,7 +1270,7 @@
     },
     {
         "BAKIYE": "114",
-        "BARKOD1": "",
+        "BARKOD1": "8697713837997",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_1241-02.png",
         "SATIS_FIAT1": "89.00000000",
@@ -1288,7 +1279,7 @@
     },
     {
         "BAKIYE": "150",
-        "BARKOD1": "",
+        "BARKOD1": "8697713838024",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_1241-03.jpg",
         "SATIS_FIAT1": "89.00000000",
@@ -1315,7 +1306,7 @@
     },
     {
         "BAKIYE": "60",
-        "BARKOD1": "",
+        "BARKOD1": "8682615202103",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_1312-01.jpg",
         "SATIS_FIAT1": "75.00000000",
@@ -1368,7 +1359,7 @@
         "STOK_KODU": "1337"
     },
     {
-        "BAKIYE": "21",
+        "BAKIYE": "15",
         "BARKOD1": "8690536905157",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_1338.jpg",
@@ -1377,22 +1368,13 @@
         "STOK_KODU": "1338"
     },
     {
-        "BAKIYE": "46",
+        "BAKIYE": "40",
         "BARKOD1": "8690536905133",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_1339.jpg",
         "SATIS_FIAT1": "155.00000000",
         "STOK_ADI": "BİNGO SIVI DETERJAN ONARAN KORUMA 3 LT *6*",
         "STOK_KODU": "1339"
-    },
-    {
-        "BAKIYE": "2",
-        "BARKOD1": "8690536905140",
-        "GRUP_KODU": "DETERJAN",
-        "IMAGE_PATH_WEB": "images/product_1339-01.jpg",
-        "SATIS_FIAT1": "155.00000000",
-        "STOK_ADI": "BİNGO SIVI DETERJAN RENKLİ LOVELY 3 LT *6*",
-        "STOK_KODU": "1339-01"
     },
     {
         "BAKIYE": "54",
@@ -1459,7 +1441,7 @@
     },
     {
         "BAKIYE": "171",
-        "BARKOD1": "",
+        "BARKOD1": "8690536905669",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_136-03.jpg",
         "SATIS_FIAT1": "315.00000000",
@@ -1495,7 +1477,7 @@
     },
     {
         "BAKIYE": "539",
-        "BARKOD1": "",
+        "BARKOD1": "8696947006308",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_249.png",
         "SATIS_FIAT1": "19.50000000",
@@ -1504,7 +1486,7 @@
     },
     {
         "BAKIYE": "40",
-        "BARKOD1": "",
+        "BARKOD1": "8690546614667",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_250.png",
         "SATIS_FIAT1": "79.00000000",
@@ -1522,7 +1504,7 @@
     },
     {
         "BAKIYE": "27",
-        "BARKOD1": "",
+        "BARKOD1": "9000101814484",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_2740.jpg",
         "SATIS_FIAT1": "155.00000000",
@@ -1540,7 +1522,7 @@
     },
     {
         "BAKIYE": "61",
-        "BARKOD1": "",
+        "BARKOD1": "9000101814514",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_2740-03.jpg",
         "SATIS_FIAT1": "155.00000000",
@@ -1549,7 +1531,7 @@
     },
     {
         "BAKIYE": "48",
-        "BARKOD1": "",
+        "BARKOD1": "9000101814422",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_2740-04.jpg",
         "SATIS_FIAT1": "155.00000000",
@@ -1602,8 +1584,8 @@
         "STOK_KODU": "3199"
     },
     {
-        "BAKIYE": "720",
-        "BARKOD1": "",
+        "BAKIYE": "700",
+        "BARKOD1": "8696947006063",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_3211.png",
         "SATIS_FIAT1": "21.25000000",
@@ -1629,7 +1611,7 @@
         "STOK_KODU": "3318"
     },
     {
-        "BAKIYE": "461",
+        "BAKIYE": "449",
         "BARKOD1": "8697713837195",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_3320.jpg",
@@ -1656,7 +1638,7 @@
         "STOK_KODU": "335-02"
     },
     {
-        "BAKIYE": "150",
+        "BAKIYE": "130",
         "BARKOD1": "8690637895166",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_336.jpg",
@@ -1701,7 +1683,7 @@
         "STOK_KODU": "336-04"
     },
     {
-        "BAKIYE": "91",
+        "BAKIYE": "83",
         "BARKOD1": "8690637926938",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_337.png",
@@ -1710,7 +1692,7 @@
         "STOK_KODU": "337"
     },
     {
-        "BAKIYE": "382",
+        "BAKIYE": "374",
         "BARKOD1": "8690637926945",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_337-01.jpeg",
@@ -1729,7 +1711,7 @@
     },
     {
         "BAKIYE": "210",
-        "BARKOD1": "",
+        "BARKOD1": "8690802103713",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_400.jpg",
         "SATIS_FIAT1": "28.90000000",
@@ -1738,7 +1720,7 @@
     },
     {
         "BAKIYE": "42",
-        "BARKOD1": "",
+        "BARKOD1": "8690802103706",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_401.jpg",
         "SATIS_FIAT1": "28.90000000",
@@ -1756,7 +1738,7 @@
     },
     {
         "BAKIYE": "17",
-        "BARKOD1": "",
+        "BARKOD1": "8001090416025",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_496-04.jpg",
         "SATIS_FIAT1": "109.00000000",
@@ -1764,7 +1746,7 @@
         "STOK_KODU": "496-04"
     },
     {
-        "BAKIYE": "1387",
+        "BAKIYE": "1367",
         "BARKOD1": "5413149798854",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_497.jpg",
@@ -1863,7 +1845,7 @@
         "STOK_KODU": "837"
     },
     {
-        "BAKIYE": "800",
+        "BAKIYE": "780",
         "BARKOD1": "8690732014028",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_838.png",
@@ -1936,7 +1918,7 @@
     },
     {
         "BAKIYE": "60",
-        "BARKOD1": "",
+        "BARKOD1": "8690536903115",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_2000-04.png",
         "SATIS_FIAT1": "99.00000000",
@@ -1945,7 +1927,7 @@
     },
     {
         "BAKIYE": "4",
-        "BARKOD1": "",
+        "BARKOD1": "8690536901647",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_2000-06.png",
         "SATIS_FIAT1": "99.00000000",
@@ -2088,7 +2070,7 @@
         "STOK_KODU": "895"
     },
     {
-        "BAKIYE": "729",
+        "BAKIYE": "705",
         "BARKOD1": "9000101017649",
         "GRUP_KODU": "DETERJAN",
         "IMAGE_PATH_WEB": "images/product_896.png",
@@ -2115,7 +2097,7 @@
         "STOK_KODU": "101"
     },
     {
-        "BAKIYE": "17",
+        "BAKIYE": "15",
         "BARKOD1": "",
         "GRUP_KODU": "DIGER",
         "IMAGE_PATH_WEB": "images/product_1030.jpg",
@@ -2142,7 +2124,7 @@
         "STOK_KODU": "121-01"
     },
     {
-        "BAKIYE": "490",
+        "BAKIYE": "462",
         "BARKOD1": "8683717471428",
         "GRUP_KODU": "DIGER",
         "IMAGE_PATH_WEB": "images/product_122.jpg",
@@ -2160,7 +2142,7 @@
         "STOK_KODU": "123"
     },
     {
-        "BAKIYE": "102",
+        "BAKIYE": "88",
         "BARKOD1": "8683717472777",
         "GRUP_KODU": "DIGER",
         "IMAGE_PATH_WEB": "images/product_123-01.jpeg",
@@ -2169,7 +2151,7 @@
         "STOK_KODU": "123-01"
     },
     {
-        "BAKIYE": "46",
+        "BAKIYE": "32",
         "BARKOD1": "8683717471442",
         "GRUP_KODU": "DIGER",
         "IMAGE_PATH_WEB": "images/product_123-02.webp",
@@ -2178,7 +2160,7 @@
         "STOK_KODU": "123-02"
     },
     {
-        "BAKIYE": "66",
+        "BAKIYE": "52",
         "BARKOD1": "8683717472418",
         "GRUP_KODU": "DIGER",
         "IMAGE_PATH_WEB": "images/product_123-03.jpg",
@@ -2197,7 +2179,7 @@
     },
     {
         "BAKIYE": "6",
-        "BARKOD1": "",
+        "BARKOD1": "8699389200464",
         "GRUP_KODU": "DIGER",
         "IMAGE_PATH_WEB": "images/product_1400.jpg",
         "SATIS_FIAT1": "195.00000000",
@@ -2206,7 +2188,7 @@
     },
     {
         "BAKIYE": "8",
-        "BARKOD1": "",
+        "BARKOD1": "8699389200471",
         "GRUP_KODU": "DIGER",
         "IMAGE_PATH_WEB": "images/product_1401.jpg",
         "SATIS_FIAT1": "205.00000000",
@@ -2214,7 +2196,7 @@
         "STOK_KODU": "1401"
     },
     {
-        "BAKIYE": "27",
+        "BAKIYE": "26",
         "BARKOD1": "8699270013531",
         "GRUP_KODU": "DIGER",
         "IMAGE_PATH_WEB": "images/product_2775.png",
@@ -2226,7 +2208,7 @@
         "BAKIYE": "160",
         "BARKOD1": "",
         "GRUP_KODU": "DIGER",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "52.50000000",
         "STOK_ADI": "YEDİBAŞAK KAKAO 100 GR *16*",
         "STOK_KODU": "2873"
@@ -2235,7 +2217,7 @@
         "BAKIYE": "48",
         "BARKOD1": "",
         "GRUP_KODU": "DIGER",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "22.50000000",
         "STOK_ADI": "YEDİBAŞAK TAVUK HARCI 100 GR*16",
         "STOK_KODU": "2886"
@@ -2244,7 +2226,7 @@
         "BAKIYE": "80",
         "BARKOD1": "",
         "GRUP_KODU": "DIGER",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "27.50000000",
         "STOK_ADI": "YEDİBAŞAK KÖFTE HARCI 100 GR*16",
         "STOK_KODU": "2887"
@@ -2253,7 +2235,7 @@
         "BAKIYE": "60",
         "BARKOD1": "",
         "GRUP_KODU": "DIGER",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "27.50000000",
         "STOK_ADI": "YEDİBAŞAK MISIR NİŞASTASI 500 GR*12",
         "STOK_KODU": "2888"
@@ -2262,14 +2244,14 @@
         "BAKIYE": "60",
         "BARKOD1": "",
         "GRUP_KODU": "DIGER",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "37.50000000",
         "STOK_ADI": "YEDİBAŞAK BUĞDAY NİŞASTASI 500 GR*12",
         "STOK_KODU": "2890"
     },
     {
         "BAKIYE": "37",
-        "BARKOD1": "",
+        "BARKOD1": "8697890311006",
         "GRUP_KODU": "DIGER",
         "IMAGE_PATH_WEB": "images/product_3027.png",
         "SATIS_FIAT1": "118.50000000",
@@ -2295,7 +2277,7 @@
         "STOK_KODU": "542"
     },
     {
-        "BAKIYE": "794",
+        "BAKIYE": "764",
         "BARKOD1": "1",
         "GRUP_KODU": "DIGER",
         "IMAGE_PATH_WEB": "images/product_583.png",
@@ -2325,7 +2307,7 @@
         "BAKIYE": "72",
         "BARKOD1": "",
         "GRUP_KODU": "DIGER",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "20.00000000",
         "STOK_ADI": "YEDİBAŞAK PUDRA ŞEKERİ 200 GR*12",
         "STOK_KODU": "180"
@@ -2352,7 +2334,7 @@
         "BAKIYE": "75",
         "BARKOD1": "",
         "GRUP_KODU": "DIGER",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "11.50000000",
         "STOK_ADI": "TEMİX ÇÖP TORBASI KÜÇÜK BOY 30 LU *25*",
         "STOK_KODU": "2200"
@@ -2361,7 +2343,7 @@
         "BAKIYE": "334",
         "BARKOD1": "",
         "GRUP_KODU": "DIGER",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "11.50000000",
         "STOK_ADI": "TEMİX ÇÖP TORBASI BÜYÜK BOY 7 Lİ *25*",
         "STOK_KODU": "2200-01"
@@ -2370,7 +2352,7 @@
         "BAKIYE": "383",
         "BARKOD1": "",
         "GRUP_KODU": "DIGER",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "11.50000000",
         "STOK_ADI": "TEMİX ÇÖP TORBASI ORTA BOY 10 LU *25*",
         "STOK_KODU": "2200-02"
@@ -2379,7 +2361,7 @@
         "BAKIYE": "96",
         "BARKOD1": "1",
         "GRUP_KODU": "DIGER",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "55.00000000",
         "STOK_ADI": "YEDİBAŞAK SÜPER KARIŞIM ÇİĞKÖFTE SETİ 550 GR *12*",
         "STOK_KODU": "949"
@@ -2388,7 +2370,7 @@
         "BAKIYE": "30",
         "BARKOD1": "1",
         "GRUP_KODU": "DIGER",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "60.00000000",
         "STOK_ADI": "YEDİBAŞAK ANADOLU USULÜ ÇİĞKÖFTE SETİ*12* 600 GR",
         "STOK_KODU": "949-01"
@@ -2511,7 +2493,7 @@
         "STOK_KODU": "316"
     },
     {
-        "BAKIYE": "3",
+        "BAKIYE": "1",
         "BARKOD1": "8690526087252",
         "GRUP_KODU": "ETI",
         "IMAGE_PATH_WEB": "images/product_408.jpg",
@@ -2547,7 +2529,7 @@
         "STOK_KODU": "033-01"
     },
     {
-        "BAKIYE": "118",
+        "BAKIYE": "102",
         "BARKOD1": "",
         "GRUP_KODU": "GOFRET",
         "IMAGE_PATH_WEB": "images/product_125.png",
@@ -2556,7 +2538,7 @@
         "STOK_KODU": "125"
     },
     {
-        "BAKIYE": "92",
+        "BAKIYE": "86",
         "BARKOD1": "8693175003000",
         "GRUP_KODU": "GOFRET",
         "IMAGE_PATH_WEB": "images/product_1307.png",
@@ -2565,7 +2547,7 @@
         "STOK_KODU": "1307"
     },
     {
-        "BAKIYE": "131",
+        "BAKIYE": "125",
         "BARKOD1": "8693175003017",
         "GRUP_KODU": "GOFRET",
         "IMAGE_PATH_WEB": "images/product_1307-01.png",
@@ -2619,7 +2601,7 @@
         "STOK_KODU": "533-01"
     },
     {
-        "BAKIYE": "9646",
+        "BAKIYE": "9583",
         "BARKOD1": "8692813002122",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_003.png",
@@ -2628,7 +2610,7 @@
         "STOK_KODU": "003"
     },
     {
-        "BAKIYE": "1011",
+        "BAKIYE": "1001",
         "BARKOD1": "8692813003396",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_004.jpg",
@@ -2637,7 +2619,7 @@
         "STOK_KODU": "004"
     },
     {
-        "BAKIYE": "105",
+        "BAKIYE": "101",
         "BARKOD1": "8692813003495",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_005.jpg",
@@ -2646,7 +2628,7 @@
         "STOK_KODU": "005"
     },
     {
-        "BAKIYE": "120",
+        "BAKIYE": "114",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_006.png",
@@ -2655,7 +2637,7 @@
         "STOK_KODU": "006"
     },
     {
-        "BAKIYE": "1030",
+        "BAKIYE": "1012",
         "BARKOD1": "8692813003945",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_007.png",
@@ -2664,7 +2646,7 @@
         "STOK_KODU": "007"
     },
     {
-        "BAKIYE": "58",
+        "BAKIYE": "56",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_008.png",
@@ -2673,7 +2655,7 @@
         "STOK_KODU": "008"
     },
     {
-        "BAKIYE": "155",
+        "BAKIYE": "154",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_009.jpg",
@@ -2682,7 +2664,7 @@
         "STOK_KODU": "009"
     },
     {
-        "BAKIYE": "96",
+        "BAKIYE": "94",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_010.png",
@@ -2691,7 +2673,7 @@
         "STOK_KODU": "010"
     },
     {
-        "BAKIYE": "111",
+        "BAKIYE": "106",
         "BARKOD1": "8692813004782",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_011.png",
@@ -2700,7 +2682,7 @@
         "STOK_KODU": "011"
     },
     {
-        "BAKIYE": "38",
+        "BAKIYE": "37",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_017.png",
@@ -2718,7 +2700,7 @@
         "STOK_KODU": "020"
     },
     {
-        "BAKIYE": "252",
+        "BAKIYE": "249",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_021.jpg",
@@ -2754,7 +2736,7 @@
         "STOK_KODU": "062-01"
     },
     {
-        "BAKIYE": "1463",
+        "BAKIYE": "1449",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_088.png",
@@ -2772,7 +2754,7 @@
         "STOK_KODU": "1025"
     },
     {
-        "BAKIYE": "40",
+        "BAKIYE": "34",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1051.jpg",
@@ -2781,7 +2763,7 @@
         "STOK_KODU": "1051"
     },
     {
-        "BAKIYE": "98",
+        "BAKIYE": "92",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1052.jpg",
@@ -2790,7 +2772,7 @@
         "STOK_KODU": "1052"
     },
     {
-        "BAKIYE": "228",
+        "BAKIYE": "226",
         "BARKOD1": "8690723383508",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1090.jpg",
@@ -2817,15 +2799,6 @@
         "STOK_KODU": "1090-02"
     },
     {
-        "BAKIYE": "1",
-        "BARKOD1": "",
-        "GRUP_KODU": "ICECEK",
-        "IMAGE_PATH_WEB": "images/product_1090-05.jpg",
-        "SATIS_FIAT1": "400.00000000",
-        "STOK_ADI": "ULUDAĞ 1 LT MANDALİNA  *12* (20.05.2025)",
-        "STOK_KODU": "1090-05"
-    },
-    {
         "BAKIYE": "4",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
@@ -2833,15 +2806,6 @@
         "SATIS_FIAT1": "400.00000000",
         "STOK_ADI": "ULUDAĞ 1 LT NAR   *12*",
         "STOK_KODU": "1090-07"
-    },
-    {
-        "BAKIYE": "4",
-        "BARKOD1": "",
-        "GRUP_KODU": "ICECEK",
-        "IMAGE_PATH_WEB": "images/product_1090-08.jpg",
-        "SATIS_FIAT1": "400.00000000",
-        "STOK_ADI": "ULUDAĞ 1 LT ANANAS  *12*",
-        "STOK_KODU": "1090-08"
     },
     {
         "BAKIYE": "5",
@@ -2880,7 +2844,7 @@
         "STOK_KODU": "1137"
     },
     {
-        "BAKIYE": "86",
+        "BAKIYE": "85",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1137-01.jpg",
@@ -2889,7 +2853,7 @@
         "STOK_KODU": "1137-01"
     },
     {
-        "BAKIYE": "77",
+        "BAKIYE": "76",
         "BARKOD1": "8691020683803",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1137-02.png",
@@ -2934,7 +2898,7 @@
         "STOK_KODU": "1181"
     },
     {
-        "BAKIYE": "628",
+        "BAKIYE": "613",
         "BARKOD1": "8692971071107",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1204.jpg",
@@ -2952,7 +2916,7 @@
         "STOK_KODU": "1213"
     },
     {
-        "BAKIYE": "4595",
+        "BAKIYE": "4387",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1251.png",
@@ -2961,7 +2925,7 @@
         "STOK_KODU": "1251"
     },
     {
-        "BAKIYE": "4280",
+        "BAKIYE": "4268",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1252.png",
@@ -2970,7 +2934,7 @@
         "STOK_KODU": "1252"
     },
     {
-        "BAKIYE": "1162",
+        "BAKIYE": "1158",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1253.png",
@@ -2979,7 +2943,7 @@
         "STOK_KODU": "1253"
     },
     {
-        "BAKIYE": "465",
+        "BAKIYE": "463",
         "BARKOD1": "8690574000968",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1263.jpg",
@@ -2988,7 +2952,7 @@
         "STOK_KODU": "1263"
     },
     {
-        "BAKIYE": "3496",
+        "BAKIYE": "3394",
         "BARKOD1": "8691381000011",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_128.png",
@@ -3006,7 +2970,7 @@
         "STOK_KODU": "128-01"
     },
     {
-        "BAKIYE": "89",
+        "BAKIYE": "77",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_128-02.png",
@@ -3042,7 +3006,7 @@
         "STOK_KODU": "138"
     },
     {
-        "BAKIYE": "257",
+        "BAKIYE": "256",
         "BARKOD1": "8692813004126",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1461.jpg",
@@ -3060,7 +3024,7 @@
         "STOK_KODU": "231"
     },
     {
-        "BAKIYE": "16",
+        "BAKIYE": "12",
         "BARKOD1": "5449000016645",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_236.jpg",
@@ -3114,7 +3078,7 @@
         "STOK_KODU": "2502"
     },
     {
-        "BAKIYE": "261",
+        "BAKIYE": "253",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_2517.png",
@@ -3123,7 +3087,7 @@
         "STOK_KODU": "2517"
     },
     {
-        "BAKIYE": "2129",
+        "BAKIYE": "2088",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_2518.png",
@@ -3141,7 +3105,7 @@
         "STOK_KODU": "255"
     },
     {
-        "BAKIYE": "1062",
+        "BAKIYE": "1054",
         "BARKOD1": "8691020683162",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_262.jpg",
@@ -3150,7 +3114,7 @@
         "STOK_KODU": "262"
     },
     {
-        "BAKIYE": "114",
+        "BAKIYE": "111",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_262-01.jpg",
@@ -3159,7 +3123,7 @@
         "STOK_KODU": "262-01"
     },
     {
-        "BAKIYE": "100",
+        "BAKIYE": "97",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_262-02.png",
@@ -3213,7 +3177,7 @@
         "STOK_KODU": "264-02"
     },
     {
-        "BAKIYE": "52",
+        "BAKIYE": "47",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_2664.jpg",
@@ -3222,7 +3186,7 @@
         "STOK_KODU": "2664"
     },
     {
-        "BAKIYE": "1974",
+        "BAKIYE": "1964",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_2666.webp",
@@ -3231,7 +3195,7 @@
         "STOK_KODU": "2666"
     },
     {
-        "BAKIYE": "166",
+        "BAKIYE": "155",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_2667.jpg",
@@ -3240,7 +3204,7 @@
         "STOK_KODU": "2667"
     },
     {
-        "BAKIYE": "29",
+        "BAKIYE": "27",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_2670.png",
@@ -3258,7 +3222,7 @@
         "STOK_KODU": "2671"
     },
     {
-        "BAKIYE": "49",
+        "BAKIYE": "48",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_2717.jpg",
@@ -3267,7 +3231,7 @@
         "STOK_KODU": "2717"
     },
     {
-        "BAKIYE": "76",
+        "BAKIYE": "75",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_2729.png",
@@ -3330,7 +3294,7 @@
         "STOK_KODU": "2744-05"
     },
     {
-        "BAKIYE": "804",
+        "BAKIYE": "779",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_2757.jpg",
@@ -3339,7 +3303,7 @@
         "STOK_KODU": "2757"
     },
     {
-        "BAKIYE": "129",
+        "BAKIYE": "119",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_2757-01.jpg",
@@ -3348,7 +3312,7 @@
         "STOK_KODU": "2757-01"
     },
     {
-        "BAKIYE": "58",
+        "BAKIYE": "47",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_2859.jpg",
@@ -3357,7 +3321,7 @@
         "STOK_KODU": "2859"
     },
     {
-        "BAKIYE": "1271",
+        "BAKIYE": "1261",
         "BARKOD1": "8699120445826",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_2891.jpg",
@@ -3366,7 +3330,7 @@
         "STOK_KODU": "2891"
     },
     {
-        "BAKIYE": "679",
+        "BAKIYE": "669",
         "BARKOD1": "8699120445819",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_2891-01.jpg",
@@ -3382,6 +3346,15 @@
         "SATIS_FIAT1": "318.00000000",
         "STOK_ADI": "ULUDAĞ EXTRA 1 LT YEŞİL LİMON *12* (20.07.2025 )",
         "STOK_KODU": "3071"
+    },
+    {
+        "BAKIYE": "4",
+        "BARKOD1": "",
+        "GRUP_KODU": "ICECEK",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
+        "SATIS_FIAT1": "318.00000000",
+        "STOK_ADI": "ULUDAĞ EXTRA 1 LT MANDALİNA  *12*",
+        "STOK_KODU": "3071-02"
     },
     {
         "BAKIYE": "33",
@@ -3429,7 +3402,7 @@
         "STOK_KODU": "3194-02"
     },
     {
-        "BAKIYE": "156",
+        "BAKIYE": "155",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_322.png",
@@ -3438,7 +3411,7 @@
         "STOK_KODU": "322"
     },
     {
-        "BAKIYE": "326",
+        "BAKIYE": "325",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_322-01.png",
@@ -3447,7 +3420,7 @@
         "STOK_KODU": "322-01"
     },
     {
-        "BAKIYE": "318",
+        "BAKIYE": "317",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_322-02.png",
@@ -3456,7 +3429,7 @@
         "STOK_KODU": "322-02"
     },
     {
-        "BAKIYE": "303",
+        "BAKIYE": "302",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_322-03.png",
@@ -3465,7 +3438,7 @@
         "STOK_KODU": "322-03"
     },
     {
-        "BAKIYE": "35",
+        "BAKIYE": "29",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_3252.jpg",
@@ -3492,7 +3465,7 @@
         "STOK_KODU": "328-01"
     },
     {
-        "BAKIYE": "20",
+        "BAKIYE": "19",
         "BARKOD1": "8693354005696",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_329.png",
@@ -3519,7 +3492,7 @@
         "STOK_KODU": "331"
     },
     {
-        "BAKIYE": "1",
+        "BAKIYE": "-1",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_3310.png",
@@ -3528,7 +3501,7 @@
         "STOK_KODU": "3310"
     },
     {
-        "BAKIYE": "9",
+        "BAKIYE": "8",
         "BARKOD1": "8692813003945",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_3311.png",
@@ -3537,7 +3510,7 @@
         "STOK_KODU": "3311"
     },
     {
-        "BAKIYE": "180",
+        "BAKIYE": "172",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_3311-01.png",
@@ -3546,7 +3519,7 @@
         "STOK_KODU": "3311-01"
     },
     {
-        "BAKIYE": "181",
+        "BAKIYE": "179",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_404837.png",
@@ -3555,7 +3528,7 @@
         "STOK_KODU": "404837"
     },
     {
-        "BAKIYE": "57",
+        "BAKIYE": "50",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_487.jpg",
@@ -3573,7 +3546,7 @@
         "STOK_KODU": "504"
     },
     {
-        "BAKIYE": "87",
+        "BAKIYE": "83",
         "BARKOD1": "5449000016669",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_505.png",
@@ -3645,7 +3618,7 @@
         "STOK_KODU": "545"
     },
     {
-        "BAKIYE": "372",
+        "BAKIYE": "371",
         "BARKOD1": "8698595625016",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_559.jpg",
@@ -3672,7 +3645,7 @@
         "STOK_KODU": "621"
     },
     {
-        "BAKIYE": "14",
+        "BAKIYE": "13",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_622.jpg",
@@ -3699,7 +3672,7 @@
         "STOK_KODU": "629"
     },
     {
-        "BAKIYE": "22",
+        "BAKIYE": "21",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_631.jpg",
@@ -3708,7 +3681,7 @@
         "STOK_KODU": "631"
     },
     {
-        "BAKIYE": "509",
+        "BAKIYE": "478",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_739.jpg",
@@ -3717,7 +3690,7 @@
         "STOK_KODU": "739"
     },
     {
-        "BAKIYE": "600",
+        "BAKIYE": "589",
         "BARKOD1": "8697448890076",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_802.png",
@@ -3726,7 +3699,7 @@
         "STOK_KODU": "802"
     },
     {
-        "BAKIYE": "58",
+        "BAKIYE": "57",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1487.png",
@@ -3735,7 +3708,7 @@
         "STOK_KODU": "1487"
     },
     {
-        "BAKIYE": "242",
+        "BAKIYE": "239",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1490.png",
@@ -3744,7 +3717,7 @@
         "STOK_KODU": "1490"
     },
     {
-        "BAKIYE": "66",
+        "BAKIYE": "65",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1491.png",
@@ -3753,7 +3726,7 @@
         "STOK_KODU": "1491"
     },
     {
-        "BAKIYE": "21",
+        "BAKIYE": "18",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1494.png",
@@ -3825,7 +3798,7 @@
         "STOK_KODU": "1528-01"
     },
     {
-        "BAKIYE": "10",
+        "BAKIYE": "7",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1529.png",
@@ -3834,7 +3807,7 @@
         "STOK_KODU": "1529"
     },
     {
-        "BAKIYE": "25",
+        "BAKIYE": "22",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1529-02.png",
@@ -3843,16 +3816,7 @@
         "STOK_KODU": "1529-02"
     },
     {
-        "BAKIYE": "1",
-        "BARKOD1": "",
-        "GRUP_KODU": "ICECEK",
-        "IMAGE_PATH_WEB": "images/product_1529-04.png",
-        "SATIS_FIAT1": "440.00000000",
-        "STOK_ADI": "OBSESSO CARAMEL MACCHIATO 250 ML *12*",
-        "STOK_KODU": "1529-04"
-    },
-    {
-        "BAKIYE": "104",
+        "BAKIYE": "101",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1529-07.png",
@@ -3861,7 +3825,7 @@
         "STOK_KODU": "1529-07"
     },
     {
-        "BAKIYE": "384",
+        "BAKIYE": "365",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1548.png",
@@ -3927,7 +3891,7 @@
         "BAKIYE": "20",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "440.00000000",
         "STOK_ADI": "CAPPY 1/1 ATOM MEYVE NEKTARI*12",
         "STOK_KODU": "186"
@@ -3936,13 +3900,13 @@
         "BAKIYE": "20",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "440.00000000",
         "STOK_ADI": "CAPPY 1/1 ŞEFTALİ MEYVE NEKTARI*12",
         "STOK_KODU": "187"
     },
     {
-        "BAKIYE": "26",
+        "BAKIYE": "25",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1878.png",
@@ -3951,7 +3915,7 @@
         "STOK_KODU": "1878"
     },
     {
-        "BAKIYE": "95",
+        "BAKIYE": "94",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1879.png",
@@ -3963,7 +3927,7 @@
         "BAKIYE": "20",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "440.00000000",
         "STOK_ADI": "CAPPY 1/1 KARIŞIK*12",
         "STOK_KODU": "189"
@@ -3972,7 +3936,7 @@
         "BAKIYE": "5",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "440.00000000",
         "STOK_ADI": "CAPPY 1/1 KAYISI*12",
         "STOK_KODU": "190"
@@ -3981,7 +3945,7 @@
         "BAKIYE": "10",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "440.00000000",
         "STOK_ADI": "CAPPY 1/1 VİŞNE *12",
         "STOK_KODU": "194"
@@ -4059,7 +4023,7 @@
         "STOK_KODU": "2099"
     },
     {
-        "BAKIYE": "217",
+        "BAKIYE": "216",
         "BARKOD1": "8690723383706",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_215.png",
@@ -4077,7 +4041,7 @@
         "STOK_KODU": "2197"
     },
     {
-        "BAKIYE": "96",
+        "BAKIYE": "86",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_2198.png",
@@ -4104,7 +4068,7 @@
         "STOK_KODU": "2206"
     },
     {
-        "BAKIYE": "14",
+        "BAKIYE": "13",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_2207.png",
@@ -4122,7 +4086,7 @@
         "STOK_KODU": "2209"
     },
     {
-        "BAKIYE": "119",
+        "BAKIYE": "118",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_2241.png",
@@ -4131,7 +4095,7 @@
         "STOK_KODU": "2241"
     },
     {
-        "BAKIYE": "71",
+        "BAKIYE": "60",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_2272.png",
@@ -4140,7 +4104,7 @@
         "STOK_KODU": "2272"
     },
     {
-        "BAKIYE": "49",
+        "BAKIYE": "48",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_2273.png",
@@ -4149,7 +4113,7 @@
         "STOK_KODU": "2273"
     },
     {
-        "BAKIYE": "465",
+        "BAKIYE": "449",
         "BARKOD1": "8690574820511",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_864.png",
@@ -4158,7 +4122,7 @@
         "STOK_KODU": "864"
     },
     {
-        "BAKIYE": "6204",
+        "BAKIYE": "6173",
         "BARKOD1": "8690574000951",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_865.png",
@@ -4176,16 +4140,7 @@
         "STOK_KODU": "866"
     },
     {
-        "BAKIYE": "2",
-        "BARKOD1": "",
-        "GRUP_KODU": "ICECEK",
-        "IMAGE_PATH_WEB": "images/product_866-01.png",
-        "SATIS_FIAT1": "335.00000000",
-        "STOK_ADI": "PEPSİ PET 330 ML *24*",
-        "STOK_KODU": "866-01"
-    },
-    {
-        "BAKIYE": "46",
+        "BAKIYE": "44",
         "BARKOD1": "86903400",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_867.png",
@@ -4194,7 +4149,7 @@
         "STOK_KODU": "867"
     },
     {
-        "BAKIYE": "292",
+        "BAKIYE": "275",
         "BARKOD1": "8696236302982",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_893.png",
@@ -4239,7 +4194,7 @@
         "STOK_KODU": "918"
     },
     {
-        "BAKIYE": "174",
+        "BAKIYE": "172",
         "BARKOD1": "90162602",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_919.png",
@@ -4284,7 +4239,7 @@
         "STOK_KODU": "2073-03"
     },
     {
-        "BAKIYE": "632",
+        "BAKIYE": "620",
         "BARKOD1": "",
         "GRUP_KODU": "ICECEK",
         "IMAGE_PATH_WEB": "images/product_1478-01.png",
@@ -4338,7 +4293,7 @@
         "STOK_KODU": "1154"
     },
     {
-        "BAKIYE": "24",
+        "BAKIYE": "21",
         "BARKOD1": "8682241216031",
         "GRUP_KODU": "ISLAK",
         "IMAGE_PATH_WEB": "images/product_1155.jpg",
@@ -4383,7 +4338,7 @@
         "STOK_KODU": "1328"
     },
     {
-        "BAKIYE": "804",
+        "BAKIYE": "792",
         "BARKOD1": "",
         "GRUP_KODU": "ISLAK",
         "IMAGE_PATH_WEB": "images/product_1329.png",
@@ -4392,7 +4347,7 @@
         "STOK_KODU": "1329"
     },
     {
-        "BAKIYE": "598",
+        "BAKIYE": "564",
         "BARKOD1": "8681212061922",
         "GRUP_KODU": "ISLAK",
         "IMAGE_PATH_WEB": "images/product_2442.jpg",
@@ -4473,7 +4428,7 @@
         "STOK_KODU": "048"
     },
     {
-        "BAKIYE": "15",
+        "BAKIYE": "12",
         "BARKOD1": "8690536024711",
         "GRUP_KODU": "KAGIT",
         "IMAGE_PATH_WEB": "images/product_1055.png",
@@ -4491,7 +4446,7 @@
         "STOK_KODU": "1060-001"
     },
     {
-        "BAKIYE": "60",
+        "BAKIYE": "56",
         "BARKOD1": "8690536011322",
         "GRUP_KODU": "KAGIT",
         "IMAGE_PATH_WEB": "images/product_1062.jpg",
@@ -4500,7 +4455,7 @@
         "STOK_KODU": "1062"
     },
     {
-        "BAKIYE": "16",
+        "BAKIYE": "14",
         "BARKOD1": "8690536012305",
         "GRUP_KODU": "KAGIT",
         "IMAGE_PATH_WEB": "images/product_1063.jpg",
@@ -4545,7 +4500,7 @@
         "STOK_KODU": "1748"
     },
     {
-        "BAKIYE": "42",
+        "BAKIYE": "36",
         "BARKOD1": "8690536010165",
         "GRUP_KODU": "KAGIT",
         "IMAGE_PATH_WEB": "images/product_1749.png",
@@ -4563,7 +4518,7 @@
         "STOK_KODU": "1862"
     },
     {
-        "BAKIYE": "341",
+        "BAKIYE": "337",
         "BARKOD1": "",
         "GRUP_KODU": "KAGIT",
         "IMAGE_PATH_WEB": "images/product_855-06.png",
@@ -4635,7 +4590,7 @@
         "STOK_KODU": "552"
     },
     {
-        "BAKIYE": "181",
+        "BAKIYE": "180",
         "BARKOD1": "8690770322215",
         "GRUP_KODU": "KAHVALTI",
         "IMAGE_PATH_WEB": "images/product_845.jpg",
@@ -4656,7 +4611,7 @@
         "BAKIYE": "80",
         "BARKOD1": "",
         "GRUP_KODU": "KAHVALTI",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "44.50000000",
         "STOK_ADI": "YEDİBAŞAK SALATA SOSU 1 KG *12*",
         "STOK_KODU": "1995"
@@ -4665,7 +4620,7 @@
         "BAKIYE": "54",
         "BARKOD1": "",
         "GRUP_KODU": "KAHVALTI",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "15.50000000",
         "STOK_ADI": "SILADAN LİMON SOSU 500 GR GR *18*",
         "STOK_KODU": "2165-01"
@@ -4689,7 +4644,7 @@
         "STOK_KODU": "109"
     },
     {
-        "BAKIYE": "317",
+        "BAKIYE": "316",
         "BARKOD1": "8690632062808",
         "GRUP_KODU": "KAHVE",
         "IMAGE_PATH_WEB": "images/product_1346.png",
@@ -4707,7 +4662,7 @@
         "STOK_KODU": "1453"
     },
     {
-        "BAKIYE": "205",
+        "BAKIYE": "181",
         "BARKOD1": "8690632013657",
         "GRUP_KODU": "KAHVE",
         "IMAGE_PATH_WEB": "images/product_241.jpg",
@@ -4716,7 +4671,7 @@
         "STOK_KODU": "241"
     },
     {
-        "BAKIYE": "36",
+        "BAKIYE": "12",
         "BARKOD1": "8690632013640",
         "GRUP_KODU": "KAHVE",
         "IMAGE_PATH_WEB": "images/product_243.png",
@@ -4725,7 +4680,7 @@
         "STOK_KODU": "243"
     },
     {
-        "BAKIYE": "49",
+        "BAKIYE": "39",
         "BARKOD1": "8690632240763",
         "GRUP_KODU": "KAHVE",
         "IMAGE_PATH_WEB": "images/product_245.png",
@@ -4743,7 +4698,7 @@
         "STOK_KODU": "2465"
     },
     {
-        "BAKIYE": "5",
+        "BAKIYE": "4",
         "BARKOD1": "",
         "GRUP_KODU": "KAHVE",
         "IMAGE_PATH_WEB": "images/product_260-02.webp",
@@ -4833,7 +4788,7 @@
         "STOK_KODU": "3180"
     },
     {
-        "BAKIYE": "568",
+        "BAKIYE": "564",
         "BARKOD1": "1",
         "GRUP_KODU": "KAHVE",
         "IMAGE_PATH_WEB": "images/product_3183.png",
@@ -4842,7 +4797,7 @@
         "STOK_KODU": "3183"
     },
     {
-        "BAKIYE": "1828",
+        "BAKIYE": "1804",
         "BARKOD1": "8697447043701",
         "GRUP_KODU": "KAHVE",
         "IMAGE_PATH_WEB": "images/product_381.png",
@@ -5013,7 +4968,7 @@
         "STOK_KODU": "639"
     },
     {
-        "BAKIYE": "209",
+        "BAKIYE": "196",
         "BARKOD1": "8690547040021",
         "GRUP_KODU": "KENTON",
         "IMAGE_PATH_WEB": "images/product_640.jpeg",
@@ -5049,7 +5004,7 @@
         "STOK_KODU": "644"
     },
     {
-        "BAKIYE": "1152",
+        "BAKIYE": "1136",
         "BARKOD1": "8690547101203",
         "GRUP_KODU": "KENTON",
         "IMAGE_PATH_WEB": "images/product_645-02.png",
@@ -5058,7 +5013,7 @@
         "STOK_KODU": "645-02"
     },
     {
-        "BAKIYE": "48",
+        "BAKIYE": "37",
         "BARKOD1": "",
         "GRUP_KODU": "KENTON",
         "IMAGE_PATH_WEB": "images/product_646.jpg",
@@ -5067,7 +5022,7 @@
         "STOK_KODU": "646"
     },
     {
-        "BAKIYE": "31",
+        "BAKIYE": "21",
         "BARKOD1": "8690547100022",
         "GRUP_KODU": "KENTON",
         "IMAGE_PATH_WEB": "images/product_647.png",
@@ -5076,7 +5031,7 @@
         "STOK_KODU": "647"
     },
     {
-        "BAKIYE": "8",
+        "BAKIYE": "6",
         "BARKOD1": "8690547100046",
         "GRUP_KODU": "KENTON",
         "IMAGE_PATH_WEB": "images/product_648.png",
@@ -5112,7 +5067,7 @@
         "STOK_KODU": "650"
     },
     {
-        "BAKIYE": "157",
+        "BAKIYE": "156",
         "BARKOD1": "8690547187115",
         "GRUP_KODU": "KENTON",
         "IMAGE_PATH_WEB": "images/product_651.jpg",
@@ -5283,7 +5238,7 @@
         "STOK_KODU": "1152"
     },
     {
-        "BAKIYE": "12",
+        "BAKIYE": "9",
         "BARKOD1": "8690885200453",
         "GRUP_KODU": "KOZMETIK",
         "IMAGE_PATH_WEB": "images/product_1197.png",
@@ -5364,7 +5319,7 @@
         "STOK_KODU": "3112-06"
     },
     {
-        "BAKIYE": "1764",
+        "BAKIYE": "1752",
         "BARKOD1": "8699621512331",
         "GRUP_KODU": "KOZMETIK",
         "IMAGE_PATH_WEB": "images/product_3159.png",
@@ -5466,7 +5421,7 @@
         "BAKIYE": "25",
         "BARKOD1": "",
         "GRUP_KODU": "KOZMETIK",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "43.00000000",
         "STOK_ADI": "VMAX SCRUBBİNG KİNG SARI SÜNGER SET",
         "STOK_KODU": "994242"
@@ -5475,7 +5430,7 @@
         "BAKIYE": "67",
         "BARKOD1": "",
         "GRUP_KODU": "KOZMETIK",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "39.00000000",
         "STOK_ADI": "VMAX CLEANİNG BRUSH RENKLİ BULAŞIK TELİ",
         "STOK_KODU": "994244"
@@ -5484,7 +5439,7 @@
         "BAKIYE": "168",
         "BARKOD1": "",
         "GRUP_KODU": "KOZMETIK",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "15.00000000",
         "STOK_ADI": "VMAX MAVİ BULAŞIK TELİ İNATÇI KİRLER*12*",
         "STOK_KODU": "994245"
@@ -5493,19 +5448,10 @@
         "BAKIYE": "132",
         "BARKOD1": "",
         "GRUP_KODU": "KOZMETIK",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "30.00000000",
         "STOK_ADI": "DERBY TRAŞ KREMİ KARMA *12*",
         "STOK_KODU": "994248"
-    },
-    {
-        "BAKIYE": "6",
-        "BARKOD1": "",
-        "GRUP_KODU": "KOZMETIK",
-        "IMAGE_PATH_WEB": "images/product_994249.png",
-        "SATIS_FIAT1": "39.00000000",
-        "STOK_ADI": "DERBY TRAŞ KÖPÜĞÜ 200 ML *12*",
-        "STOK_KODU": "994249"
     },
     {
         "BAKIYE": "4",
@@ -5535,7 +5481,7 @@
         "STOK_KODU": "077"
     },
     {
-        "BAKIYE": "28",
+        "BAKIYE": "26",
         "BARKOD1": "8690576029806",
         "GRUP_KODU": "MAKARNA",
         "IMAGE_PATH_WEB": "images/product_079.jpg",
@@ -5571,7 +5517,7 @@
         "STOK_KODU": "083"
     },
     {
-        "BAKIYE": "168",
+        "BAKIYE": "165",
         "BARKOD1": "8690576029004",
         "GRUP_KODU": "MAKARNA",
         "IMAGE_PATH_WEB": "images/product_084.jpg",
@@ -5589,7 +5535,7 @@
         "STOK_KODU": "086"
     },
     {
-        "BAKIYE": "720",
+        "BAKIYE": "576",
         "BARKOD1": "",
         "GRUP_KODU": "MAKARNA",
         "IMAGE_PATH_WEB": "images/product_1381.png",
@@ -5598,16 +5544,7 @@
         "STOK_KODU": "1381"
     },
     {
-        "BAKIYE": "72",
-        "BARKOD1": "",
-        "GRUP_KODU": "MAKARNA",
-        "IMAGE_PATH_WEB": "images/product_3095-01.jpg",
-        "SATIS_FIAT1": "22.00000000",
-        "STOK_ADI": "İNDOMİE BARDAK SEBZELİ  60 GR *24*",
-        "STOK_KODU": "3095-01"
-    },
-    {
-        "BAKIYE": "264",
+        "BAKIYE": "216",
         "BARKOD1": "",
         "GRUP_KODU": "MAKARNA",
         "IMAGE_PATH_WEB": "images/product_3095-03.jpg",
@@ -5616,7 +5553,7 @@
         "STOK_KODU": "3095-03"
     },
     {
-        "BAKIYE": "1355",
+        "BAKIYE": "515",
         "BARKOD1": "8680908020014",
         "GRUP_KODU": "MAKARNA",
         "IMAGE_PATH_WEB": "images/product_2021.png",
@@ -5625,7 +5562,7 @@
         "STOK_KODU": "2021"
     },
     {
-        "BAKIYE": "5200",
+        "BAKIYE": "4920",
         "BARKOD1": "8680908020007",
         "GRUP_KODU": "MAKARNA",
         "IMAGE_PATH_WEB": "images/product_2022.png",
@@ -5634,7 +5571,7 @@
         "STOK_KODU": "2022"
     },
     {
-        "BAKIYE": "3760",
+        "BAKIYE": "3560",
         "BARKOD1": "8680908020021",
         "GRUP_KODU": "MAKARNA",
         "IMAGE_PATH_WEB": "images/product_2023.png",
@@ -5643,7 +5580,7 @@
         "STOK_KODU": "2023"
     },
     {
-        "BAKIYE": "2240",
+        "BAKIYE": "1960",
         "BARKOD1": "8680908020038",
         "GRUP_KODU": "MAKARNA",
         "IMAGE_PATH_WEB": "images/product_2024.png",
@@ -5688,7 +5625,7 @@
         "STOK_KODU": "958"
     },
     {
-        "BAKIYE": "66",
+        "BAKIYE": "65",
         "BARKOD1": "8690530001336",
         "GRUP_KODU": "MENDIL",
         "IMAGE_PATH_WEB": "images/product_959.png",
@@ -5697,7 +5634,7 @@
         "STOK_KODU": "959"
     },
     {
-        "BAKIYE": "528",
+        "BAKIYE": "512",
         "BARKOD1": "8690536843107",
         "GRUP_KODU": "PED",
         "IMAGE_PATH_WEB": "images/product_1470.jpg",
@@ -5733,7 +5670,7 @@
         "STOK_KODU": "3300"
     },
     {
-        "BAKIYE": "216",
+        "BAKIYE": "192",
         "BARKOD1": "8001090514714",
         "GRUP_KODU": "PED",
         "IMAGE_PATH_WEB": "images/product_824.jpg",
@@ -5742,7 +5679,7 @@
         "STOK_KODU": "824"
     },
     {
-        "BAKIYE": "96",
+        "BAKIYE": "80",
         "BARKOD1": "8001090430458",
         "GRUP_KODU": "PED",
         "IMAGE_PATH_WEB": "images/product_826-01.jpg",
@@ -5751,7 +5688,7 @@
         "STOK_KODU": "826-01"
     },
     {
-        "BAKIYE": "768",
+        "BAKIYE": "744",
         "BARKOD1": "4015400753155",
         "GRUP_KODU": "PED",
         "IMAGE_PATH_WEB": "images/product_827-02.png",
@@ -5760,7 +5697,7 @@
         "STOK_KODU": "827-02"
     },
     {
-        "BAKIYE": "432",
+        "BAKIYE": "384",
         "BARKOD1": "8001841114767",
         "GRUP_KODU": "PED",
         "IMAGE_PATH_WEB": "images/product_828.jpg",
@@ -5778,7 +5715,7 @@
         "STOK_KODU": "829"
     },
     {
-        "BAKIYE": "560",
+        "BAKIYE": "544",
         "BARKOD1": "8690536843091",
         "GRUP_KODU": "PED",
         "IMAGE_PATH_WEB": "images/product_1998.jpg",
@@ -5832,7 +5769,7 @@
         "STOK_KODU": "850"
     },
     {
-        "BAKIYE": "10",
+        "BAKIYE": "9",
         "BARKOD1": "8887549054044",
         "GRUP_KODU": "PIL",
         "IMAGE_PATH_WEB": "images/product_851.png",
@@ -6183,7 +6120,7 @@
         "STOK_KODU": "985"
     },
     {
-        "BAKIYE": "778",
+        "BAKIYE": "683",
         "BARKOD1": "",
         "GRUP_KODU": "SAKIZ",
         "IMAGE_PATH_WEB": "images/product_502.jpg",
@@ -6219,7 +6156,7 @@
         "STOK_KODU": "030"
     },
     {
-        "BAKIYE": "1932",
+        "BAKIYE": "1920",
         "BARKOD1": "8690508101426",
         "GRUP_KODU": "SALCA",
         "IMAGE_PATH_WEB": "images/product_1083-01.png",
@@ -6237,7 +6174,7 @@
         "STOK_KODU": "1084"
     },
     {
-        "BAKIYE": "56",
+        "BAKIYE": "50",
         "BARKOD1": "8691728000209",
         "GRUP_KODU": "SALCA",
         "IMAGE_PATH_WEB": "images/product_3204.png",
@@ -6363,10 +6300,10 @@
         "STOK_KODU": "2062-04"
     },
     {
-        "BAKIYE": "318",
+        "BAKIYE": "312",
         "BARKOD1": "8683130020906",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "102.00000000",
         "STOK_ADI": "ELİDOR İPEKSİ YUMUŞAKLIK 400 ML *6* SARI",
         "STOK_KODU": "2062-07"
@@ -6381,28 +6318,28 @@
         "STOK_KODU": "2062-13"
     },
     {
-        "BAKIYE": "362",
+        "BAKIYE": "356",
         "BARKOD1": "8683130020821",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "102.00000000",
         "STOK_ADI": "ELİDOR  SAÇ DÖKÜLEMELİRİNE KARŞI KAHVERENGİ 400 ML *6*",
         "STOK_KODU": "2062-15"
     },
     {
-        "BAKIYE": "746",
+        "BAKIYE": "740",
         "BARKOD1": "8690637936357",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "102.00000000",
         "STOK_ADI": "ELİDOR GÜÇLÜ PARLAK 400 ML *6* PEMBE",
         "STOK_KODU": "2062-16"
     },
     {
-        "BAKIYE": "3206",
+        "BAKIYE": "3200",
         "BARKOD1": "8690637984686",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "102.00000000",
         "STOK_ADI": "ELİDOR KEPEĞE KARŞI 400 ML*6* MAVİ",
         "STOK_KODU": "2062-27"
@@ -6411,7 +6348,7 @@
         "BAKIYE": "114",
         "BARKOD1": "8006540476390",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "74.50000000",
         "STOK_ADI": "PANTENE TEMEL BAKIM 350 ML *6*",
         "STOK_KODU": "2088-01"
@@ -6420,7 +6357,7 @@
         "BAKIYE": "138",
         "BARKOD1": "8700216084352",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "74.50000000",
         "STOK_ADI": "PANTENE ONARICI VE KORUYUCU BAKIM 350 ML  *6*",
         "STOK_KODU": "2088-03"
@@ -6429,7 +6366,7 @@
         "BAKIYE": "192",
         "BARKOD1": "8006540476956",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "74.50000000",
         "STOK_ADI": "PANTENE YAĞ TERAPİSİ 350 ML*6*",
         "STOK_KODU": "2088-06"
@@ -6438,7 +6375,7 @@
         "BAKIYE": "180",
         "BARKOD1": "8700216084314",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "74.50000000",
         "STOK_ADI": "PANTENE NEM TERAPİSİ 350 ML*6*",
         "STOK_KODU": "2088-07"
@@ -6447,7 +6384,7 @@
         "BAKIYE": "132",
         "BARKOD1": "8006540476154",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "74.50000000",
         "STOK_ADI": "PANTENE GÜC VE PARLAKLIK 350 ML *6*",
         "STOK_KODU": "2088-09"
@@ -6456,7 +6393,7 @@
         "BAKIYE": "114",
         "BARKOD1": "8006540476697",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "74.50000000",
         "STOK_ADI": "PANTENE DÖKÜLME KARŞITI 350 ML *6*",
         "STOK_KODU": "2088-10"
@@ -6465,7 +6402,7 @@
         "BAKIYE": "36",
         "BARKOD1": "8006540690383",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "74.50000000",
         "STOK_ADI": "PANTENE KEPEĞE KARŞI ETKİLİ 350 ML *6*",
         "STOK_KODU": "2088-11"
@@ -6474,7 +6411,7 @@
         "BAKIYE": "42",
         "BARKOD1": "8006540476840",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "74.50000000",
         "STOK_ADI": "PANTENE 3Ü1 ARADA DÖKÜLME KARŞITI 350 ML *6*",
         "STOK_KODU": "2088-12"
@@ -6483,7 +6420,7 @@
         "BAKIYE": "-36",
         "BARKOD1": "8006540476307",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "74.50000000",
         "STOK_ADI": "PANTENE 3Ü1 ARADA GÜC VE PARLAKLIK 350 ML *6*",
         "STOK_KODU": "2088-13"
@@ -6492,7 +6429,7 @@
         "BAKIYE": "144",
         "BARKOD1": "8006540476871",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "74.50000000",
         "STOK_ADI": "PANTENE 3Ü1 ARADA NEM TERAPİSİ 350 ML*6*",
         "STOK_KODU": "2088-15"
@@ -6501,7 +6438,7 @@
         "BAKIYE": "102",
         "BARKOD1": "8006540476901",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "74.50000000",
         "STOK_ADI": "PANTENE 3Ü1 ARADA ONARICI VE KORUYUCU 350 ML  *6*",
         "STOK_KODU": "2088-16"
@@ -6510,7 +6447,7 @@
         "BAKIYE": "138",
         "BARKOD1": "8006540477007",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "74.50000000",
         "STOK_ADI": "PANTENE 3Ü1 ARADA TEMEL BAKIM 350 ML *6*",
         "STOK_KODU": "2088-17"
@@ -6519,7 +6456,7 @@
         "BAKIYE": "6",
         "BARKOD1": "8700216258487",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "97.50000000",
         "STOK_ADI": "HEAD SHOULDERS DERİNLEMESİNE NEMLENDİRİCİ 330 ML 6*",
         "STOK_KODU": "2094-05"
@@ -6528,7 +6465,7 @@
         "BAKIYE": "6",
         "BARKOD1": "8700216260053",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "97.50000000",
         "STOK_ADI": "HEAD SHOULDERS KADINLARA  ÖZEL DÖKÜLME KARŞITI 330 ML *6*",
         "STOK_KODU": "2094-06"
@@ -6537,7 +6474,7 @@
         "BAKIYE": "11",
         "BARKOD1": "8700216258203",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "97.50000000",
         "STOK_ADI": "HEAD SHOULDERS DÖKÜLME KARŞITI KAFEİN 330 ML *6*",
         "STOK_KODU": "2094-16"
@@ -6546,16 +6483,16 @@
         "BAKIYE": "12",
         "BARKOD1": "8700216259941",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "97.50000000",
         "STOK_ADI": "HEAD SHOULDERS LİMON FERAHLIĞI *6* 330 ML",
         "STOK_KODU": "2094-22"
     },
     {
-        "BAKIYE": "96",
+        "BAKIYE": "84",
         "BARKOD1": "",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "44.00000000",
         "STOK_ADI": "DALAN ŞAMPUAN ÇEŞİTLERİ 450 ML *12*",
         "STOK_KODU": "2103-03"
@@ -6564,7 +6501,7 @@
         "BAKIYE": "146",
         "BARKOD1": "8690637925726",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "102.00000000",
         "STOK_ADI": "ELİDOR SAÇ KREMİ SAĞLIKLI UZAYAN SAÇLAR 350 ML*6*  -  YEŞİL",
         "STOK_KODU": "2105"
@@ -6573,7 +6510,7 @@
         "BAKIYE": "98",
         "BARKOD1": "8690637978555",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "102.00000000",
         "STOK_ADI": "ELİDOR SAÇ KREMİ GÜÇLÜ VE PARLAK 350 ML*6* - PEMBE",
         "STOK_KODU": "2105-03"
@@ -6582,7 +6519,7 @@
         "BAKIYE": "168",
         "BARKOD1": "8690637927065",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "102.00000000",
         "STOK_ADI": "ELİDOR SAÇ KREMİ ANINDA ONARICI BAKIM 350 ML *6* - TURUNCU",
         "STOK_KODU": "2105-05"
@@ -6591,7 +6528,7 @@
         "BAKIYE": "174",
         "BARKOD1": "8690572787755",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "67.50000000",
         "STOK_ADI": "BLENDAX ŞAMPUAN 500 ML*12 Lİ KOLİ*",
         "STOK_KODU": "2183"
@@ -6600,34 +6537,34 @@
         "BAKIYE": "746",
         "BARKOD1": "8690637978838",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "102.00000000",
         "STOK_ADI": "ELİDOR SAĞLIKLI UZAYAN SAÇLAR 400 ML *6* YEŞİL",
         "STOK_KODU": "2062-28"
     },
     {
-        "BAKIYE": "210",
+        "BAKIYE": "204",
         "BARKOD1": "8690637978821",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "102.00000000",
         "STOK_ADI": "ELİDOR RENK KORUYUC 400 ML *6* KIRMIZI",
         "STOK_KODU": "2062-30"
     },
     {
-        "BAKIYE": "620",
+        "BAKIYE": "614",
         "BARKOD1": "8690637978845",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "102.00000000",
         "STOK_ADI": "ELİDOR ANINDA ONARICI BAKIM 400 ML *6* TURUNCU",
         "STOK_KODU": "2062-31"
     },
     {
-        "BAKIYE": "242",
+        "BAKIYE": "236",
         "BARKOD1": "8690637978814",
         "GRUP_KODU": "SAMPUAN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "102.00000000",
         "STOK_ADI": "ELİDOR ESMER PARLAKLIK 400 ML *6* SİYAH",
         "STOK_KODU": "2062-33"
@@ -6669,7 +6606,7 @@
         "STOK_KODU": "151"
     },
     {
-        "BAKIYE": "2248",
+        "BAKIYE": "2208",
         "BARKOD1": "",
         "GRUP_KODU": "SEKER",
         "IMAGE_PATH_WEB": "images/product_1773-01.png",
@@ -6687,7 +6624,7 @@
         "STOK_KODU": "1773-02"
     },
     {
-        "BAKIYE": "20",
+        "BAKIYE": "10",
         "BARKOD1": "",
         "GRUP_KODU": "SEKER",
         "IMAGE_PATH_WEB": "images/product_2044.jpg",
@@ -6696,7 +6633,7 @@
         "STOK_KODU": "2044"
     },
     {
-        "BAKIYE": "74",
+        "BAKIYE": "66",
         "BARKOD1": "",
         "GRUP_KODU": "SEKER",
         "IMAGE_PATH_WEB": "images/product_2045.jpg",
@@ -6732,7 +6669,7 @@
         "STOK_KODU": "1842"
     },
     {
-        "BAKIYE": "478",
+        "BAKIYE": "477",
         "BARKOD1": "8696150144026",
         "GRUP_KODU": "SICAK",
         "IMAGE_PATH_WEB": "images/product_1842-01.jpg",
@@ -6750,7 +6687,7 @@
         "STOK_KODU": "1842-02"
     },
     {
-        "BAKIYE": "213",
+        "BAKIYE": "212",
         "BARKOD1": "8696150144033",
         "GRUP_KODU": "SICAK",
         "IMAGE_PATH_WEB": "images/product_1842-03.png",
@@ -7029,7 +6966,7 @@
         "STOK_KODU": "1074"
     },
     {
-        "BAKIYE": "34",
+        "BAKIYE": "14",
         "BARKOD1": "",
         "GRUP_KODU": "SUT",
         "IMAGE_PATH_WEB": "images/product_1238.jpg",
@@ -7146,7 +7083,7 @@
         "STOK_KODU": "170"
     },
     {
-        "BAKIYE": "12",
+        "BAKIYE": "7",
         "BARKOD1": "4084500410534",
         "GRUP_KODU": "TABLET",
         "IMAGE_PATH_WEB": "images/product_2188.jpg",
@@ -7182,7 +7119,7 @@
         "STOK_KODU": "1850"
     },
     {
-        "BAKIYE": "6",
+        "BAKIYE": "5",
         "BARKOD1": "",
         "GRUP_KODU": "TADIM",
         "IMAGE_PATH_WEB": "images/product_1129-02.jpg",
@@ -7191,7 +7128,7 @@
         "STOK_KODU": "1129-02"
     },
     {
-        "BAKIYE": "18",
+        "BAKIYE": "17",
         "BARKOD1": "",
         "GRUP_KODU": "TADIM",
         "IMAGE_PATH_WEB": "images/product_2442-04.png",
@@ -7200,7 +7137,7 @@
         "STOK_KODU": "2442-04"
     },
     {
-        "BAKIYE": "8",
+        "BAKIYE": "7",
         "BARKOD1": "",
         "GRUP_KODU": "TADIM",
         "IMAGE_PATH_WEB": "images/product_406366.png",
@@ -7209,16 +7146,7 @@
         "STOK_KODU": "406366"
     },
     {
-        "BAKIYE": "1",
-        "BARKOD1": "",
-        "GRUP_KODU": "TADIM",
-        "IMAGE_PATH_WEB": "images/product_1690.png",
-        "SATIS_FIAT1": "750.00000000",
-        "STOK_ADI": "TADIMCA ANTEP FISTIKLI 30 GR*20",
-        "STOK_KODU": "1690"
-    },
-    {
-        "BAKIYE": "13",
+        "BAKIYE": "12",
         "BARKOD1": "",
         "GRUP_KODU": "TADIM",
         "IMAGE_PATH_WEB": "images/product_1691.png",
@@ -7380,7 +7308,7 @@
         "STOK_KODU": "2474"
     },
     {
-        "BAKIYE": "114",
+        "BAKIYE": "112",
         "BARKOD1": "",
         "GRUP_KODU": "TUZ",
         "IMAGE_PATH_WEB": "images/product_2475.jpg",
@@ -7398,7 +7326,7 @@
         "STOK_KODU": "323"
     },
     {
-        "BAKIYE": "66",
+        "BAKIYE": "64",
         "BARKOD1": "869705072576",
         "GRUP_KODU": "TUZ",
         "IMAGE_PATH_WEB": "images/product_372.jpg",
@@ -7497,7 +7425,7 @@
         "STOK_KODU": "1128"
     },
     {
-        "BAKIYE": "88",
+        "BAKIYE": "87",
         "BARKOD1": "8690766009205",
         "GRUP_KODU": "ULKER",
         "IMAGE_PATH_WEB": "images/product_1129.jpg",
@@ -7545,7 +7473,7 @@
         "BAKIYE": "165",
         "BARKOD1": "8690504079729",
         "GRUP_KODU": "ULKER",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "144.00000000",
         "STOK_ADI": "ÜLKER DANKEK PÖTİ *24* HİNDİSTAN CEVİZİ",
         "STOK_KODU": "1164"
@@ -7605,7 +7533,7 @@
         "STOK_KODU": "1167-04"
     },
     {
-        "BAKIYE": "7",
+        "BAKIYE": "6",
         "BARKOD1": "8690504951872",
         "GRUP_KODU": "ULKER",
         "IMAGE_PATH_WEB": "images/product_1168.jpg",
@@ -7668,16 +7596,7 @@
         "STOK_KODU": "1182"
     },
     {
-        "BAKIYE": "1",
-        "BARKOD1": "8690504008101",
-        "GRUP_KODU": "ULKER",
-        "IMAGE_PATH_WEB": "images/product_1183.jpg",
-        "SATIS_FIAT1": "192.00000000",
-        "STOK_ADI": "ÜLKER HAYLAYF*24 64 GR",
-        "STOK_KODU": "1183"
-    },
-    {
-        "BAKIYE": "132",
+        "BAKIYE": "128",
         "BARKOD1": "8690504016885",
         "GRUP_KODU": "ULKER",
         "IMAGE_PATH_WEB": "images/product_1184.jpg",
@@ -7758,10 +7677,10 @@
         "STOK_KODU": "1198-01"
     },
     {
-        "BAKIYE": "64",
+        "BAKIYE": "63",
         "BARKOD1": "8690504065395",
         "GRUP_KODU": "ULKER",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "350.00000000",
         "STOK_ADI": "ÜLKER LAVİVA ÇİKOLATA*24 35 GR (30/07/2025)",
         "STOK_KODU": "1203"
@@ -7887,7 +7806,7 @@
         "BAKIYE": "142",
         "BARKOD1": "8690504084846",
         "GRUP_KODU": "ULKER",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "132.50000000",
         "STOK_ADI": "ÜLKER HARBY KARAMELLİ *24* 25 GR",
         "STOK_KODU": "1533"
@@ -7896,7 +7815,7 @@
         "BAKIYE": "28",
         "BARKOD1": "8690504017264",
         "GRUP_KODU": "ULKER",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "390.00000000",
         "STOK_ADI": "ÜLKER PETİBÖR 800 GR *6*",
         "STOK_KODU": "945"
@@ -7920,7 +7839,7 @@
         "STOK_KODU": "2662"
     },
     {
-        "BAKIYE": "27",
+        "BAKIYE": "26",
         "BARKOD1": "8691609100011",
         "GRUP_KODU": "UN",
         "IMAGE_PATH_WEB": "images/product_579.jpeg",
@@ -7929,7 +7848,7 @@
         "STOK_KODU": "579"
     },
     {
-        "BAKIYE": "78",
+        "BAKIYE": "72",
         "BARKOD1": "8691609100103",
         "GRUP_KODU": "UN",
         "IMAGE_PATH_WEB": "images/product_580.jpg",
@@ -7938,7 +7857,7 @@
         "STOK_KODU": "580"
     },
     {
-        "BAKIYE": "59",
+        "BAKIYE": "56",
         "BARKOD1": "8691609100028",
         "GRUP_KODU": "UN",
         "IMAGE_PATH_WEB": "images/product_581.jpg",
@@ -7947,7 +7866,7 @@
         "STOK_KODU": "581"
     },
     {
-        "BAKIYE": "166",
+        "BAKIYE": "160",
         "BARKOD1": "8691609100165",
         "GRUP_KODU": "UN",
         "IMAGE_PATH_WEB": "images/product_582.jpg",
@@ -7959,7 +7878,7 @@
         "BAKIYE": "52",
         "BARKOD1": "8697677040228",
         "GRUP_KODU": "YAG",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "525.00000000",
         "STOK_ADI": "ZEYTİNBİRLİK ZEYTİNYAĞI 2 LT *6*",
         "STOK_KODU": "1003-01"
@@ -7968,13 +7887,13 @@
         "BAKIYE": "51",
         "BARKOD1": "",
         "GRUP_KODU": "YAG",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "325.00000000",
         "STOK_ADI": "AYVAZ MISIR YAĞI  5 LT PET *4*",
         "STOK_KODU": "1380"
     },
     {
-        "BAKIYE": "47",
+        "BAKIYE": "46",
         "BARKOD1": "",
         "GRUP_KODU": "YAG",
         "IMAGE_PATH_WEB": "images/product_2748.jpg",
@@ -8001,7 +7920,7 @@
         "STOK_KODU": "3317"
     },
     {
-        "BAKIYE": "2",
+        "BAKIYE": "1",
         "BARKOD1": "8698509200018",
         "GRUP_KODU": "YAG",
         "IMAGE_PATH_WEB": "images/product_565.png",
@@ -8067,7 +7986,7 @@
         "BAKIYE": "13",
         "BARKOD1": "",
         "GRUP_KODU": "ZEYTIN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "2925.00000000",
         "STOK_ADI": "FIRAT ZEYTİN 201/230 ŞAMPİYON 10 KG",
         "STOK_KODU": "415"
@@ -8076,7 +7995,7 @@
         "BAKIYE": "5",
         "BARKOD1": "8697402510446",
         "GRUP_KODU": "ZEYTIN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "1550.00000000",
         "STOK_ADI": "FIRAT ZEYTİN 290/320 SÜPER YAĞLI SARI TENEKE 10 KG",
         "STOK_KODU": "418"
@@ -8085,7 +8004,7 @@
         "BAKIYE": "9",
         "BARKOD1": "",
         "GRUP_KODU": "ZEYTIN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "1900.00000000",
         "STOK_ADI": "FIRAT ZEYTİN 261/290 MEGA YEŞİL TENEKE 10 KG",
         "STOK_KODU": "420"
@@ -8094,7 +8013,7 @@
         "BAKIYE": "55",
         "BARKOD1": "",
         "GRUP_KODU": "ZEYTIN",
-        "IMAGE_PATH_WEB": "images/image_placeholder.png",
+        "IMAGE_PATH_WEB": "images/urun_yok.png",
         "SATIS_FIAT1": "190.00000000",
         "STOK_ADI": "FIRAT SİYAH ZEYTİN MEGA 900 GR 260-290*6",
         "STOK_KODU": "421"
