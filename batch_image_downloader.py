@@ -81,6 +81,23 @@ def get_db_connection():
         )
         conn = pyodbc.connect(conn_str, timeout=5)
         print(f"'{server}' üzerindeki '{database}' veritabanına başarıyla bağlanıldı.")
+
+        # Türkçe karakterler için encoding ayarları
+        try:
+            print("Veritabanı bağlantısı için encoding ayarları deneniyor (kaynak: cp1254, hedef: utf-8)...")
+            # SQL_CHAR (VARCHAR, CHAR vb.) verilerin cp1254 olduğunu varsayıyoruz.
+            conn.setdecoding(pyodbc.SQL_CHAR, encoding='cp1254', ctype=pyodbc.SQL_CHAR)
+            # SQL_WCHAR (NVARCHAR, NCHAR vb.) verilerin zaten Unicode (örn. UTF-16) olduğunu varsayıyoruz,
+            # Python'a geçerken UTF-8 string olması için.
+            conn.setdecoding(pyodbc.SQL_WCHAR, encoding='utf-8', ctype=pyodbc.SQL_WCHAR)
+            # Python tarafında tüm stringlerin (sorgu sonuçları dahil) UTF-8 olmasını istiyoruz.
+            conn.setencoding(encoding='utf-8') 
+            print("Encoding ayarları varsayılan olarak uygulandı.")
+        except Exception as e:
+            print(f"Encoding ayarları yapılırken bir hata oluştu: {e}. Varsayılan ayarlarla devam edilecek.")
+            # Hata olsa bile bağlantıyı döndürmeye devam et, belki bazı sürücüler bu ayarları desteklemez
+            # veya farklı şekilde yapılandırılması gerekir.
+
         return conn
     except pyodbc.Error as ex:
         sqlstate = ex.args[0]
@@ -93,28 +110,68 @@ def get_db_connection():
         print(f"Veritabanı bağlantısı sırasında genel bir hata oluştu: {e}")
         return None
 
-def find_image_url_via_search_ai(cleaned_product_name: str, original_stok_adi: str, stok_kodu: str) -> str | None:
+def find_image_url_via_search_ai(cleaned_product_name: str, original_stok_adi: str, stok_kodu: str, barkod: str | None) -> str | None:
     """
-    Temizlenmiş ürün adını kullanarak (DuckDuckGo ile) bir resim URL'i bulmaya çalışır.
+    Temizlenmiş ürün adını veya barkodu kullanarak (DuckDuckGo ile) bir resim URL'i bulmaya çalışır.
+    Önce barkod ile arama yapar, bulunamazsa ürün adıyla devam eder.
     Bu fonksiyon, basit bir örnek sunar ve ilk bulunan görseli almaya çalışır.
     Daha gelişmiş AI tabanlı seçim için bu fonksiyonun iyileştirilmesi gerekir.
     """
     if not DUCKDUCKGO_SEARCH_AVAILABLE:
-        print(f"  [UYARI] duckduckgo_search kütüphanesi kurulu olmadığı için '{cleaned_product_name}' için resim aranamıyor.")
+        print(f"  [UYARI] duckduckgo_search kütüphanesi kurulu olmadığı için resim aranamıyor.")
         return None
 
-    if not cleaned_product_name:
-        return None
+    search_term_used = ""
 
-    search_query = f"{cleaned_product_name} ürün resmi"
-    print(f"  [DUCKDUCKGO ARAMA] '{search_query}' için resim URL'i aranıyor (STOK_KODU: {stok_kodu})...")
+    # 1. Barkod ile arama yapmayı dene
+    if barkod and barkod.strip():
+        search_query_barcode = f"{barkod.strip()} ürün"
+        print(f"  [DUCKDUCKGO BARKOD ARAMA] '{search_query_barcode}' için resim URL'i aranıyor (STOK_KODU: {stok_kodu})...")
+        search_term_used = f"Barkod: {barkod.strip()}"
+        try:
+            with DDGS() as ddgs:
+                results = ddgs.images(
+                    keywords=search_query_barcode,
+                    region='wt-wt',
+                    safesearch='moderate',
+                    max_results=3 # Barkod aramasında daha az sonuç yeterli olabilir
+                )
+                if results:
+                    first_image_url = results[0].get('image')
+                    if first_image_url:
+                        print(f"    DuckDuckGo'dan barkod ({barkod.strip()}) ile bulunan ilk resim URL'i: {first_image_url}")
+                        return first_image_url
+                    else:
+                        print(f"    DuckDuckGo barkod ({barkod.strip()}) arama sonuçlarında geçerli bir resim URL'i bulunamadı.")
+                else:
+                    print(f"    DuckDuckGo'da barkod ({barkod.strip()}) ile resim bulunamadı.")
+        except Exception as e:
+            print(f"  [DUCKDUCKGO BARKOD ARAMA HATA] Barkod ile resim aranırken bir hata oluştu: {e}")
+        # Barkodla bulunamazsa ürün adıyla devam etmesi için aşağı düşer
+    
+    # 2. Ürün adıyla arama yap (barkodla bulunamadıysa veya barkod yoksa)
+    if not cleaned_product_name and not (barkod and barkod.strip()): # Eğer barkod da yoksa ve ürün adı da yoksa boşuna arama
+        print(f"  [UYARI] Hem barkod hem de ürün adı boş olduğu için arama yapılamıyor (STOK_KODU: {stok_kodu}).")
+        return None
+    
+    if not cleaned_product_name: # Sadece barkod vardı ama bulunamadı, ürün adı yoksa buradan çık
+         print(f"  [BİLGİ] Barkod ile resim bulunamadı ve ürün adı da mevcut değil (STOK_KODU: {stok_kodu}).")
+         return None
+
+    search_query_name = f"{cleaned_product_name} ürün resmi"
+    search_type_message = "ürün adıyla"
+    if search_term_used: # Daha önce barkodla arama denendiğini belirt
+        search_type_message = f"barkodla bulunamadığı için {search_type_message}"
+        
+    print(f"  [DUCKDUCKGO ÜRÜN ADI ARAMA] '{search_query_name}' için {search_type_message} resim URL'i aranıyor (STOK_KODU: {stok_kodu})...")
+    search_term_used = f"Ürün Adı: {cleaned_product_name}"
 
     try:
         with DDGS() as ddgs:
             results = ddgs.images(
-                keywords=search_query,
-                region='wt-wt', # Bölge (örneğin tr-tr, us-en, wt-wt: Dünya genelinde)
-                safesearch='moderate', # moderate, strict, off
+                keywords=search_query_name,
+                region='wt-wt',
+                safesearch='moderate',
                 size=None,  # None, Small, Medium, Large, Wallpaper
                 # color=None, # Monochromatic, Color
                 # type_image=None, # photo, clipart, gif, transparent, line
@@ -128,17 +185,17 @@ def find_image_url_via_search_ai(cleaned_product_name: str, original_stok_adi: s
                 # burada ek mantık gerekebilir.
                 first_image_url = results[0].get('image')
                 if first_image_url:
-                    print(f"    DuckDuckGo'dan bulunan ilk resim URL'i: {first_image_url}")
+                    print(f"    DuckDuckGo'dan {search_term_used} ile bulunan ilk resim URL'i: {first_image_url}")
                     # İsteğe bağlı: Bulunan URL'nin gerçekten bir resim olup olmadığını kontrol etmek için
                     # requests.head(first_image_url, timeout=5).headers.get('Content-Type', '').startswith('image/')
                     # gibi bir kontrol eklenebilir, ancak bu işlemi yavaşlatabilir.
                     return first_image_url
                 else:
-                    print(f"    DuckDuckGo sonuçlarında geçerli bir resim URL'i bulunamadı.")
+                    print(f"    DuckDuckGo'da {search_term_used} ile resim bulunamadı.")
             else:
-                print(f"    DuckDuckGo'da '{search_query}' için resim bulunamadı.")
+                print(f"    DuckDuckGo'da {search_term_used} ile resim bulunamadı.")
     except Exception as e:
-        print(f"  [DUCKDUCKGO HATA] Resim aranırken bir hata oluştu: {e}")
+        print(f"  [DUCKDUCKGO ÜRÜN ADI HATA] {search_term_used} ile resim aranırken bir hata oluştu: {e}")
     
     return None
 
@@ -159,7 +216,8 @@ def batch_download_product_images():
     query = """
     SELECT 
         s.STOK_KODU, 
-        s.STOK_ADI
+        s.STOK_ADI,
+        ISNULL(s.BARKOD1, '') as BARKOD1 -- BARKOD1 alanını ekledik, NULL ise boş string
     FROM TBLSTSABIT s
     WHERE 
         s.GRUP_KODU NOT IN ('KULLANMA', 'INT', 'PALET') 
@@ -178,9 +236,10 @@ def batch_download_product_images():
         for row in cursor.fetchall():
             stok_kodu = row.STOK_KODU.strip()
             stok_adi = row.STOK_ADI.strip() if row.STOK_ADI else ""
+            barkod = row.BARKOD1.strip() if row.BARKOD1 else None # Barkodu al
             products_processed += 1
 
-            print(f"\nİşleniyor: STOK_KODU='{stok_kodu}', STOK_ADI='{stok_adi}'")
+            print(f"\nİşleniyor: STOK_KODU='{stok_kodu}', STOK_ADI='{stok_adi}', BARKOD='{barkod if barkod else ''}'")
 
             cleaned_name = image_processor.clean_product_name(stok_adi)
             print(f"  Temizlenmiş Ad: '{cleaned_name}'")
@@ -196,7 +255,7 @@ def batch_download_product_images():
 
             # 2. Adım: AI/Arama modülü ile resim URL'i bul
             # (KULLANICI TARAFINDAN GELİŞTİRİLECEK YER)
-            image_url_found = find_image_url_via_search_ai(cleaned_name, stok_adi, stok_kodu)
+            image_url_found = find_image_url_via_search_ai(cleaned_name, stok_adi, stok_kodu, barkod)
 
             if image_url_found:
                 print(f"  Bulunan Resim URL'i: {image_url_found}")
