@@ -754,9 +754,9 @@
                     item.stokKodu,
                     barkod,
                     item.stokAdi,
-                    item.quantity, // Sadece sayı, TL yok
-                    formatCurrency(item.price), // Sadece rakam, TL yok
-                    formatCurrency(item.quantity * item.price) // Sadece rakam, TL yok
+                    "'" + item.quantity, // Miktarın başına tek tırnak ekle
+                    formatCurrency(item.price),
+                    formatCurrency(item.quantity * item.price)
                 ]);
             });
 
