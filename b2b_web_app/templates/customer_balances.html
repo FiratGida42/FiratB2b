@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }} - B2B Portalı</title>
     <link href="https://bootswatch.com/5/yeti/bootstrap.min.css" rel="stylesheet">
-    {# DataTables için CSS (isteğe bağlı, aktif etmek için yorumu kaldırın) #}
-    {# <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css"> #}
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
     <style>
         body {
             padding-top: 56px; 
@@ -14,6 +14,18 @@
         }
         .table th.text-end, .table td.text-end {
             text-align: right !important;
+        }
+        /* DataTables arama kutusunu biraz güzelleştirelim */
+        div.dataTables_wrapper div.dataTables_filter input {
+            margin-left: 0.5em;
+            display: inline-block;
+            width: auto;
+            margin-bottom: 10px; /* Arama kutusunun altına biraz boşluk */
+        }
+        div.dataTables_wrapper div.dataTables_length select {
+            width: auto;
+            display: inline-block;
+            margin-bottom: 10px; /* Sayfa başına gösterilecek öğe sayısının altına boşluk */
         }
     </style>
 </head>
@@ -71,7 +83,8 @@
 
         {% if customers %}
         <div class="table-responsive">
-            <table class="table table-striped table-hover table-sm">
+            <!-- DataTables'in arama kutusu ve diğer kontrolleri buraya otomatik eklemesi için tabloya bir ID verelim -->
+            <table id="customerBalancesTable" class="table table-striped table-hover table-sm">
                 <thead class="table-dark">
                     <tr>
                         <th scope="col">#</th>
@@ -92,9 +105,9 @@
                             {% set cari_isim = customer.CARI_ISIM.strip() if customer.CARI_ISIM else '' %}
                             {{ cari_isim if cari_isim else 'İsim Belirtilmemiş' }}
                         </td>
-                        <td class="text-end">{{ customer.BORC_BAKIYESI | currency_tr }}</td>
-                        <td class="text-end">{{ customer.ALACAK_BAKIYESI | currency_tr }}</td>
-                        <td class="text-end fw-bold">{{ customer.NET_BAKIYE | currency_tr }}</td>
+                        <td class="text-end" data-order="{{ customer.BORC_BAKIYESI | float }}">{{ customer.BORC_BAKIYESI | currency_tr }}</td>
+                        <td class="text-end" data-order="{{ customer.ALACAK_BAKIYESI | float }}">{{ customer.ALACAK_BAKIYESI | currency_tr }}</td>
+                        <td class="text-end fw-bold" data-order="{{ customer.NET_BAKIYE | float }}">{{ customer.NET_BAKIYE | currency_tr }}</td>
                         <td>{{ customer.GRUP_KODU if customer.GRUP_KODU else '-' }}</td>
                     </tr>
                     {% endfor %}
@@ -109,22 +122,48 @@
         {% endif %}
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    {# DataTables için JS (isteğe bağlı, aktif etmek için yorumu kaldırın)
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script> <!-- DataTables için jQuery'nin güncel bir versiyonu -->
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
         $(document).ready(function() {
-            $('.table').DataTable({
+            // Bakiye sütunları için özel sıralama fonksiyonu (para formatını ve "₺" sembolünü kaldırarak)
+            // Ancak Jinja2'de data-order'a float değerini zaten yazdığımız için buna gerek kalmadı.
+            // jQuery.fn.dataTable.ext.type.order['currency-pre'] = function ( d ) {
+            //     var val = String(d).replace(/[.\s₺]/g, '').replace(',', '.');
+            //     return parseFloat(val) || 0;
+            // };
+
+            $('#customerBalancesTable').DataTable({
                 "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json"
+                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json", // Türkçe dil dosyası
+                     "search": "Ara:", // Arama kutusu etiketini değiştir
+                     "lengthMenu": "Sayfada _MENU_ kayıt göster", // "Show X entries" metnini değiştir
+                     "info": "Toplam _TOTAL_ kayıttan _START_ ile _END_ arası gösteriliyor",
+                     "infoEmpty": "Kayıt bulunamadı",
+                     "infoFiltered": "(_MAX_ toplam kayıttan filtrelendi)",
+                     "paginate": {
+                        "first": "İlk",
+                        "last": "Son",
+                        "next": "Sonraki",
+                        "previous": "Önceki"
+                    }
                 },
-                "pageLength": 25,
-                "order": [[ 2, "asc" ]] // Cari isme göre sırala
+                "pageLength": 25, // Varsayılan sayfa başına kayıt sayısı
+                // Varsayılan sıralama: Net Bakiye (6. sütun, index 5) azalan sırada (desc)
+                // Backend'de zaten sıralı geldiği için DataTables'in ilk sıralamasına gerek yok,
+                // ancak kullanıcı başlığa tıklarsa diye tanımlı bırakabiliriz veya kaldırabiliriz.
+                // Backend sıralamasına güveniyorsak, bu "order" satırı tamamen kaldırılabilir.
+                // "order": [[ 5, "desc" ]], 
+                "columnDefs": [
+                    { "type": "num", "targets": [3, 4, 5] } // 3, 4, ve 5. sütunları (Borç, Alacak, Net Bakiye) sayısal olarak sırala
+                    // data-order kullandığımız için 'currency-pre' tipine gerek kalmadı.
+                    // { "type": "currency", "targets": [3, 4, 5] } 
+                ]
             });
         });
     </script>
-    #}
 </body>
 </html> 

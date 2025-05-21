@@ -266,14 +266,24 @@ async def read_root(request: Request):
 @app.get("/customer-balances", response_class=HTMLResponse)
 async def view_customer_balances(request: Request, current_user: str = Depends(get_current_admin_user_with_redirect)):
     customers_data = []
-    # available_customers.json dosyasının tam yolu
-    # STATIC_DIR zaten b2b_web_app/static olarak tanımlı
     available_customers_file_path = os.path.join(STATIC_DIR, "json_data", "available_customers.json")
 
     try:
         if os.path.exists(available_customers_file_path):
             with open(available_customers_file_path, "r", encoding="utf-8") as f:
                 customers_data = json.load(f)
+            
+            # Bakiye parsing ve sıralama için yardımcı fonksiyon
+            def parse_bakiye_for_sort(bakiye_str):
+                try:
+                    # "0E-8" gibi bilimsel gösterimleri float olarak doğru parse eder
+                    return float(bakiye_str)
+                except (ValueError, TypeError):
+                    return 0.0 # Hata durumunda veya null ise 0 kabul et
+
+            # NET_BAKIYE'ye göre büyükten küçüğe sırala
+            customers_data.sort(key=lambda x: parse_bakiye_for_sort(x.get("NET_BAKIYE", "0")), reverse=True)
+
         else:
             print(f"UYARI: Cari bakiye dosyası bulunamadı: {available_customers_file_path}")
     except Exception as e:
