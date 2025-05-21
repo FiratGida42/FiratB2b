@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }} - B2B Portalı</title>
     <link href="https://bootswatch.com/5/yeti/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-5-theme/1.3.0/select2-bootstrap-5-theme.min.css" />
     <style>
         body {
             padding-top: 70px;
@@ -66,6 +68,25 @@
     <div class="container mt-4">
         <h1 class="mb-4 text-center">{{ title }}</h1>
 
+        <!-- Yeni Sipariş Oluşturma Bölümü -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3>Yeni Sipariş İçin Cari Seçimi</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="customer-select-dropdown" class="form-label">Müşteri Seçiniz:</label>
+                    <select class="form-select" id="customer-select-dropdown" style="width: 100%;">
+                        <option value="" selected disabled>Yükleniyor...</option>
+                    </select>
+                </div>
+                <!-- Buraya yeni siparişle ilgili diğer form elemanları eklenebilir -->
+                <button type="button" class="btn btn-primary" id="start-new-order-btn" disabled>Sipariş Oluşturmaya Başla</button>
+            </div>
+        </div>
+        <!-- Yeni Sipariş Oluşturma Bölümü SONU -->
+
+        <h2 class="mb-3">Mevcut Siparişleriniz</h2>
         <div id="ordersContainer">
             <!-- Siparişler buraya dinamik olarak eklenecek -->
         </div>
@@ -306,6 +327,8 @@
         document.addEventListener('DOMContentLoaded', function () {
             const ordersContainer = document.getElementById('ordersContainer');
             const noOrdersMessage = document.getElementById('noOrdersMessage');
+            const customerSelectDropdown = document.getElementById('customer-select-dropdown');
+            const startNewOrderButton = document.getElementById('start-new-order-btn');
 
             async function fetchOrdersFromServer() {
                 try {
@@ -329,6 +352,79 @@
                     return [];
                 }
             }
+
+            async function fetchAvailableCustomers() {
+                try {
+                    // Göreceli yol, templates klasöründen static klasörüne erişim için ayarlanmalı.
+                    // Genellikle Flask/Django gibi frameworklerde /static/... şeklinde direkt erişim olur.
+                    // Tarayıcıdan direkt HTML dosyası açılıyorsa, dosya yapısına göre ../static/... gibi olur.
+                    // Flask kullandığınızı varsayarak /static/... kullanıyorum, eğer farklıysa düzeltmeniz gerekebilir.
+                    const response = await fetch('/static/json_data/available_customers.json'); 
+                    if (!response.ok) {
+                        throw new Error(`Müşteri listesi yüklenemedi: ${response.status} ${response.statusText}`);
+                    }
+                    const customers = await response.json();
+                    return customers;
+                } catch (error) {
+                    console.error("Cari müşteri listesi yüklenirken hata:", error);
+                    if(customerSelectDropdown) {
+                        customerSelectDropdown.innerHTML = '<option value="" selected disabled>Müşteriler yüklenemedi.</option>';
+                    }
+                    return [];
+                }
+            }
+
+            function populateCustomerDropdown(customers) {
+                if (!customerSelectDropdown) return;
+
+                customerSelectDropdown.innerHTML = ''; // Önceki seçenekleri temizle
+                if (customers.length === 0) {
+                    customerSelectDropdown.innerHTML = '<option value="" selected disabled>Uygun müşteri bulunamadı.</option>';
+                    startNewOrderButton.disabled = true;
+                    return;
+                }
+
+                const defaultOption = document.createElement('option');
+                defaultOption.value = "";
+                defaultOption.textContent = "Bir müşteri seçin...";
+                defaultOption.selected = true;
+                defaultOption.disabled = true;
+                customerSelectDropdown.appendChild(defaultOption);
+
+                customers.forEach(customer => {
+                    const option = document.createElement('option');
+                    option.value = customer.CARI_KOD; // JSON dosyanızdaki müşteri kodu alanı
+                    option.textContent = `${customer.CARI_ISIM} (${customer.CARI_KOD})`; // JSON dosyanızdaki müşteri ismi alanı
+                    customerSelectDropdown.appendChild(option);
+                });
+                
+                // Select2'yi etkinleştir (jQuery ve Select2 scriptleri eklenmeli)
+                $(customerSelectDropdown).select2({
+                    theme: "bootstrap-5",
+                    placeholder: "Bir müşteri seçin veya arayın...",
+                    allowClear: true
+                });
+
+                startNewOrderButton.disabled = false; // Müşteri yüklendiyse butonu aktif et
+            }
+
+            customerSelectDropdown.addEventListener('change', function() {
+                if (this.value) {
+                    console.log("Seçilen Cari Kodu:", this.value);
+                    // Burada seçilen müşteri ile ilgili işlemler yapılabilir.
+                    // Örneğin, seçilen müşteriye ait özel bilgileri getirme, sipariş formunu etkinleştirme vb.
+                }
+            });
+
+            startNewOrderButton.addEventListener('click', function() {
+                const selectedCustomerCode = customerSelectDropdown.value;
+                if (!selectedCustomerCode) {
+                    alert("Lütfen bir müşteri seçin.");
+                    return;
+                }
+                alert(`Yeni sipariş oluşturma işlemi ${selectedCustomerCode} müşterisi için başlatılıyor... (Bu kısım geliştirilecek)`);
+                // Örneğin: window.location.href = `/new_order?customer_code=${selectedCustomerCode}`;
+            });
 
             async function renderOrders() {
                 console.log("renderOrders fonksiyonu çağrıldı.");
@@ -438,10 +534,18 @@
                 ordersContainer.appendChild(accordion);
             }
 
-            renderOrders();
+            async function initializePage() {
+                renderOrders(); // Mevcut siparişleri yükle ve göster
+                const customers = await fetchAvailableCustomers();
+                populateCustomerDropdown(customers);
+            }
+
+            initializePage();
         });
     </script>
     <!-- Gerekli kütüphaneler (SheetJS, jsPDF, jsPDF-AutoTable, Bootstrap) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> <!-- Select2 için jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>

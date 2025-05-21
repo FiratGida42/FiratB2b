@@ -55,6 +55,7 @@ from data_extractor import (
 )
 # batch_image_downloader ve image_processor'dan gerekli importlar
 from image_processor import download_and_save_image as save_image_from_url, clean_product_name
+from customers_module import CustomersPage # <<< YENİ: Cari modülünü import et
 try:
     from duckduckgo_search import DDGS
     DUCKDUCKGO_SEARCH_AVAILABLE = True
@@ -261,22 +262,35 @@ class MainWindow(QMainWindow):
         settings_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_FileDialogDetailedView)
         products_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_DirIcon)
         categories_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_DirLinkIcon)
+        customers_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_DriveNetIcon) # Cari için ikon
+
         ayarlar_item = QListWidgetItem("Ayarlar")
         ayarlar_item.setIcon(settings_icon)
         self.menu_list_widget.addItem(ayarlar_item)
+
         urunler_item = QListWidgetItem("Ürünler")
         urunler_item.setIcon(products_icon)
         self.menu_list_widget.addItem(urunler_item)
+
         kategoriler_item = QListWidgetItem("Kategoriler")
         kategoriler_item.setIcon(categories_icon)
         self.menu_list_widget.addItem(kategoriler_item)
+
+        cariler_item = QListWidgetItem("Cariler") # <<< YENİ
+        cariler_item.setIcon(customers_icon)      # <<< YENİ
+        self.menu_list_widget.addItem(cariler_item) # <<< YENİ
+
         self.menu_list_widget.currentItemChanged.connect(self.change_view)
         main_app_layout.addWidget(self.menu_list_widget, 0)
+
         self.stacked_widget = QStackedWidget()
         main_app_layout.addWidget(self.stacked_widget, 1)
+
         self._create_settings_page()
         self._create_products_page()
         self._create_categories_page()
+        self._create_customers_page_from_module() # <<< YENİ: Modülden cari sayfası oluştur
+
         self.menu_list_widget.setCurrentRow(0)
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
@@ -754,6 +768,15 @@ class MainWindow(QMainWindow):
 
         elif current.text() == "Kategoriler":
             self.stacked_widget.setCurrentWidget(self.categories_page_widget)
+        elif current.text() == "Cariler": # <<< YENİ
+            if hasattr(self, 'customers_page_widget'): # Widget'ın varlığını kontrol et
+                self.stacked_widget.setCurrentWidget(self.customers_page_widget)
+                self.status_bar.showMessage("Cariler sayfası açıldı.", 2000)
+                 # İsteğe bağlı olarak, sayfaya her geçildiğinde verileri otomatik yükleyebilirsiniz:
+                # if hasattr(self.customers_page_widget, 'load_customer_data'):
+                #    self.customers_page_widget.load_customer_data()
+            else:
+                self.status_bar.showMessage("Cari sayfası widget'ı bulunamadı!", 3000)
         # Diğer menü öğeleri için benzer elif blokları eklenebilir
 
     def load_settings(self):
@@ -1436,6 +1459,12 @@ class MainWindow(QMainWindow):
             item.setForeground(UNCHECKED_ITEM_COLOR)
         self.group_code_list_widget.blockSignals(False)  # Sinyalleri tekrar etkinleştir
         self.status_bar.showMessage("Tüm grup kodlarının seçimi kaldırıldı.", 2000)
+
+    def _create_customers_page_from_module(self): # <<< YENİ METOT
+        # CustomersPage'e self (MainWindow instance) parent olarak veriliyor.
+        # Bu sayede CustomersPage içinden MainWindow'un status_bar gibi elemanlarına erişilebilir.
+        self.customers_page_widget = CustomersPage(parent=self)
+        self.stacked_widget.addWidget(self.customers_page_widget)
 
 
 if __name__ == '__main__':

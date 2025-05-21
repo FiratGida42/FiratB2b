@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func # func.now() için eklendi
 # from sqlalchemy.ext.declarative import declarative_base # Bu satır artık gereksiz
 
-from .database import Base # database.py dosyasından Base import ediliyor
+from b2b_web_app.database import Base # database.py dosyasından Base import ediliyor
 
 # Base = declarative_base() # Bu satır kaldırıldı, Base database.py'den geliyor
 

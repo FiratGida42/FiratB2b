@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sepetim - B2B Portalı</title>
     <link href="https://bootswatch.com/5/yeti/bootstrap.min.css" rel="stylesheet">
+    <!-- Select2 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-5-theme/1.3.0/select2-bootstrap-5-theme.min.css" />
     <style>
         body {
             padding-top: 70px; 
@@ -100,8 +103,11 @@
         <div id="orderActions" class="mt-4 p-3 border rounded shadow-sm bg-white" style="display:none;">
             <h3 class="mb-3">Siparişi Tamamla</h3>
             <div class="row gy-3 align-items-end">
-                <div class="col-md-8"> <label for="customerName" class="form-label">Cari İsmi:</label>
-                    <input type="text" class="form-control form-control-lg" id="customerName" placeholder="Sipariş veren cari/firma adı">
+                <div class="col-md-8">
+                    <label for="customer-select-cart" class="form-label">Cari Seçiniz:</label>
+                    <select class="form-select form-select-lg" id="customer-select-cart" style="width: 100%;">
+                        <option value="" selected disabled>Yükleniyor...</option>
+                    </select>
                 </div>
                 <div class="col-md-4">
                     <button class="btn btn-success btn-lg w-100" id="saveOrderButton" onclick="saveOrderAndProceed()">Siparişi Kaydet ve Bitir</button>
@@ -111,6 +117,10 @@
 
     </div>
 
+    <!-- jQuery ve Select2 JS (Bootstrap JS'den önce veya sonra olabilir, ama kendi JS kodumuzdan önce olmalı) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -123,7 +133,8 @@
             const cartGrandTotalElement = document.getElementById('cartGrandTotal');
             const emptyCartMessage = document.getElementById('emptyCartMessage');
             const orderActionsSection = document.getElementById('orderActions');
-            const customerNameInput = document.getElementById('customerName');
+            const customerCartSelectDropdown = document.getElementById('customer-select-cart');
+            let availableCustomersData = []; // Müşteri verilerini saklamak için
             
             // --- localStorage Fonksiyonları (Sepet için) ---
             function getCartItemsFromStorage() {
@@ -234,8 +245,60 @@
                 cartGrandTotalElement.textContent = formatCurrency(grandTotal);
             }
 
+            async function fetchAvailableCustomersForCart() {
+                try {
+                    const response = await fetch('/static/json_data/available_customers.json');
+                    if (!response.ok) {
+                        throw new Error(`Müşteri listesi yüklenemedi: ${response.status} ${response.statusText}`);
+                    }
+                    availableCustomersData = await response.json(); // Gelen veriyi global değişkende sakla
+                    return availableCustomersData;
+                } catch (error) {
+                    console.error("Cari müşteri listesi yüklenirken hata (Sepet):", error);
+                    if(customerCartSelectDropdown) {
+                        customerCartSelectDropdown.innerHTML = '<option value="" selected disabled>Müşteriler yüklenemedi.</option>';
+                    }
+                    return [];
+                }
+            }
+
+            function populateCartCustomerDropdown(customers) {
+                if (!customerCartSelectDropdown) return;
+
+                customerCartSelectDropdown.innerHTML = ''; // Önceki seçenekleri temizle
+                if (customers.length === 0) {
+                    customerCartSelectDropdown.innerHTML = '<option value="" selected disabled>Uygun müşteri bulunamadı.</option>';
+                    // Sipariş butonunu belki burada disable etmek gerekebilir, ancak müşteri seçimi zorunluysa zaten saveOrderAndProceed\'de kontrol ediliyor.
+                    return;
+                }
+
+                const defaultOption = document.createElement('option');
+                defaultOption.value = ""; // Değerini boş yapalım ki seçilmemiş olsun
+                defaultOption.textContent = "Bir müşteri seçin...";
+                defaultOption.selected = true;
+                defaultOption.disabled = true; // Kullanıcı bunu seçemesin
+                customerCartSelectDropdown.appendChild(defaultOption);
+
+                customers.forEach(customer => {
+                    const option = document.createElement('option');
+                    option.value = customer.CARI_KOD; // Değer olarak CARI_KOD
+                    option.textContent = `${customer.CARI_ISIM} (${customer.CARI_KOD})`;
+                    option.dataset.cariIsim = customer.CARI_ISIM; // CARI_ISIM'i data attribute olarak sakla
+                    customerCartSelectDropdown.appendChild(option);
+                });
+                
+                $(customerCartSelectDropdown).select2({
+                    theme: "bootstrap-5",
+                    placeholder: "Bir müşteri seçin veya arayın...",
+                    allowClear: true // Boş seçim ("Bir müşteri seçin...") seçeneğine geri dönmeyi sağlar
+                });
+            }
+
             window.saveOrderAndProceed = async function() {
-                const customerName = customerNameInput.value.trim();
+                const selectedOption = customerCartSelectDropdown.options[customerCartSelectDropdown.selectedIndex];
+                const customerCode = customerCartSelectDropdown.value;
+                const customerName = selectedOption && selectedOption.dataset.cariIsim ? selectedOption.dataset.cariIsim : null;
+
                 const cartItems = getCartItemsFromStorage();
 
                 if (cartItems.length === 0) {
@@ -243,23 +306,22 @@
                     return;
                 }
                 
-                // Cari ismi backend'de zorunlu hale getirildiği için frontend'de de kontrol ekleyelim.
-                if (!customerName) {
-                    alert("Lütfen siparişi tamamlamak için Cari Adı giriniz.");
-                    customerNameInput.classList.add('is-invalid'); // Hata stili ekle
-                    customerNameInput.focus();
+                if (!customerCode || !customerName) { // Hem kod hem isim olmalı (isim data attribute'tan geliyor)
+                    alert("Lütfen siparişi tamamlamak için bir Cari seçiniz.");
+                    // Select2 için hata gösterme biraz daha farklı olabilir, focus() doğrudan çalışmayabilir.
+                    // Şimdilik sadece alert ile yetinelim. Gerekirse Select2 için özel stil eklenebilir.
+                    $(customerCartSelectDropdown).select2('open'); // Dropdown'ı açmayı dene
                     return;
-                } else {
-                    customerNameInput.classList.remove('is-invalid'); // Hata stilini kaldır (eğer varsa)
                 }
 
                 const orderPayload = {
-                    customer_name: customerName || null, // Boşsa null gönder
+                    customer_name: customerName, // Seçilen müşterinin adı
                     items: cartItems.map(item => ({
                         product_code: item.stokKodu,
                         product_name: item.stokAdi,
                         quantity: item.quantity,
-                        unit_price: item.price
+                        unit_price: item.price,
+                        barcode: item.barkod || null // barkod bilgisini de ekleyelim (eğer varsa)
                     }))
                 };
 
@@ -278,7 +340,9 @@
                         alert(`Siparişiniz başarıyla oluşturuldu! Sipariş ID: ${newOrder.id}`);
                         clearCartFromStorage();
                         renderCart(); // Sepeti boşaltıp arayüzü güncelle
-                        customerNameInput.value = ''; // Cari adı alanını temizle
+                        // customerNameInput.value = ''; // Eski input temizleme kaldırıldı
+                        // Dropdown'ı başlangıç durumuna getir (jQuery ve Select2 ile)
+                        $(customerCartSelectDropdown).val(null).trigger('change');
                         // İsteğe bağlı: Kullanıcıyı siparişler sayfasına yönlendir
                         // window.location.href = '/orders'; 
                     } else {
@@ -292,7 +356,13 @@
                 }
             }
             
-            renderCart(); // Sayfa yüklendiğinde sepeti render et
+            async function initializeCartPage() {
+                renderCart(); // Sayfa yüklendiğinde sepeti render et
+                const customers = await fetchAvailableCustomersForCart();
+                populateCartCustomerDropdown(customers);
+            }
+
+            initializeCartPage(); // Ana başlatma fonksiyonu
         });
     </script>
 </body>

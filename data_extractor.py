@@ -90,16 +90,16 @@ def get_db_connection_settings():
         print(f"{SETTINGS_FILE} okunurken beklenmedik bir hata oluştu: {e}")
         return None, None, None
 
-def get_db_connection():
+def get_db_connection(caller_info: str = "Unknown"):
     '''SQL Server'a bağlantı kurar ve bağlantı nesnesini döndürür.'''
     server, user, db_name = get_db_connection_settings()
     if not server or not user or not db_name:
-        print("Bağlantı ayarları eksik. Lütfen db_connection_ui.py arayüzünden ayarları yapın.")
+        logging.error(f"get_db_connection (called by {caller_info}): Bağlantı ayarları eksik.")
         return None
 
     password = keyring.get_password(SERVICE_NAME, user)
     if password is None:
-        print(f"Hata: '{user}' kullanıcısı için şifre keyring'de bulunamadı.")
+        logging.error(f"get_db_connection (called by {caller_info}): '{user}' için şifre keyring'de bulunamadı.")
         return None
 
     conn_str = (
@@ -111,17 +111,17 @@ def get_db_connection():
         f"TrustServerCertificate=yes;"
     )
     
-    conn = None # conn değişkenini try bloğundan önce None olarak başlatalım
+    conn = None
     try:
         conn = pyodbc.connect(conn_str, timeout=5)
-        print("Veritabanına başarıyla bağlanıldı.")
+        logging.info(f"get_db_connection (called by {caller_info}): Veritabanına başarıyla bağlanıldı ({server}/{db_name}).")
         return conn 
     except pyodbc.Error as ex:
         sqlstate = ex.args[0]
-        print(f"Veritabanı bağlantı hatası: {sqlstate} - {ex}")
+        logging.error(f"get_db_connection (called by {caller_info}): Veritabanı bağlantı hatası: {sqlstate} - {ex}")
         return None
     except Exception as e:
-        print(f"Bağlantı sırasında beklenmedik bir hata oluştu: {e}")
+        logging.error(f"get_db_connection (called by {caller_info}): Bağlantı sırasında beklenmedik bir hata oluştu: {e}")
         return None
 
 DEFAULT_API_URL = "https://firatb2b.onrender.com/api/products"
@@ -457,4 +457,139 @@ def find_image_url_for_product(cleaned_product_name: str, original_stok_adi: str
     #     return "https://www.example.com/images/coca_cola.jpg" 
     return None # Şimdilik her zaman None
 
-# ... ( geri kalan kod olduğu gibi kalacak, özellikle extract_data_from_db ve diğerleri) ... 
+def fetch_unique_group_codes(db_conn=None):
+    """
+    TBLCASABIT tablosundan, 'GG' ve '135' ile BAŞLAMAYAN cari kodlarına ait
+    benzersiz GRUP_KODU değerlerini çeker.
+    Eğer dışarıdan bir db_conn verilmezse, kendi bağlantısını kurar ve kapatır.
+    """
+    close_conn_locally = False
+    if db_conn is None:
+        db_conn = get_db_connection(caller_info="fetch_unique_group_codes")
+        if not db_conn:
+            logging.error("fetch_unique_group_codes: Veritabanı bağlantısı kurulamadı.")
+            return [] # Bağlantı yoksa boş liste dön
+        close_conn_locally = True
+
+    group_codes = []
+    try:
+        with db_conn.cursor() as cursor:
+            sql_query = """
+            SELECT DISTINCT
+                RTRIM(LTRIM(ISNULL(CB.GRUP_KODU, ''))) AS GRUP_KODU
+            FROM
+                dbo.TBLCASABIT CB
+            WHERE
+                CB.CARI_KOD NOT LIKE 'GG%'
+                AND CB.CARI_KOD NOT LIKE '135%'
+            ORDER BY
+                GRUP_KODU;
+            """
+            cursor.execute(sql_query)
+            group_codes = [row.GRUP_KODU for row in cursor.fetchall() if row.GRUP_KODU] # Sadece boş olmayanları al
+        logging.info(f"Başarıyla {len(group_codes)} adet benzersiz grup kodu çekildi.")
+        return group_codes
+    except pyodbc.Error as err:
+        logging.error(f"Benzersiz grup kodları çekilirken SQL Hatası: {err}")
+        return []
+    except Exception as e:
+        logging.error(f"Benzersiz grup kodları çekilirken beklenmedik hata: {e}")
+        return []
+    finally:
+        if close_conn_locally and db_conn:
+            try:
+                db_conn.close()
+            except Exception as e:
+                logging.error(f"fetch_unique_group_codes: Veritabanı bağlantısı kapatılırken hata: {e}")
+
+def fetch_customer_summary(db_conn=None, selected_group_codes=None): # selected_group_codes eklendi
+    """
+    dbo.TBLCASABIT tablosundan temel cari bilgilerini çeker.
+    CARI_KODU 'GG' veya '135' ile başlayanları hariç tutar.
+    Eğer selected_group_codes listesi verilirse, sadece o grup kodlarına ait carileri çeker.
+    Eğer dışarıdan bir db_conn verilmezse, kendi bağlantısını kurar ve kapatır.
+    """
+    close_conn_locally = False
+    if db_conn is None:
+        db_conn = get_db_connection(caller_info="fetch_customer_summary")
+        if not db_conn:
+            logging.error("fetch_customer_summary: Veritabanı bağlantısı kurulamadı.")
+            return None 
+        close_conn_locally = True
+
+    customers = []
+    try:
+        with db_conn.cursor() as cursor:
+            base_sql_query = """
+            SELECT
+                CB.CARI_KOD,
+                dbo.TRK(CB.CARI_ISIM) AS CARI_ISIM,
+                ISNULL(CB.CM_BORCT, 0) AS BORC_BAKIYESI,
+                ISNULL(CB.CM_ALACT, 0) AS ALACAK_BAKIYESI,
+                (ISNULL(CB.CM_BORCT, 0) - ISNULL(CB.CM_ALACT, 0)) AS NET_BAKIYE,
+                CB.GRUP_KODU
+            FROM
+                dbo.TBLCASABIT CB
+            """
+            
+            params = []
+            where_clauses = ["CB.CARI_KOD NOT LIKE 'GG%'", "CB.CARI_KOD NOT LIKE '135%'"]
+
+            if selected_group_codes: # Eğer seçili grup kodu varsa
+                if isinstance(selected_group_codes, list) and len(selected_group_codes) > 0:
+                    placeholders = ', '.join(['?' for _ in selected_group_codes])
+                    where_clauses.append(f"CB.GRUP_KODU IN ({placeholders})")
+                    params.extend(selected_group_codes)
+            
+            if where_clauses:
+                full_sql_query = f"{base_sql_query} WHERE {' AND '.join(where_clauses)} ORDER BY CB.CARI_ISIM;"
+            else: # Bu durum pek olası değil çünkü CARI_KOD filtreleri her zaman var
+                full_sql_query = f"{base_sql_query} ORDER BY CB.CARI_ISIM;"
+
+            if params:
+                cursor.execute(full_sql_query, params)
+            else:
+                cursor.execute(full_sql_query)
+                
+            columns = [column[0] for column in cursor.description]
+            for row in cursor.fetchall():
+                customers.append(dict(zip(columns, row)))
+        logging.info(f"Başarıyla {len(customers)} adet cari özeti çekildi (Grup Filtresi: {selected_group_codes if selected_group_codes else 'Yok'}).")
+        return customers
+    except pyodbc.Error as err:
+        logging.error(f"Cari özetleri çekilirken SQL Hatası: {err}. Sorgu: {full_sql_query if 'full_sql_query' in locals() else 'Tanımsız'}")
+        return None
+    except Exception as e:
+        logging.error(f"Cari özetleri çekilirken beklenmedik hata: {e}. Sorgu: {full_sql_query if 'full_sql_query' in locals() else 'Tanımsız'}")
+        return None
+    finally:
+        if close_conn_locally and db_conn:
+            try:
+                db_conn.close()
+            except Exception as e:
+                logging.error(f"fetch_customer_summary: Veritabanı bağlantısı kapatılırken hata: {e}")
+
+if __name__ == '__main__':
+    # Test amaçlı
+    # test_conn = get_db_connection()
+    # if test_conn:
+    #     print("Veritabanı bağlantısı başarılı.")
+    #     # product_data = fetch_product_data(test_conn)
+    #     # if product_data:
+    #     #     print(f"{len(product_data)} ürün çekildi.")
+    #     #     # print(product_data[0]) # İlk ürünü yazdır
+    #     # else:
+    #     #     print("Ürün verisi çekilemedi.")
+    #     customer_data = fetch_customer_summary(test_conn)
+    #     if customer_data:
+    #         print(f"{len(customer_data)} cari özeti çekildi.")
+    #         if customer_data:
+    #             print(customer_data[0]) # İlk cariyi yazdır
+    #     else:
+    #         print("Cari özeti verisi çekilemedi.")
+    #     test_conn.close()
+    # else:
+    #     print("Veritabanı bağlantısı kurulamadı.")
+    pass # Ana blok boş kalmasın diye pass eklendi
+
+# ... ( extract_data_from_db ve diğerleri burada devam etmeli ) ... 

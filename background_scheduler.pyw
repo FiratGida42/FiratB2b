@@ -4,6 +4,7 @@ import os
 import sys
 import logging
 import schedule
+import shutil
 
 # Proje kök dizinini sys.path'e ekle
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -62,6 +63,8 @@ logger.addHandler(stream_handler)
 
 # En son başarılı güncelleme işinin zaman damgasını saklamak için global değişken
 last_successful_update_timestamp = 0.0
+# Müşteri senkronizasyonu için son başarılı kaynak dosya zaman damgası
+last_synced_customer_file_mtime = 0.0
 
 def perform_actual_update_task(excluded_groups_from_settings=None):
     """
@@ -112,6 +115,76 @@ def perform_actual_update_task(excluded_groups_from_settings=None):
             except Exception as e:
                 logger.error(f"Veritabanı bağlantısı kapatılırken hata: {e}")
         logger.info("Asıl güncelleme görevinin (perform_actual_update_task) bu çalışması tamamlandı.")
+
+
+def sync_customer_data_for_web():
+    """
+    Masaüstü uygulamasından gelen `filrelenen_cariler.json` dosyasını okur
+    ve web uygulamasının kullanacağı `available_customers.json` dosyasına kopyalar.
+    Yalnızca kaynak dosya daha yeniyse veya hedef dosya yoksa kopyalama yapar.
+    """
+    global last_synced_customer_file_mtime
+    logger.info("Müşteri verisi senkronizasyon görevi (sync_customer_data_for_web) tetiklendi.")
+
+    try:
+        with open(SETTINGS_FILE, "r", encoding="utf-8") as f:
+            settings_data = json.load(f)
+    except Exception as e:
+        logger.error(f"'{SETTINGS_FILE}' okunurken hata (sync_customer_data_for_web): {e}", exc_info=True)
+        return
+
+    sync_settings = settings_data.get("customer_sync_settings", {})
+    is_enabled = sync_settings.get("enabled", False)
+    source_file_name = sync_settings.get("source_file_relative_to_root")
+    target_dir_name = sync_settings.get("target_directory_relative_to_root")
+    target_file_name = sync_settings.get("target_filename")
+
+    if not is_enabled:
+        logger.info("Müşteri verisi senkronizasyonu (settings.json) etkin değil.")
+        return
+
+    if not all([source_file_name, target_dir_name, target_file_name]):
+        logger.error("Müşteri senkronizasyon ayarları eksik (source_file_relative_to_root, target_directory_relative_to_root, veya target_filename). İşlem yapılamıyor.")
+        return
+
+    # BASE_DIR, background_scheduler.pyw dosyasının bulunduğu yer (proje kök dizini varsayılıyor)
+    source_file_path = os.path.join(BASE_DIR, source_file_name)
+    target_directory_path = os.path.join(BASE_DIR, target_dir_name)
+    target_file_path = os.path.join(target_directory_path, target_file_name)
+
+    logger.debug(f"Kaynak müşteri dosyası: {source_file_path}")
+    logger.debug(f"Hedef müşteri dosyası: {target_file_path}")
+
+    if not os.path.exists(source_file_path):
+        logger.warning(f"Kaynak müşteri dosyası ({source_file_path}) bulunamadı. Senkronizasyon yapılamıyor.")
+        return
+
+    try:
+        source_file_mtime = os.path.getmtime(source_file_path)
+    except OSError as e:
+        logger.error(f"Kaynak dosyanın ({source_file_path}) son değiştirilme zamanı alınamadı: {e}")
+        return
+
+    # Optimizasyon: Eğer kaynak dosya değişmemişse kopyalama yapma
+    if source_file_mtime <= last_synced_customer_file_mtime and os.path.exists(target_file_path):
+        logger.info(f"Kaynak müşteri dosyası ({source_file_name}) değişmemiş. Kopyalama atlanıyor.")
+        return
+
+    # Hedef dizini oluştur (varsa hata vermez)
+    try:
+        os.makedirs(target_directory_path, exist_ok=True)
+        logger.info(f"Hedef dizin ({target_directory_path}) kontrol edildi/oluşturuldu.")
+    except OSError as e:
+        logger.error(f"Hedef dizin ({target_directory_path}) oluşturulurken hata: {e}", exc_info=True)
+        return
+
+    # Dosyayı kopyala
+    try:
+        shutil.copy2(source_file_path, target_file_path) # copy2 metadata'yı da kopyalar (örn: mtime)
+        logger.info(f"Müşteri verileri başarıyla '{source_file_path}' dosyasından '{target_file_path}' dosyasına kopyalandı.")
+        last_synced_customer_file_mtime = os.path.getmtime(target_file_path) # Kopyalanan dosyanın mtime'ını al
+    except Exception as e:
+        logger.error(f"Müşteri verileri kopyalanırken hata oluştu (kaynak: {source_file_path}, hedef: {target_file_path}): {e}", exc_info=True)
 
 
 def job_controller():
@@ -197,12 +270,36 @@ if __name__ == "__main__":
     # Örnek: Her 1 dakikada bir ayarları ve zamanı kontrol et.
     logger.info("Zamanlayıcı kuruluyor: `job_controller` her 1 dakikada bir çalışacak.")
     schedule.every(1).minutes.do(job_controller)
-    # schedule.every(20).seconds.do(job_controller) # Test için daha kısa aralık
+    logger.info(f"Ana ürün güncelleme kontrolcüsü (`job_controller`) her {1} dakikada bir çalışacak şekilde zamanlandı.")
+
+    # Müşteri verisi senkronizasyon görevini zamanla
+    _check_interval = 60 # Varsayılan değer
+    try:
+        with open(SETTINGS_FILE, "r", encoding="utf-8") as f_settings:
+            _settings_data_for_sync_interval = json.load(f_settings)
+        _sync_settings = _settings_data_for_sync_interval.get("customer_sync_settings", {})
+        if _sync_settings: # Ayarlar varsa içinden oku
+            _check_interval = _sync_settings.get("check_interval_seconds", 60) 
+            if not isinstance(_check_interval, (int, float)) or _check_interval <= 0:
+                logger.warning(f"customer_sync_settings içindeki check_interval_seconds ({_check_interval}) geçersiz, varsayılan 60 sn kullanılacak.")
+                _check_interval = 60
+            logger.info(f"Müşteri senkronizasyon ayarları okundu: check_interval_seconds = {_check_interval}")
+        else:
+            logger.warning(f"'{SETTINGS_FILE}' içinde `customer_sync_settings` bölümü bulunamadı. Müşteri senkronizasyonu için varsayılan {_check_interval}sn aralığı kullanılacak.")
+        
+        schedule.every(_check_interval).seconds.do(sync_customer_data_for_web)
+        logger.info(f"Müşteri senkronizasyon görevi (`sync_customer_data_for_web`) her {_check_interval} saniyede bir çalışacak şekilde zamanlandı.")
+
+    except Exception as e:
+        logger.error(f"Müşteri senkronizasyon görevi zamanlanırken {SETTINGS_FILE} okunamadı veya ayar hatası: {e}. Varsayılan 60sn aralığı ile zamanlama deneniyor.", exc_info=True)
+        schedule.every(60).seconds.do(sync_customer_data_for_web) 
+        logger.info("Müşteri senkronizasyon görevi (`sync_customer_data_for_web`) hata nedeniyle varsayılan 60 saniye aralığı ile zamanlandı.")
 
     # Başlangıçta hemen bir kez çalıştırarak ayarları ve zamanı kontrol etsin.
-    # Bu, script başladığında uzun süre beklemeden ilk güncellemeyi (gerekirse) yapmasını sağlar.
-    logger.info("Zamanlayıcı kuruldu. İlk kontrol hemen tetikleniyor...")
+    logger.info("İlk kontrol (job_controller) hemen tetikleniyor...")
     job_controller() 
+    logger.info("İlk müşteri verisi senkronizasyonu (sync_customer_data_for_web) hemen tetikleniyor...")
+    sync_customer_data_for_web() # Bu çağrının kesinlikle yapıldığından emin olalım
 
     logger.info("Zamanlayıcı döngüsü başlatılıyor. Çıkmak için Ctrl+C.")
     try:
