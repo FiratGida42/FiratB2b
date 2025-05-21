@@ -98,6 +98,18 @@ if not PRODUCTS_API_KEY_VALUE:
 
 app = FastAPI(title="B2B Ürün Servisi", version="0.1.0")
 
+# --- Para Formatlama için Jinja2 Filtresi ---
+def format_currency_tr(value):
+    try:
+        val = float(value)
+        # Bilimsel gösterimi (0E-8 gibi) 0.0 olarak ele al
+        if abs(val) < 1e-7: 
+            val = 0.0
+        # Sayıyı formatla: binlik ayırıcı nokta, ondalık ayırıcı virgül, 2 ondalık basamak
+        return f"{val:,.2f} ₺".replace(",", "X").replace(".", ",").replace("X", ".")
+    except (ValueError, TypeError):
+        return value # Hata durumunda orijinal değeri döndür
+
 # --- SECRET_KEY Ayarı (Ortam Değişkeninden Oku) ---
 SECRET_KEY = os.environ.get("FASTAPI_SECRET_KEY")
 if not SECRET_KEY:
@@ -115,6 +127,8 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Jinja2Templates örneğini oluştur
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
+# Filtreyi Jinja2 ortamına ekle
+templates.env.filters['currency_tr'] = format_currency_tr
 
 # Gelen ürün verilerini saklamak için dosya yolunu ortam değişkeninden al, yoksa varsayılanı kullan
 PRODUCTS_FILE = os.getenv("PRODUCTS_FILE_PATH", "received_products.json")
@@ -247,6 +261,30 @@ async def read_root(request: Request):
         "request": request, 
         "title": "Ürün Kataloğu",
         "admin_user": admin_user
+    })
+
+@app.get("/customer-balances", response_class=HTMLResponse)
+async def view_customer_balances(request: Request, current_user: str = Depends(get_current_admin_user_with_redirect)):
+    customers_data = []
+    # available_customers.json dosyasının tam yolu
+    # STATIC_DIR zaten b2b_web_app/static olarak tanımlı
+    available_customers_file_path = os.path.join(STATIC_DIR, "json_data", "available_customers.json")
+
+    try:
+        if os.path.exists(available_customers_file_path):
+            with open(available_customers_file_path, "r", encoding="utf-8") as f:
+                customers_data = json.load(f)
+        else:
+            print(f"UYARI: Cari bakiye dosyası bulunamadı: {available_customers_file_path}")
+    except Exception as e:
+        print(f"HATA: Cari bakiye dosyası okunurken hata: {e}")
+        # Hata durumunda boş liste ile devam et, template hatayı uygun şekilde göstermeli
+
+    return templates.TemplateResponse("customer_balances.html", {
+        "request": request,
+        "title": "Cari Bakiyeler",
+        "admin_user": current_user, # admin_user yerine current_user (dependency'den gelen)
+        "customers": customers_data
     })
 
 @app.get("/cart", response_class=HTMLResponse)
