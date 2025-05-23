@@ -266,7 +266,7 @@ async def read_root(request: Request):
 @app.get("/customer-balances", response_class=HTMLResponse)
 async def view_customer_balances(request: Request, current_user: str = Depends(get_current_admin_user_with_redirect)):
     customers_data = []
-    available_customers_file_path = os.path.join(STATIC_DIR, "json_data", "available_customers.json")
+    available_customers_file_path = os.path.join(STATIC_DIR, "json_data", "filtrelenen_cariler.json")
 
     try:
         if os.path.exists(available_customers_file_path):

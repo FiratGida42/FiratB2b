@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "name": "Python Dosyaları",
+      "description": "Python ve Python Pencere uygulaması dosyaları için genel kurallar",
+      "languageIds": ["python"],
+      "patterns": ["**/*.py", "**/*.pyw"],
+      "codeLens": {
+        "enabled": true
+      },
+      "ai": {
+        "codeQuote": true,
+        "tabSize": 4,
+        "allowedTools": [
+          "edit_file",
+          "read_file",
+          "codebase_search",
+          "grep_search",
+          "file_search",
+          "list_dir",
+          "run_terminal_cmd",
+          "delete_file"
+        ]
+      },
+      "format": {
+        "tool": "autopep8",
+        "options": ["--max-line-length=120"]
+      },
+      "lint": {
+        "tool": "flake8",
+        "options": [
+          "--max-line-length=120",
+          "--ignore=E501,W503,F401,F841"
+        ]
+      }
+    },
+    {
+      "name": "JSON Dosyaları",
+      "description": "JSON yapılandırma dosyaları",
+      "languageIds": ["json", "jsonc"],
+      "patterns": ["**/*.json"],
+      "ai": {
+        "codeQuote": true,
+        "tabSize": 2
+      },
+      "format": {
+        "tool": "prettier",
+        "options": []
+      }
+    },
+    {
+      "name": "HTML Dosyaları",
+      "description": "HTML şablon dosyaları",
+      "languageIds": ["html"],
+      "patterns": ["**/*.html"],
+      "ai": {
+        "codeQuote": true,
+        "tabSize": 2
+      },
+      "format": {
+        "tool": "prettier",
+        "options": []
+      }
+    },
+    {
+      "name": "Mako Şablon Dosyaları",
+      "description": "Alembic için Mako şablon dosyaları",
+      "languageIds": ["mako"],
+      "patterns": ["**/*.mako"],
+      "ai": {
+        "codeQuote": true,
+        "tabSize": 4
+      }
+    },
+    {
+      "name": "INI Dosyaları",
+      "description": "Yapılandırma INI dosyaları (örn. alembic.ini)",
+      "languageIds": ["ini"],
+      "patterns": ["**/*.ini"],
+      "ai": {
+        "codeQuote": true,
+        "tabSize": 4
+      }
+    }
+  ],
+  "global": {
+    "ai": {
+      "autoImports": true,
+      "debug": false,
+      "maxAiDiffSize": 2500,
+      "customInstructions": [
+        "Always write your answers in Turkish"
+      ],
+      "excludedPatterns": [
+        "**/__pycache__/**",
+        "**/*.pyc",
+        "**/*.pyo",
+        "**/*.spec",
+        "**/b2b_web_app/logs/**",
+        "**/*.db",
+        "**/*.sqlite3"
+      ]
+    },
+    "formatOnSave": "off"
+  }
+} 

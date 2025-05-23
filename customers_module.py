@@ -150,8 +150,22 @@ class CustomersPage(QWidget):
             self.populate_group_codes_filter() # Grup kodlarını doldur
             self.load_filter_settings()      # Kayıtlı filtreleri yükle
             self.apply_filters() # Filtreleri uygula (bu tabloyu da doldurur)
+
+            # JSON dosyasını otomatik olarak kaydet
+            if self.currently_displayed_data:
+                logger.info("Veriler yenilendi, filtrelenen_cariler.json otomatik olarak güncelleniyor.")
+                self.save_displayed_data_to_json(silent=True) # Sessiz kaydet
+            else:
+                logger.info("Yenileme sonrası gösterilecek filtrelenmiş cari verisi bulunmadığından JSON dosyası güncellenmedi.")
+
             if self.parent_window and hasattr(self.parent_window, 'status_bar'):
-                self.parent_window.status_bar.showMessage(f"{len(self.all_customers_data)} cari kaydı yüklendi.", 3000)
+                # Kullanıcıya hem yükleme hem de dosya güncelleme bilgisini tek mesajda verelim.
+                message = f"{len(self.all_customers_data)} cari kaydı yüklendi."
+                if self.currently_displayed_data: # Eğer json güncellendiyse mesaja ekle
+                    message += " Web için senkronizasyon dosyası güncellendi."
+                else:
+                    message += " Web için senkronizasyon dosyası güncellenmedi (filtrelenmiş veri yok)."
+                self.parent_window.status_bar.showMessage(message, 5000)
         else:
             self.customers_table.setRowCount(0)
             self.customers_table.setColumnCount(0)
@@ -211,22 +225,22 @@ class CustomersPage(QWidget):
         # if self.parent_window and hasattr(self.parent_window, 'status_bar'):
         #     self.parent_window.status_bar.showMessage(f"{len(data_to_show)} kayıt gösteriliyor.", 2000)
 
-    def save_displayed_data_to_json(self):
+    def save_displayed_data_to_json(self, silent=False):
         if not self.currently_displayed_data:
-            QMessageBox.information(self, "Bilgi", "Kaydedilecek veri bulunmuyor. Lütfen önce carileri yükleyin ve filtreleyin.")
+            if not silent: # Sadece sessiz değilse mesaj göster
+                QMessageBox.information(self, "Bilgi", "Kaydedilecek veri bulunmuyor. Lütfen önce carileri yükleyin ve filtreleyin.")
+            else:
+                logger.info("Kaydedilecek filtrelenmiş cari verisi bulunmuyor (otomatik kaydetme).")
             return
 
-        # Kullanıcıdan dosya adı ve yeri al bölümü kaldırıldı.
-        # Dosya adı ve yolu sabit olarak belirlendi.
-        file_path = "filrelenen_cariler.json" 
+        file_path = "filtrelenen_cariler.json" 
 
-        # ÖNCE FİLTRE AYARLARINI KAYDET
         self.save_filter_settings()
         logger.info("JSON kaydetme işlemi öncesinde filtre ayarları da kaydedildi.")
 
         data_to_save = copy.deepcopy(self.currently_displayed_data)
         
-        for item in data_to_save: # item bir dictionary
+        for item in data_to_save: 
             for key, value in item.items():
                 if isinstance(value, Decimal):
                     item[key] = str(value)
@@ -235,19 +249,18 @@ class CustomersPage(QWidget):
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(data_to_save, f, ensure_ascii=False, indent=4)
             
-            # Durum çubuğu mesajı yerine QMessageBox gösterilecek
-            QMessageBox.information(self, "Başarılı", f"Veriler başarıyla {file_path} dosyasına kaydedildi.")
-            
-            # Eski durum çubuğu mesajı (artık kullanılmayacak veya isteğe bağlı olarak eklenebilir):
-            # if self.parent_window and hasattr(self.parent_window, 'status_bar'):
-            #     self.parent_window.status_bar.showMessage(f"Veriler başarıyla {file_path} dosyasına kaydedildi.", 5000)
-            # else:
-            #     QMessageBox.information(self, "Başarılı", f"Veriler başarıyla {file_path} dosyasına kaydedildi.")
+            logger.info(f"Veriler başarıyla {file_path} dosyasına kaydedildi (silent={silent}).") # Log mesajı eklendi
+            if not silent: # Sadece sessiz değilse mesaj göster
+                QMessageBox.information(self, "Başarılı", f"Veriler başarıyla {file_path} dosyasına kaydedildi.")
 
         except IOError as e:
-            QMessageBox.critical(self, "Kayıt Hatası", f"Dosya kaydedilirken bir hata oluştu: {e}")
+            logger.error(f"Dosya kaydedilirken IO Hatası (dosya: {file_path}): {e}", exc_info=True) # Log eklendi
+            if not silent:
+                QMessageBox.critical(self, "Kayıt Hatası", f"Dosya kaydedilirken bir hata oluştu: {e}")
         except Exception as e:
-            QMessageBox.critical(self, "Kayıt Hatası", f"Beklenmedik bir hata oluştu: {e}")
+            logger.error(f"Dosya kaydedilirken beklenmedik hata (dosya: {file_path}): {e}", exc_info=True) # Log eklendi
+            if not silent:
+                QMessageBox.critical(self, "Kayıt Hatası", f"Beklenmedik bir hata oluştu: {e}")
 
     def filter_table_by_search(self):
         # Bu fonksiyon doğrudan tabloyu doldurmak yerine apply_filters'ı çağıracak

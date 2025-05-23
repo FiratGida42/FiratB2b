@@ -13,6 +13,12 @@ from decimal import Decimal # Decimal tipi için import eklendi (eğer __main__ 
 import image_processor # image_processor.py dosyamız
 import logging # logging modülünü import et
 
+# Decimal nesnelerini JSON'a serileştirmek için yardımcı fonksiyon
+def decimal_serializer(obj):
+    if isinstance(obj, Decimal):
+        return str(obj) # veya float(obj) - string genellikle daha güvenlidir kayıp yaşamamak için
+    raise TypeError(f"Object of type {obj.__class__.__name__} is not JSON serializable")
+
 # Loglama yapılandırması
 LOG_DIR = "b2b_web_app/logs"  # Log klasörünün yolu
 LOG_FILE_NAME = "b2b_desktop_app.log" # Log dosyasının adı
@@ -56,6 +62,9 @@ FIELDS_TO_CORRECT = ['STOK_ADI', 'GRUP_KODU']
 # Sayısal alanlar Decimal'e çevrilecek
 NUMERIC_FIELDS_TO_CONVERT = ['BAKIYE', 'SATIS_FIAT1']
 
+# Cari özet için sayısal alanlar (fetch_customer_summary için)
+CUSTOMER_NUMERIC_FIELDS = ["BORC_BAKIYESI", "ALACAK_BAKIYESI", "NET_BAKIYE"]
+
 def _correct_turkish_characters_in_row(row_dict):
     """Belirtilen alanlardaki Türkçe karakter hatalarını düzeltir."""
     for key, value in row_dict.items():
@@ -66,9 +75,9 @@ def _correct_turkish_characters_in_row(row_dict):
             row_dict[key] = corrected_value
     return row_dict
 
-def _convert_numeric_fields_in_row(row_dict):
-    """Belirtilen sayısal alanları Decimal tipine çevirir."""
-    for key in NUMERIC_FIELDS_TO_CONVERT:
+def _convert_numeric_fields_in_row(row_dict, field_list=NUMERIC_FIELDS_TO_CONVERT):
+    """Belirtilen sayısal alanları (field_list kullanarak) Decimal tipine çevirir."""
+    for key in field_list:
         if key in row_dict:
             # to_decimal None dönerse None olarak bırak, aksi halde Decimal olur.
             row_dict[key] = to_decimal(row_dict[key]) 
@@ -314,24 +323,17 @@ def extract_data_from_db(connection_params):
     return products
 
 def save_data_to_json(data, filename="urun_verileri_onizleme.json"):
-    """Veriyi JSON dosyasına kaydeder, Decimal'leri string'e çevirir."""
-    def decimal_default(obj):
-        if isinstance(obj, Decimal):
-            return str(obj)
-        raise TypeError
-
-    if not data: # Veri yoksa kontrolü ekleyelim
-        print("Kaydedilecek veri bulunmuyor.") # Bu print kalabilir veya isteğe bağlı.
-        return False
-
+    """Veriyi JSON dosyasına kaydeder. Decimal tiplerini stringe çevirir."""
     try:
-        with open(filename, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4, default=decimal_default)
-        print(f"Veri başarıyla '{filename}' dosyasına kaydedildi.")
-        return True # Başarılı olduğunda True döndür
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=4, default=decimal_serializer)
+        
+        print(f"{filename} dosyasına {len(data)} kayıt başarıyla yazıldı.")
+        logging.info(f"{filename} dosyasına {len(data)} kayıt başarıyla yazıldı.")
+        return True
     except Exception as e:
         print(f"JSON dosyasına yazılırken hata: {e}")
-        return False # Hata durumunda False döndür
+        return False
 
 def send_data_to_web_api(product_data: list, api_url: str = DEFAULT_API_URL) -> tuple[bool, str]:
     settings = load_settings() # Ayarları yükle
@@ -553,7 +555,12 @@ def fetch_customer_summary(db_conn=None, selected_group_codes=None): # selected_
                 
             columns = [column[0] for column in cursor.description]
             for row in cursor.fetchall():
-                customers.append(dict(zip(columns, row)))
+                row_dict = dict(zip(columns, row))
+                # Cari için Türkçe karakter düzeltmesi (eğer gerekiyorsa - şimdilik atlandı, alanlar bilinmiyor)
+                # row_dict = _correct_turkish_characters_in_row(row_dict) # Hangi alanlar için?
+                # Cari için sayısal alan dönüşümü
+                row_dict = _convert_numeric_fields_in_row(row_dict, field_list=CUSTOMER_NUMERIC_FIELDS)
+                customers.append(row_dict)
         logging.info(f"Başarıyla {len(customers)} adet cari özeti çekildi (Grup Filtresi: {selected_group_codes if selected_group_codes else 'Yok'}).")
         return customers
     except pyodbc.Error as err:
