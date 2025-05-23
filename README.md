@@ -11,37 +11,39 @@ Bu proje, bir SQL Server veritabanındaki ürün ve cari bilgilerini çekerek bi
     *   Veritabanlarını listeleme ve seçme.
     *   Ürün verilerini çekme, filtreleme (grup koduna göre) ve `QTableWidget` üzerinde önizleme.
     *   Filtrelenmiş ürün verilerini JSON formatında kaydetme.
-    *   Çekilen ürün verilerini web API'sine gönderme.
+    *   Çekilen ürün verilerini web API'sine (`/api/products`) gönderme. Bu API, `PRODUCTS_API_KEY` ortam değişkeni ile korunur.
     *   Cari hesap verilerini çekme, filtreleme (grup kodu ve arama ile) ve tabloda gösterme.
-    *   Filtrelenmiş cari verilerini web senkronizasyonu için JSON'a kaydetme (`filtrelenen_cariler.json`).
+    *   Filtrelenmiş cari verilerini canlı web uygulamasındaki `/api/update-customer-balances` API endpoint'ine gönderme. Bu işlem `background_scheduler_cariler.pyw` script'i tarafından yapılır ve bu script, API anahtarını yerel `settings.json` dosyasındaki `customer_sync_api_key` alanından okur.
     *   Kategori ağacını statik olarak görüntüleme.
     *   Tam ekran modu, menü çubuğu ve kullanıcı dostu arayüz.
     *   Otomatik ürün güncelleme için zamanlayıcı ayarları.
 *   **Web Uygulaması (`b2b_web_app/`):**
     *   FastAPI tabanlı RESTful API'ler.
     *   Ürün ve sipariş yönetimi için API endpoint'leri.
+        *   `/api/products`: Masaüstü uygulamasından ürün verilerini alır. Bu endpoint, Render üzerinde `PRODUCTS_API_KEY` adlı bir ortam değişkeni ile tanımlanan API anahtarı ile korunur.
+        *   `/api/update-customer-balances`: Yerel `background_scheduler_cariler.pyw` script'inden cari bakiye verilerini alır. Bu endpoint, Render üzerinde `SERVER_API_KEY` adlı bir ortam değişkeni ile tanımlanan API anahtarı ile korunur.
     *   Admin girişi ve yetkilendirme.
     *   Jinja2 şablonları ile dinamik HTML sayfaları:
         *   Ürün listeleme ve detayları.
         *   Sepet ve sipariş oluşturma (admin tarafından).
         *   Cari bakiye görüntüleme.
         *   Siparişleri listeleme ve durum güncelleme.
-    *   Masaüstü uygulamasından gönderilen ürün verilerini (`received_products.json`) ve cari verilerini (`filtrelenen_cariler.json`) kullanarak bilgi sunumu.
+    *   Masaüstü uygulamasından gönderilen ürün verilerini (`received_products.json`) ve API ile güncellenen cari verilerini (`b2b_web_app/static/json_data/filtrelenen_cariler.json`) kullanarak bilgi sunumu.
 *   **Veri Çekme ve İşleme (`data_extractor.py`):**
     *   SQL Server'dan ürün ve cari verilerini çeken merkezi modül.
     *   Türkçe karakter düzeltmeleri ve sayısal veri dönüşümleri yapar.
     *   Ürünler için yerel resim yollarını bulur veya varsayılan bir yer tutucu atar.
 *   **Arka Plan Zamanlayıcıları:**
-    *   **`background_scheduler.pyw` (Ürünler İçin):**
-        *   Belirlenen aralıklarla otomatik olarak ürün verilerini çekip web API'sine gönderir.
-        *   `settings.json` üzerinden yapılandırılır.
+    *   **`background_scheduler.pyw` (Ürünler İçin - Yerel Makinede Çalışır):**
+        *   Belirlenen aralıklarla otomatik olarak ürün verilerini çekip web API'sine (`/api/products`) gönderir.
+        *   API'ye göndereceği anahtarı yerel `settings.json` dosyasındaki `products_api_key` alanından okur.
     *   **`background_scheduler_cariler.pyw` (Cariler İçin - Yerel Makinede Çalışır):**
         *   Her dakika otomatik olarak cari verilerini SQL Server'dan (yerel veya erişilebilir bir ağdaki) çeker.
         *   Carileri filtreler:
             *   Sadece Grup Kodu "SERVÝS", "TOPTAN" olan veya Grup Kodu boş olan cariler dahil edilir.
             *   Net bakiyesi sıfır olmayan cariler dahil edilir.
-        *   Filtrelenmiş verileri canlı web uygulamasındaki bir API endpoint'ine (`/api/update-customer-balances`) gönderir.
-        *   Canlı uygulama, bu veriyi alarak sunucudaki `b2b_web_app/static/json_data/filtrelenen_cariler.json` dosyasını günceller.
+        *   Filtrelenmiş verileri canlı web uygulamasındaki bir API endpoint'ine (`/api/update-customer-balances`) gönderir. Bu işlem için kullanılacak API anahtarını yerel `settings.json` dosyasındaki `customer_sync_api_key` alanından okur.
+        *   Canlı uygulama (`/api/update-customer-balances` endpoint'i), bu gelen isteği kendi `SERVER_API_KEY` ortam değişkeni ile doğrular ve veriyi alarak sunucudaki `b2b_web_app/static/json_data/filtrelenen_cariler.json` dosyasını günceller.
         *   Yerel script, ayrıca kendi loglarını da tutar (`b2b_web_app/logs/` altında).
 *   **Resim İşleme ve İndirme:**
     *   `image_processor.py`: Ürün adlarını temizler, resim URL'lerinden dosya uzantısı alır ve resimleri indirip kaydeder.
@@ -105,17 +107,34 @@ Bu proje, bir SQL Server veritabanındaki ürün ve cari bilgilerini çekerek bi
     ```bash
     pip install -r requirements.txt
     ```
+    Gerekirse `python-dotenv` kütüphanesini de yükleyin: `pip install python-dotenv` (FastAPI uygulaması `.env` dosyasını kullanıyorsa).
 
-4.  **Ortam Değişkenleri (.env Dosyası):**
-    Projenin ana dizininde `env.example` dosyasını kopyalayarak `.env` adında bir dosya oluşturun ve aşağıdaki değişkenleri kendi ayarlarınızla doldurun:
-    ```env
-    FASTAPI_SECRET_KEY="cok_gizli_bir_anahtar_uretin_buraya" # FastAPI session ve diğer güvenlik işlemleri için
-    PRODUCTS_API_KEY="masaustunden_gelen_veriler_icin_bir_api_anahtari" # /api/products endpoint'ini korumak için
-    # SQLALCHEMY_DATABASE_URL="sqlite:///./b2b_app.sqlite3" # Eğer database.py dışında yönetilecekse (Alembic için alembic.ini kullanılır)
-    ADMIN_CONFIG_PATH="admin_config.json" # Admin kullanıcı bilgilerinin tutulduğu dosya yolu (varsayılan)
-    PRODUCTS_FILE_PATH="received_products.json" # Masaüstünden gelen ürünlerin kaydedileceği dosya (varsayılan)
-    ```
-    `FASTAPI_SECRET_KEY` ve `PRODUCTS_API_KEY` için güçlü ve rastgele değerler üretmeniz önemlidir.
+4.  **Ortam Değişkenleri ve API Anahtarları:**
+    *   **Web Uygulaması (Render üzerinde):**
+        Canlı web uygulaması (`b2b_web_app/main.py`) için gerekli ortam değişkenleri doğrudan Render platformunun arayüzünden ayarlanmalıdır. Önemli ortam değişkenleri şunlardır:
+        *   `FASTAPI_SECRET_KEY`: FastAPI session ve diğer güvenlik işlemleri için güçlü, rastgele bir anahtar.
+        *   `PRODUCTS_API_KEY`: `/api/products` endpoint'ini korumak için API anahtarı.
+        *   `SERVER_API_KEY`: `/api/update-customer-balances` endpoint'ini korumak için API anahtarı.
+        *   `ADMIN_CONFIG_PATH` (Opsiyonel): Admin kullanıcı bilgilerinin tutulduğu dosyanın yolu (varsayılan: `admin_config.json`).
+        *   `PRODUCTS_FILE_PATH` (Opsiyonel): Masaüstünden gelen ürünlerin kaydedileceği dosyanın yolu (varsayılan: `received_products.json`).
+        *   Eğer veritabanı kullanılıyorsa, `SQLALCHEMY_DATABASE_URL` gibi veritabanı bağlantı bilgileri.
+    *   **Yerel Geliştirme için `.env` Dosyası (Opsiyonel):**
+        `b2b_web_app` dizini içinde bir `.env` dosyası oluşturarak yukarıdaki ortam değişkenlerini yerel geliştirme ortamınız için tanımlayabilirsiniz. FastAPI uygulaması başlangıçta bu dosyayı okuyacaktır.
+        ```env
+        FASTAPI_SECRET_KEY="yerel_cok_gizli_bir_anahtar"
+        PRODUCTS_API_KEY="yerel_urun_api_anahtari"
+        SERVER_API_KEY="yerel_cari_api_anahtari"
+        # SQLALCHEMY_DATABASE_URL="sqlite:///./b2b_app_local.sqlite3"
+        # ADMIN_CONFIG_PATH="../admin_config.json" # Ana dizindeki config'i işaret edebilir
+        ```
+    *   **Masaüstü Uygulaması ve Yerel Scriptler (`settings.json`):**
+        *   `main_window.py` (Masaüstü Yönetim Paneli):
+            *   SQL Server bağlantı bilgileri (sunucu, kullanıcı adı) ve seçilen veritabanı adı `settings.json` dosyasına kaydedilir. Şifre, işletim sisteminin `keyring` servisinde saklanır.
+            *   `/api/products` endpoint'ine veri göndermek için kullanılacak API anahtarı `settings.json` içindeki `products_api_key` alanına girilmelidir. Bu anahtar, Render'daki `PRODUCTS_API_KEY` ortam değişkeni ile eşleşmelidir.
+        *   `background_scheduler.pyw` (Ürünler İçin Zamanlayıcı):
+            *   API anahtarını `settings.json` dosyasındaki `products_api_key` alanından okur.
+        *   `background_scheduler_cariler.pyw` (Cariler İçin Zamanlayıcı):
+            *   API anahtarını `settings.json` dosyasındaki `customer_sync_api_key` alanından okur. Bu anahtar, Render'daki `SERVER_API_KEY` ortam değişkeni ile eşleşmelidir.
 
 5.  **Admin Kullanıcısı Oluşturma (Web Uygulaması için):**
     Web uygulamasının admin paneline erişim için bir kullanıcı oluşturun:
@@ -136,8 +155,9 @@ Bu proje, bir SQL Server veritabanındaki ürün ve cari bilgilerini çekerek bi
     *   `main_window.py` uygulamasını ilk kez çalıştırdığınızda "Ayarlar" bölümüne gidin.
     *   SQL Server bağlantı bilgilerinizi (Sunucu Adresi, Kullanıcı Adı, Şifre) girin.
     *   "Veritabanlarını Listele" butonu ile veritabanınızı seçin.
-    *   "Ürünler API Anahtarı" alanına `.env` dosyasında `PRODUCTS_API_KEY` için belirlediğiniz değeri girin.
-    *   "Tüm Ayarları Kaydet" butonuna tıklayın. Bu ayarlar `settings.json` dosyasına (şifre işletim sisteminizin keyring'ine) kaydedilecektir.
+    *   "Ürünler API Anahtarı" alanına, Render'daki `PRODUCTS_API_KEY` ortam değişkeni için belirlediğiniz/belirleyeceğiniz değeri girin.
+    *   "Cariler İçin API Anahtarı" alanına (eğer arayüzde varsa, yoksa doğrudan `settings.json`'a ekleyin: `customer_sync_api_key`), Render'daki `SERVER_API_KEY` ortam değişkeni için belirlediğiniz/belirleyeceğiniz değeri girin.
+    *   "Tüm Ayarları Kaydet" butonuna tıklayın. Bu ayarlar `settings.json` dosyasına (şifre işletim sisteminizin `keyring`'ine) kaydedilecektir.
 
 8.  **Masaüstü Yönetim Panelini Çalıştırma:**
     ```bash
@@ -163,7 +183,7 @@ Bu proje, bir SQL Server veritabanındaki ürün ve cari bilgilerini çekerek bi
     ```
     `.pyw` uzantısı sayesinde bu script'ler genellikle konsol penceresi olmadan arka planda çalışır. `background_scheduler_cariler.pyw` loglarını kendi çalışma dizini altındaki `b2b_web_app/logs/` dizininde bulabilirsiniz. Canlı sunucudaki FastAPI uygulaması ise kendi loglarını Render platformu üzerinden tutacaktır.
 
-    **Not (Yerel Scriptler için):** `background_scheduler.pyw` ve `background_scheduler_cariler.pyw` script'lerinin Windows her açıldığında otomatik olarak başlaması için Windows Görev Zamanlayıcısı'na (Task Scheduler) eklenmeleri önerilir. Görev Zamanlayıcısı'nda \"Oturum açtığımda\" tetikleyicisi ile `pythonw.exe` programını ve ilgili `.pyw` script'inin tam yolunu argüman olarak belirterek bir görev oluşturabilirsiniz. Script'in bulunduğu dizini \"Başlama yeri\" olarak ayarlamak önemlidir.
+    **Not (Yerel Scriptler için):** `background_scheduler.pyw` ve `background_scheduler_cariler.pyw` script'lerinin Windows her açıldığında otomatik olarak başlaması için Windows Görev Zamanlayıcısı'na (Task Scheduler) eklenmeleri önerilir. Görev Zamanlayıcısı'nda "Oturum açtığımda" tetikleyicisi ile `pythonw.exe` programını ve ilgili `.pyw` script'inin tam yolunu argüman olarak belirterek bir görev oluşturabilirsiniz. Script'in bulunduğu dizini "Başlama yeri" olarak ayarlamak önemlidir.
 
 ## 📁 Proje Yapısı (Özet)
 
