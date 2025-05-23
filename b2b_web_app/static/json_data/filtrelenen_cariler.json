@@ -8,6 +8,14 @@
         "GRUP_KODU": null
     },
     {
+        "CARI_KOD": "0101067153",
+        "CARI_ISIM": "  FİKRİ YETİŞ",
+        "BORC_BAKIYESI": "198337.64000000",
+        "ALACAK_BAKIYESI": "198337.54000000",
+        "NET_BAKIYE": "0.10000000",
+        "GRUP_KODU": null
+    },
+    {
         "CARI_KOD": "120-022",
         "CARI_ISIM": "  HASAN ÖZDEMİR -  ÖZDEMİR MARKET",
         "BORC_BAKIYESI": "39980.20000000",
@@ -448,6 +456,14 @@
         "GRUP_KODU": null
     },
     {
+        "CARI_KOD": "120-580",
+        "CARI_ISIM": "ÇAYIRBAĞI MARKET",
+        "BORC_BAKIYESI": "40442.80000000",
+        "ALACAK_BAKIYESI": "40958.80000000",
+        "NET_BAKIYE": "-516.00000000",
+        "GRUP_KODU": null
+    },
+    {
         "CARI_KOD": "01010673318",
         "CARI_ISIM": "ÇELEBİ ŞARKÜTERİ MARKET GIDA SAN TİC LTD ŞTİ",
         "BORC_BAKIYESI": "60673.53000000",
@@ -800,14 +816,6 @@
         "GRUP_KODU": null
     },
     {
-        "CARI_KOD": "0101067153",
-        "CARI_ISIM": "FİKRİ YETİŞ",
-        "BORC_BAKIYESI": "197538.14000000",
-        "ALACAK_BAKIYESI": "175875.54000000",
-        "NET_BAKIYE": "21662.60000000",
-        "GRUP_KODU": null
-    },
-    {
         "CARI_KOD": "06050606",
         "CARI_ISIM": "GAMSAN GIDA İMALAT SANAYİ ve DIŞ TİCARET LTD ŞTİ",
         "BORC_BAKIYESI": "0E-8",
@@ -850,9 +858,9 @@
     {
         "CARI_KOD": "120-038",
         "CARI_ISIM": "GÖKSU PASTA VE BİSKÜVİ LTD.ŞTİ.",
-        "BORC_BAKIYESI": "874788.06000000",
+        "BORC_BAKIYESI": "900323.06000000",
         "ALACAK_BAKIYESI": "841338.06000000",
-        "NET_BAKIYE": "33450.00000000",
+        "NET_BAKIYE": "58985.00000000",
         "GRUP_KODU": null
     },
     {
@@ -1088,14 +1096,6 @@
         "GRUP_KODU": null
     },
     {
-        "CARI_KOD": "120-125",
-        "CARI_ISIM": "KISMET ŞARKÜTERİ - CİHAN KAYA",
-        "BORC_BAKIYESI": "321472.83000000",
-        "ALACAK_BAKIYESI": "288714.83000000",
-        "NET_BAKIYE": "32758.00000000",
-        "GRUP_KODU": null
-    },
-    {
         "CARI_KOD": "0101067128",
         "CARI_ISIM": "KOCAOĞLANLAR GIDA LTD.ŞTİ",
         "BORC_BAKIYESI": "66013.62000000",
@@ -1250,9 +1250,9 @@
     {
         "CARI_KOD": "010106595",
         "CARI_ISIM": "MEVSİM GIDA - ZÜLEYHA DEMİR",
-        "BORC_BAKIYESI": "817497.80000000",
+        "BORC_BAKIYESI": "832807.80000000",
         "ALACAK_BAKIYESI": "768910.80000000",
-        "NET_BAKIYE": "48587.00000000",
+        "NET_BAKIYE": "63897.00000000",
         "GRUP_KODU": null
     },
     {
@@ -1994,9 +1994,9 @@
     {
         "CARI_KOD": "010608693",
         "CARI_ISIM": "ŞERİFE UYAR  CFR TOPTAN ATTARİYE",
-        "BORC_BAKIYESI": "0E-8",
+        "BORC_BAKIYESI": "1300000.00000000",
         "ALACAK_BAKIYESI": "432.92000000",
-        "NET_BAKIYE": "-432.92000000",
+        "NET_BAKIYE": "1299567.08000000",
         "GRUP_KODU": null
     }
 ]

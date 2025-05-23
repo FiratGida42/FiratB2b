@@ -2,6 +2,8 @@
 
 Bu proje, bir SQL Server veritabanındaki ürün ve cari bilgilerini çekerek bir web arayüzünde sunmayı ve yönetmeyi amaçlamaktadır. Proje, bir masaüstü yönetim paneli (PySide6 ile geliştirilmiş) ve bir web uygulaması (FastAPI ile geliştirilmiş) olmak üzere iki ana bileşenden oluşmaktadır.
 
+**Canlı Web Uygulaması (Render):** [https://firatb2b.onrender.com](https://firatb2b.onrender.com)
+
 ## 🌟 Temel Özellikler
 
 *   **Masaüstü Yönetim Paneli (`main_window.py`):**
@@ -29,9 +31,18 @@ Bu proje, bir SQL Server veritabanındaki ürün ve cari bilgilerini çekerek bi
     *   SQL Server'dan ürün ve cari verilerini çeken merkezi modül.
     *   Türkçe karakter düzeltmeleri ve sayısal veri dönüşümleri yapar.
     *   Ürünler için yerel resim yollarını bulur veya varsayılan bir yer tutucu atar.
-*   **Arka Plan Zamanlayıcısı (`background_scheduler.pyw`):**
-    *   Belirlenen aralıklarla otomatik olarak ürün verilerini çekip web API'sine gönderir.
-    *   `settings.json` üzerinden yapılandırılır.
+*   **Arka Plan Zamanlayıcıları:**
+    *   **`background_scheduler.pyw` (Ürünler İçin):**
+        *   Belirlenen aralıklarla otomatik olarak ürün verilerini çekip web API'sine gönderir.
+        *   `settings.json` üzerinden yapılandırılır.
+    *   **`background_scheduler_cariler.pyw` (Cariler İçin - Yerel Makinede Çalışır):**
+        *   Her dakika otomatik olarak cari verilerini SQL Server'dan (yerel veya erişilebilir bir ağdaki) çeker.
+        *   Carileri filtreler:
+            *   Sadece Grup Kodu "SERVÝS", "TOPTAN" olan veya Grup Kodu boş olan cariler dahil edilir.
+            *   Net bakiyesi sıfır olmayan cariler dahil edilir.
+        *   Filtrelenmiş verileri canlı web uygulamasındaki bir API endpoint'ine (`/api/update-customer-balances`) gönderir.
+        *   Canlı uygulama, bu veriyi alarak sunucudaki `b2b_web_app/static/json_data/filtrelenen_cariler.json` dosyasını günceller.
+        *   Yerel script, ayrıca kendi loglarını da tutar (`b2b_web_app/logs/` altında).
 *   **Resim İşleme ve İndirme:**
     *   `image_processor.py`: Ürün adlarını temizler, resim URL'lerinden dosya uzantısı alır ve resimleri indirip kaydeder.
     *   `batch_image_downloader.py`: Toplu resim indirme işlemleri için script (DuckDuckGo arama entegrasyonu ile).
@@ -139,13 +150,20 @@ Bu proje, bir SQL Server veritabanındaki ürün ve cari bilgilerini çekerek bi
     uvicorn main:app --reload
     ```
     Uygulama genellikle `http://127.0.0.1:8000` adresinde çalışacaktır. API dokümantasyonuna `/docs` veya `/redoc` üzerinden erişebilirsiniz.
+    Canlı web uygulaması [https://firatb2b.onrender.com](https://firatb2b.onrender.com) adresinde yayınlanmaktadır.
 
 10. **Arka Plan Zamanlayıcısını Çalıştırma (Opsiyonel):**
-    Otomatik ürün güncellemeleri için:
+    Otomatik ürün güncellemeleri için (canlı sunucudaki API'ye veri gönderir):
     ```bash
     pythonw background_scheduler.pyw
     ```
-    `.pyw` uzantısı sayesinde bu script genellikle konsol penceresi olmadan arka planda çalışır. Loglarını `b2b_web_app/logs/` dizininde bulabilirsiniz.
+    Otomatik cari bakiye güncellemeleri için (yerel makinede çalışır, canlı sunucuya API ile veri gönderir):
+    ```bash
+    pythonw background_scheduler_cariler.pyw
+    ```
+    `.pyw` uzantısı sayesinde bu script'ler genellikle konsol penceresi olmadan arka planda çalışır. `background_scheduler_cariler.pyw` loglarını kendi çalışma dizini altındaki `b2b_web_app/logs/` dizininde bulabilirsiniz. Canlı sunucudaki FastAPI uygulaması ise kendi loglarını Render platformu üzerinden tutacaktır.
+
+    **Not (Yerel Scriptler için):** `background_scheduler.pyw` ve `background_scheduler_cariler.pyw` script'lerinin Windows her açıldığında otomatik olarak başlaması için Windows Görev Zamanlayıcısı'na (Task Scheduler) eklenmeleri önerilir. Görev Zamanlayıcısı'nda \"Oturum açtığımda\" tetikleyicisi ile `pythonw.exe` programını ve ilgili `.pyw` script'inin tam yolunu argüman olarak belirterek bir görev oluşturabilirsiniz. Script'in bulunduğu dizini \"Başlama yeri\" olarak ayarlamak önemlidir.
 
 ## 📁 Proje Yapısı (Özet)
 
@@ -155,7 +173,7 @@ Bu proje, bir SQL Server veritabanındaki ürün ve cari bilgilerini çekerek bi
 ├── b2b_web_app/                  # FastAPI web uygulaması
 │   ├── static/                   # Statik dosyalar (CSS, JS, resimler)
 │   │   └── images/               # Ürün resimleri (masaüstü uygulamasından senkronize edilebilir)
-│   │   └── json_data/            # Web tarafından kullanılan JSON verileri (örn: filtrelenen_cariler.json)
+│   │   └── json_data/            # Web tarafından kullanılan JSON verileri (örn: filtrelenen_cariler.json - Bu dosya canlı sunucuda API ile güncellenir)
 │   ├── templates/                # Jinja2 HTML şablonları
 │   │   └── __init__.py
 │   │   └── database.py               # SQLAlchemy veritabanı bağlantısı ve session yönetimi
@@ -171,13 +189,14 @@ Bu proje, bir SQL Server veritabanındaki ürün ve cari bilgilerini çekerek bi
 │   ├── admin_config.json             # Web admin kullanıcı bilgileri (gitignore ile hariç tutulur)
 │   ├── alembic.ini                   # Alembic yapılandırma dosyası
 │   ├── background_scheduler.pyw      # Arka planda çalışan otomatik ürün güncelleme scripti
+│   ├── background_scheduler_cariler.pyw # Arka planda çalışan otomatik cari bakiye güncelleme scripti (yerel makinede çalışır, canlı sunucuya API ile veri gönderir)
 │   ├── batch_image_downloader.py     # Ürünler için toplu resim indirme scripti
 │   ├── create_admin.py               # Web admin kullanıcısı oluşturma scripti
 │   ├── customers_filter_settings.json# Masaüstü cari filtresi ayarları
 │   ├── customers_module.py           # Masaüstü uygulaması için Cari yönetimi sayfası
 │   ├── data_extractor.py             # SQL Server'dan veri çekme ve işleme modülü
 │   ├── db_connection_ui.py           # (Artık ana panelde) Veritabanı bağlantı arayüzü (eski)
-│   ├── filtrelenen_cariler.json      # Web'e gönderilecek filtrelenmiş cari verileri (masaüstünden oluşturulur)
+│   ├── filtrelenen_cariler.json      # (Artık kullanılmıyor, sadece referans veya yerel yedek olarak kalabilir) Web'e gönderilecek filtrelenmiş cari verileri 
 │   ├── helpers.py                    # Yardımcı fonksiyonlar (örn: para formatlama)
 │   ├── image_processor.py            # Resim işleme fonksiyonları
 │   ├── main_window.py                # Ana PySide6 masaüstü uygulaması

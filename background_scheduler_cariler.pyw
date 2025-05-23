@@ -5,6 +5,7 @@ import sys
 import logging
 import schedule
 import shutil # Dosya kopyalama ve silme işlemleri için
+import requests # API istekleri için eklendi
 from decimal import Decimal # JSON'a Decimal yazarken gerekebilir
 from datetime import datetime # Zaman damgalı log dosyası adları için
 
@@ -13,21 +14,25 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 if BASE_DIR not in sys.path:
     sys.path.append(BASE_DIR)
 
-# Web uygulaması için hedef JSON yolu
-WEB_APP_STATIC_JSON_DIR = os.path.join(BASE_DIR, "b2b_web_app", "static", "json_data")
-TARGET_WEB_JSON_FILE_NAME = "filtrelenen_cariler.json" # Bu isim README ve diğer yerlerle tutarlı
-TARGET_WEB_JSON_PATH = os.path.join(WEB_APP_STATIC_JSON_DIR, TARGET_WEB_JSON_FILE_NAME)
+# Web uygulaması için hedef JSON yolu (Artık API'ye gönderileceği için bu yerel hedef gereksiz olabilir)
+# WEB_APP_STATIC_JSON_DIR = os.path.join(BASE_DIR, "b2b_web_app", "static", "json_data")
+# TARGET_WEB_JSON_FILE_NAME = "filtrelenen_cariler.json" 
+# TARGET_WEB_JSON_PATH = os.path.join(WEB_APP_STATIC_JSON_DIR, TARGET_WEB_JSON_FILE_NAME)
 
-# Ana dizinde oluşturulacak/güncellenecek JSON dosyası
-SOURCE_JSON_FILE_NAME = "filtrelenen_cariler.json" 
+# Ana dizinde (yerelde) oluşturulacak/güncellenecek JSON dosyası (yedek veya test amaçlı kalabilir)
+SOURCE_JSON_FILE_NAME = "filtrelenen_cariler_yerel.json" # API'ye gönderildiği için adı değiştirildi
 SOURCE_JSON_PATH = os.path.join(BASE_DIR, SOURCE_JSON_FILE_NAME)
 
+# Render API endpoint URL'si ve API anahtarı için ayarlar
+RENDER_API_URL = "https://firatb2b.onrender.com/api/update-customer-balances"
+# API Anahtarını settings.json'dan okumak için bir fonksiyon veya doğrudan data_extractor'dan import edilebilir
+# Şimdilik data_extractor'daki SETTINGS_FILE'ı kullanacağız
 
 try:
     from data_extractor import (
         get_db_connection,
         fetch_customer_summary, # Carileri çekmek için bu fonksiyonu kullanacağız
-        SETTINGS_FILE,
+        SETTINGS_FILE, # settings.json dosya yolu
         LOG_DIR as APP_LOG_DIR,
         decimal_serializer # Yeni eklenen serializer fonksiyonu
     )
@@ -62,13 +67,12 @@ if not os.path.exists(LOG_BASE_DIR):
         # .pyw için print yerine başlangıçta log dosyasına yazılabilir.
         pass
 
-if not os.path.exists(WEB_APP_STATIC_JSON_DIR):
-    try:
-        os.makedirs(WEB_APP_STATIC_JSON_DIR)
-        # print(f"INFO: Web uygulaması için JSON dizini ({WEB_APP_STATIC_JSON_DIR}) oluşturuldu.")
-    except OSError as e:
-        # print(f"UYARI: Web uygulaması için JSON dizini ({WEB_APP_STATIC_JSON_DIR}) oluşturulamadı: {e}")
-        pass
+# WEB_APP_STATIC_JSON_DIR kontrolü artık burada gerekmeyebilir, API'ye gönderiliyor.
+# if not os.path.exists(WEB_APP_STATIC_JSON_DIR):
+#     try:
+#         os.makedirs(WEB_APP_STATIC_JSON_DIR)
+#     except OSError as e:
+#         pass
 
 
 # Standart formatlayıcı
@@ -106,6 +110,21 @@ main_logger.addHandler(main_stream_handler)
 
 last_successful_sync_timestamp = 0.0
 
+# settings.json'dan API anahtarını okumak için bir fonksiyon
+def get_api_key_from_settings():
+    try:
+        with open(SETTINGS_FILE, 'r', encoding='utf-8') as f:
+            settings = json.load(f)
+            # API anahtarının settings.json içinde nasıl saklandığına bağlı olarak bu anahtarı alın
+            # Örneğin: settings.get("api_settings", {}).get("products_api_key")
+            # Veya daha genel bir adla saklanıyorsa: settings.get("PRODUCTS_API_KEY")
+            # main_window.py'deki "Ürünler API Anahtarı" ile aynı anahtarı kullanacağız.
+            return settings.get("web_api_settings", {}).get("products_api_key")
+    except Exception as e:
+        # main_logger burada henüz configure edilmemiş olabilir, doğrudan print veya başlangıç loguna yazılabilir
+        print(f"UYARI: {SETTINGS_FILE} dosyasından API anahtarı okunamadı: {e}")
+        return None
+
 def perform_customer_data_sync_task():
     timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
     per_run_logger_name = f"CustomerSyncTaskRun_{timestamp_str}"
@@ -128,7 +147,7 @@ def perform_customer_data_sync_task():
         per_run_logger.info(f"Cari veri senkronizasyon görevi başlatılıyor (Detay log dosyası: {current_run_log_file_name}).")
     
         # 1. Mevcut dosyaları sil (hem kaynakta hem hedefte)
-        for file_path in [SOURCE_JSON_PATH, TARGET_WEB_JSON_PATH]:
+        for file_path in [SOURCE_JSON_PATH]:
             if os.path.exists(file_path):
                 try:
                     os.remove(file_path)
@@ -152,7 +171,7 @@ def perform_customer_data_sync_task():
         
         if not customer_data:
             per_run_logger.info("Veritabanından senkronize edilecek cari verisi bulunamadı.")
-            customer_data = []
+            customer_data = [] # Boş liste olarak API'ye gönderilebilir
         else:
             per_run_logger.info(f"{len(customer_data)} adet cari verisi çekildi. Şimdi filtreleniyor...")
             
@@ -186,35 +205,58 @@ def perform_customer_data_sync_task():
             per_run_logger.info(f"Filtreleme sonrası {len(filtered_customer_data)} adet cari kaldı.")
             customer_data = filtered_customer_data # Filtrelenmiş veriyle devam et
 
-        per_run_logger.info(f"Çekilen ve filtrelenen cari verileri {SOURCE_JSON_PATH} dosyasına kaydediliyor...")
+        # İsteğe bağlı: Filtrelenmiş veriyi yerel bir dosyaya yedek olarak kaydet
+        per_run_logger.info(f"Filtrelenmiş cari verileri yerel yedek olarak {SOURCE_JSON_PATH} dosyasına kaydediliyor...")
         try:
             with open(SOURCE_JSON_PATH, "w", encoding="utf-8") as f_source:
                 json.dump(customer_data, f_source, ensure_ascii=False, indent=4, default=decimal_serializer)
-            per_run_logger.info(f"Cari verileri başarıyla {SOURCE_JSON_PATH} dosyasına kaydedildi.")
+            per_run_logger.info(f"Cari verileri başarıyla yerel yedek dosyasına ({SOURCE_JSON_PATH}) kaydedildi.")
         except IOError as e:
-            per_run_logger.error(f"{SOURCE_JSON_PATH} dosyasına yazılırken hata: {e}")
-            return False, current_run_log_file_name
+            per_run_logger.warning(f"Yerel yedek dosyasına ({SOURCE_JSON_PATH}) yazılırken hata (bu işlem API gönderimini engellemez): {e}")
         except TypeError as e:
-            per_run_logger.error(f"JSON serileştirme hatası ({SOURCE_JSON_PATH}): {e}.")
-            return False, current_run_log_file_name
+            per_run_logger.warning(f"Yerel yedek için JSON serileştirme hatası ({SOURCE_JSON_PATH}) (API gönderimini engellemez): {e}.")
 
-        per_run_logger.info(f"{SOURCE_JSON_PATH} dosyası {TARGET_WEB_JSON_PATH} konumuna kopyalanıyor...")
+        # API anahtarını al
+        api_key = get_api_key_from_settings()
+        if not api_key:
+            per_run_logger.error("API anahtarı settings.json'dan okunamadı. Canlı sunucuya veri gönderilemiyor.")
+            return False, current_run_log_file_name
+        
+        headers = {
+            "X-API-Key": api_key,
+            "Content-Type": "application/json"
+        }
+
+        per_run_logger.info(f"{len(customer_data)} adet filtrelenmiş cari verisi {RENDER_API_URL} adresine gönderiliyor...")
         try:
-            if not os.path.exists(WEB_APP_STATIC_JSON_DIR):
-                os.makedirs(WEB_APP_STATIC_JSON_DIR)
-                per_run_logger.info(f"Hedef dizin ({WEB_APP_STATIC_JSON_DIR}) oluşturuldu.")
+            # customer_data doğrudan JSON serileştirilebilir bir Python listesi/dict olmalı.
+            # json.dumps ile stringe çevirip data= parametresi ile gönderebiliriz ya da doğrudan json= parametresi ile dict/list.
+            # `requests` kütüphanesi json parametresini otomatik olarak application/json olarak serialize eder.
+            response = requests.post(RENDER_API_URL, headers=headers, json=customer_data, timeout=30) # 30 saniye timeout
+            response.raise_for_status() # HTTP 4xx veya 5xx hatalarında exception fırlatır
             
-            shutil.copy2(SOURCE_JSON_PATH, TARGET_WEB_JSON_PATH)
-            per_run_logger.info(f"Dosya başarıyla {TARGET_WEB_JSON_PATH} konumuna kopyalandı.")
+            per_run_logger.info(f"Veriler başarıyla API'ye gönderildi. Sunucu yanıtı ({response.status_code}): {response.json()}")
             return True, current_run_log_file_name
-        except FileNotFoundError:
-            per_run_logger.error(f"Kaynak dosya ({SOURCE_JSON_PATH}) kopyalama için bulunamadı.")
+        
+        except requests.exceptions.HTTPError as http_err:
+            error_content = "Bilinmiyor"
+            try:
+                error_content = http_err.response.json() # Sunucudan gelen JSON hatasını almaya çalış
+            except json.JSONDecodeError:
+                error_content = http_err.response.text # JSON değilse text olarak al
+            per_run_logger.error(f"API'ye veri gönderilirken HTTP hatası ({http_err.response.status_code}): {error_content}")
             return False, current_run_log_file_name
-        except shutil.Error as e:
-            per_run_logger.error(f"Dosya kopyalanırken hata ({SOURCE_JSON_PATH} -> {TARGET_WEB_JSON_PATH}): {e}")
+        except requests.exceptions.ConnectionError as conn_err:
+            per_run_logger.error(f"API'ye bağlanırken hata (Bağlantı Hatası): {conn_err}")
             return False, current_run_log_file_name
-        except OSError as e:
-            per_run_logger.error(f"Hedef dizin ({WEB_APP_STATIC_JSON_DIR}) oluşturulurken veya kopyalama sırasında OS hatası: {e}")
+        except requests.exceptions.Timeout as timeout_err:
+            per_run_logger.error(f"API isteği zaman aşımına uğradı: {timeout_err}")
+            return False, current_run_log_file_name
+        except requests.exceptions.RequestException as req_err:
+            per_run_logger.error(f"API isteği sırasında genel bir hata oluştu: {req_err}")
+            return False, current_run_log_file_name
+        except Exception as e:
+            per_run_logger.error(f"API'ye veri gönderilirken beklenmedik bir hata oluştu: {e}", exc_info=True)
             return False, current_run_log_file_name
 
     except Exception as e:
