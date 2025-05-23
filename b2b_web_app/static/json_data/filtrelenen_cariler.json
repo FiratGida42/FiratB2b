@@ -1250,9 +1250,9 @@
     {
         "CARI_KOD": "010106595",
         "CARI_ISIM": "MEVSİM GIDA - ZÜLEYHA DEMİR",
-        "BORC_BAKIYESI": "832807.80000000",
+        "BORC_BAKIYESI": "832027.80000000",
         "ALACAK_BAKIYESI": "768910.80000000",
-        "NET_BAKIYE": "63897.00000000",
+        "NET_BAKIYE": "63117.00000000",
         "GRUP_KODU": null
     },
     {
@@ -1994,9 +1994,9 @@
     {
         "CARI_KOD": "010608693",
         "CARI_ISIM": "ŞERİFE UYAR  CFR TOPTAN ATTARİYE",
-        "BORC_BAKIYESI": "1300000.00000000",
+        "BORC_BAKIYESI": "0E-8",
         "ALACAK_BAKIYESI": "432.92000000",
-        "NET_BAKIYE": "1299567.08000000",
+        "NET_BAKIYE": "-432.92000000",
         "GRUP_KODU": null
     }
 ]

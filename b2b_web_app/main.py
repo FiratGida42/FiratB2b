@@ -96,6 +96,15 @@ if not PRODUCTS_API_KEY_VALUE:
     PRODUCTS_API_KEY_VALUE = "dev-temporary-products-api-key-replace-me"
     print(f"Geliştirme için oluşturulan geçici PRODUCTS_API_KEY: {PRODUCTS_API_KEY_VALUE}")
 
+# --- Müşteri Senkronizasyonu API Anahtarı Ayarı (Ortam Değişkeninden Oku) ---
+CUSTOMER_SYNC_API_KEY_VALUE = os.environ.get("SERVER_API_KEY") # SERVER_API_KEY ortam değişkenini kullanıyoruz
+if not CUSTOMER_SYNC_API_KEY_VALUE:
+    print("UYARI: SERVER_API_KEY (müşteri senkronizasyonu için) ortam değişkeni bulunamadı.")
+    print("Güvenlik için /api/update-customer-balances POST endpoint'i için bu değişkenin ayarlanması ŞİDDETLE tavsiye edilir.")
+    print("Geçici, geliştirme amaçlı bir anahtar kullanılacak. Lütfen üretimde bunu KULLANMAYIN ve değiştirin!")
+    CUSTOMER_SYNC_API_KEY_VALUE = "dev-temporary-customer-sync-api-key-replace-me" # Farklı bir fallback
+    print(f"Geliştirme için oluşturulan geçici CUSTOMER_SYNC_API_KEY: {CUSTOMER_SYNC_API_KEY_VALUE}")
+
 app = FastAPI(title="B2B Ürün Servisi", version="0.1.0")
 
 # --- Para Formatlama için Jinja2 Filtresi ---
@@ -208,6 +217,14 @@ async def verify_api_key(x_api_key: str = Header(None)):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="API Key header missing")
     if x_api_key != PRODUCTS_API_KEY_VALUE:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid API Key")
+    return True
+
+# --- Müşteri Senkronizasyonu API Anahtarı Doğrulama Dependency'si ---
+async def verify_customer_sync_api_key(x_api_key: str = Header(None)):
+    if not x_api_key:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="API Key header missing")
+    if x_api_key != CUSTOMER_SYNC_API_KEY_VALUE: # CUSTOMER_SYNC_API_KEY_VALUE kullanılıyor
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid API Key for Customer Sync") # Hata mesajını özelleştirebiliriz
     return True
 
 # --- Admin Auth Sonu ---
@@ -526,7 +543,7 @@ async def update_order_status(
 # --- Sipariş API Uç Noktaları Sonu ---
 
 # --- Yeni API Endpoint'i: Cari Bakiyelerini Güncelleme ---
-@app.post("/api/update-customer-balances", dependencies=[Depends(verify_api_key)])
+@app.post("/api/update-customer-balances", dependencies=[Depends(verify_customer_sync_api_key)])
 async def update_customer_balances_api(customer_balances: List[Dict]):
     """
     Yeni cari bakiye verilerini alır ve sunucu tarafında filtrelenen_cariler.json dosyasına kaydeder.

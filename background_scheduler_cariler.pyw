@@ -8,16 +8,18 @@ import shutil # Dosya kopyalama ve silme işlemleri için
 import requests # API istekleri için eklendi
 from decimal import Decimal # JSON'a Decimal yazarken gerekebilir
 from datetime import datetime # Zaman damgalı log dosyası adları için
+# from dotenv import load_dotenv # .env kullanılmayacağı için kaldırıldı
 
 # Proje kök dizinini sys.path'e ekle
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 if BASE_DIR not in sys.path:
     sys.path.append(BASE_DIR)
 
-# Web uygulaması için hedef JSON yolu (Artık API'ye gönderileceği için bu yerel hedef gereksiz olabilir)
-# WEB_APP_STATIC_JSON_DIR = os.path.join(BASE_DIR, "b2b_web_app", "static", "json_data")
-# TARGET_WEB_JSON_FILE_NAME = "filtrelenen_cariler.json" 
-# TARGET_WEB_JSON_PATH = os.path.join(WEB_APP_STATIC_JSON_DIR, TARGET_WEB_JSON_FILE_NAME)
+# load_dotenv() # .env kullanılmayacağı için kaldırıldı
+
+# API Anahtarı ve Render URL için global değişkenler
+API_KEY = None
+RENDER_API_URL = "https://firatb2b.onrender.com/api/update-customer-balances"
 
 # Ana dizinde (yerelde) oluşturulacak/güncellenecek JSON dosyası (yedek veya test amaçlı kalabilir)
 SOURCE_JSON_FILE_NAME = "filtrelenen_cariler_yerel.json" # API'ye gönderildiği için adı değiştirildi
@@ -110,20 +112,27 @@ main_logger.addHandler(main_stream_handler)
 
 last_successful_sync_timestamp = 0.0
 
-# settings.json'dan API anahtarını okumak için bir fonksiyon
-def get_api_key_from_settings():
+# settings.json'dan yapılandırmayı (API anahtarı dahil) yüklemek için fonksiyon
+def load_configuration():
+    global API_KEY # Global API_KEY değişkenini güncellemek için
     try:
         with open(SETTINGS_FILE, 'r', encoding='utf-8') as f:
             settings = json.load(f)
-            # API anahtarının settings.json içinde nasıl saklandığına bağlı olarak bu anahtarı alın
-            # Örneğin: settings.get("api_settings", {}).get("products_api_key")
-            # Veya daha genel bir adla saklanıyorsa: settings.get("PRODUCTS_API_KEY")
-            # main_window.py'deki "Ürünler API Anahtarı" ile aynı anahtarı kullanacağız.
-            return settings.get("web_api_settings", {}).get("products_api_key")
+            API_KEY = settings.get("customer_sync_api_key")
+            if not API_KEY:
+                main_logger.critical(f"KRİTİK HATA: 'customer_sync_api_key' {SETTINGS_FILE} dosyasında bulunamadı veya boş. Script çalıştırılamıyor.")
+                return False
+            main_logger.info(f"API Anahtarı {SETTINGS_FILE} dosyasından başarıyla yüklendi.")
+            return True
+    except FileNotFoundError:
+        main_logger.critical(f"KRİTİK HATA: Ayarlar dosyası ({SETTINGS_FILE}) bulunamadı. Script çalıştırılamıyor.")
+        return False
+    except json.JSONDecodeError:
+        main_logger.critical(f"KRİTİK HATA: Ayarlar dosyası ({SETTINGS_FILE}) geçerli bir JSON formatında değil. Script çalıştırılamıyor.")
+        return False
     except Exception as e:
-        # main_logger burada henüz configure edilmemiş olabilir, doğrudan print veya başlangıç loguna yazılabilir
-        print(f"UYARI: {SETTINGS_FILE} dosyasından API anahtarı okunamadı: {e}")
-        return None
+        main_logger.critical(f"KRİTİK HATA: Ayarlar dosyası ({SETTINGS_FILE}) okunurken beklenmedik bir hata oluştu: {e}. Script çalıştırılamıyor.", exc_info=True)
+        return False
 
 def perform_customer_data_sync_task():
     timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
@@ -216,14 +225,13 @@ def perform_customer_data_sync_task():
         except TypeError as e:
             per_run_logger.warning(f"Yerel yedek için JSON serileştirme hatası ({SOURCE_JSON_PATH}) (API gönderimini engellemez): {e}.")
 
-        # API anahtarını al
-        api_key = get_api_key_from_settings()
-        if not api_key:
-            per_run_logger.error("API anahtarı settings.json'dan okunamadı. Canlı sunucuya veri gönderilemiyor.")
+        # API anahtarı artık global değişkenden okunacak (load_configuration ile yüklendi)
+        if not API_KEY:
+            per_run_logger.error("API anahtarı yüklenemedi (settings.json kontrol edin). Canlı sunucuya veri gönderilemiyor.")
             return False, current_run_log_file_name
         
         headers = {
-            "X-API-Key": api_key,
+            "X-API-Key": API_KEY, # Global API_KEY kullanılıyor
             "Content-Type": "application/json"
         }
 
@@ -232,7 +240,9 @@ def perform_customer_data_sync_task():
             # customer_data doğrudan JSON serileştirilebilir bir Python listesi/dict olmalı.
             # json.dumps ile stringe çevirip data= parametresi ile gönderebiliriz ya da doğrudan json= parametresi ile dict/list.
             # `requests` kütüphanesi json parametresini otomatik olarak application/json olarak serialize eder.
-            response = requests.post(RENDER_API_URL, headers=headers, json=customer_data, timeout=30) # 30 saniye timeout
+            # ANCAK Decimal tipi için özel serializer kullanmamız gerekiyor.
+            customer_data_json_string = json.dumps(customer_data, ensure_ascii=False, default=decimal_serializer)
+            response = requests.post(RENDER_API_URL, headers=headers, data=customer_data_json_string, timeout=30) # json= yerine data= kullanılıyor
             response.raise_for_status() # HTTP 4xx veya 5xx hatalarında exception fırlatır
             
             per_run_logger.info(f"Veriler başarıyla API'ye gönderildi. Sunucu yanıtı ({response.status_code}): {response.json()}")
@@ -337,19 +347,30 @@ def job_controller_customers():
         # Şimdilik basitçe remove yapıyoruz.
 
 if __name__ == "__main__":
+    # İlk olarak yapılandırmayı (API anahtarı dahil) yükle
+    if not load_configuration():
+        # Hata zaten load_configuration içinde loglandı.
+        # print() ile konsola da yazdırılmış olabilir veya doğrudan çıkılmış olabilir.
+        # Burada sadece script'in sonlandığından emin olalım.
+        critical_error_log_path = os.path.join(BASE_DIR, "background_scheduler_cariler_CRITICAL_ERROR.log")
+        # load_configuration içinde zaten kritik hata loglanıyor, bu satır tekrar yazdırır.
+        # Belki sadece print ile kullanıcıya bilgi verip çıkmak yeterli.
+        print(f"KRİTİK HATA: Yapılandırma (settings.json) yüklenemedi veya API anahtarı eksik. Detaylar için logları kontrol edin. Script sonlandırılıyor.")
+        # Emin olmak için bir daha loglayalım (opsiyonel, load_configuration zaten yapıyor)
+        # with open(critical_error_log_path, "a", encoding="utf-8") as f_err:
+        #     f_err.write(f"{datetime.now().isoformat()} - KRİTİK HATA: __main__ içinde load_configuration başarısız oldu.\\n")
+        sys.exit(1) # Hata kodu ile çık
+
     # İlk başlangıç logları sadece konsola gidecek (main_logger'da global file handler yok)
     main_logger.info(f"Arka Plan CARİ Zamanlayıcı (dinamik log dosyaları ile) başlatıldı.")
     
     sync_interval_minutes = 1 
-    # main_logger.info(f"Zamanlayıcı kuruluyor: `job_controller_customers` her {sync_interval_minutes} dakikada bir çalışacak.")
-    # Yukarıdaki log artık job_controller_customers içinde olacak.
     
     schedule.every(sync_interval_minutes).minutes.do(job_controller_customers)
-    # Bu log da job_controller_customers içine taşınabilir veya burada kalabilir.
     main_logger.info(f"Cari kontrolcü görevi (`job_controller_customers`) her {sync_interval_minutes} dakikada bir çalışacak şekilde zamanlandı.")
 
     main_logger.info("İlk kontrolcü görevi (`job_controller_customers`) hemen tetikleniyor...")
-    job_controller_customers() 
+    job_controller_customers()
 
     main_logger.info("Zamanlayıcı döngüsü başlatılıyor. Çıkmak için Ctrl+C.")
     try:

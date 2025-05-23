@@ -562,9 +562,9 @@
     {
         "CARI_KOD": "320-014",
         "CARI_ISIM": "Duru Bulgur Gıda Sanayi ve Ticaret Anonim Şirketi",
-        "BORC_BAKIYESI": "564190.88000000",
+        "BORC_BAKIYESI": "632190.88000000",
         "ALACAK_BAKIYESI": "632758.24980000",
-        "NET_BAKIYE": "-68567.36980000",
+        "NET_BAKIYE": "-567.36980000",
         "GRUP_KODU": null
     },
     {
@@ -650,9 +650,9 @@
     {
         "CARI_KOD": "120-015",
         "CARI_ISIM": "ENVEROĞLU TİCARET - ENVER KOCABAŞ",
-        "BORC_BAKIYESI": "1814184.86000000",
+        "BORC_BAKIYESI": "1940284.86000000",
         "ALACAK_BAKIYESI": "2179983.58000000",
-        "NET_BAKIYE": "-365798.72000000",
+        "NET_BAKIYE": "-239698.72000000",
         "GRUP_KODU": "TOPTAN"
     },
     {
@@ -1602,9 +1602,9 @@
     {
         "CARI_KOD": "010608642",
         "CARI_ISIM": "SEYİT ÖZLÜ - TOPTAN GIDA",
-        "BORC_BAKIYESI": "3763792.30000000",
+        "BORC_BAKIYESI": "3943792.30000000",
         "ALACAK_BAKIYESI": "3953100.00000000",
-        "NET_BAKIYE": "-189307.70000000",
+        "NET_BAKIYE": "-9307.70000000",
         "GRUP_KODU": null
     },
     {
