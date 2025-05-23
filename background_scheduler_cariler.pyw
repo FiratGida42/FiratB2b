@@ -152,11 +152,41 @@ def perform_customer_data_sync_task():
         
         if not customer_data:
             per_run_logger.info("Veritabanından senkronize edilecek cari verisi bulunamadı.")
-            customer_data = [] 
+            customer_data = []
+        else:
+            per_run_logger.info(f"{len(customer_data)} adet cari verisi çekildi. Şimdi filtreleniyor...")
+            
+            # İstenen filtrelemeyi burada yapalım
+            filtered_customer_data = []
+            allowed_group_codes = ["SERVÝS", "TOPTAN", None, ""] # İzin verilen grup kodları (None ve boş string dahil)
+            
+            for customer in customer_data:
+                grup_kodu = customer.get("GRUP_KODU")
+                net_bakiye_str = customer.get("NET_BAKIYE", "0")
 
-        per_run_logger.info(f"{len(customer_data)} adet cari verisi çekildi.")
+                try:
+                    # "0E-8" gibi bilimsel gösterimleri ve normal sayıları float'a çevir
+                    net_bakiye_float = float(net_bakiye_str)
+                except (ValueError, TypeError):
+                    net_bakiye_float = 0.0 # Hatalı veya eksikse 0 kabul et
+                
+                # Grup kodu kontrolü
+                is_group_allowed = False
+                if grup_kodu is None or grup_kodu.strip() == "": # None veya sadece boşluklardan oluşanlar "" olarak kabul edilir
+                    is_group_allowed = True
+                elif isinstance(grup_kodu, str) and grup_kodu.upper() in [agc.upper() if agc else "" for agc in allowed_group_codes if agc]: # Büyük/küçük harf duyarsız kontrol
+                    is_group_allowed = True
 
-        per_run_logger.info(f"Çekilen cari verileri {SOURCE_JSON_PATH} dosyasına kaydediliyor...")
+                # Bakiye kontrolü (0 olmayanlar)
+                is_bakiye_valid = abs(net_bakiye_float) > 1e-7 # Kayan nokta hassasiyeti için epsilon kontrolü
+
+                if is_group_allowed and is_bakiye_valid:
+                    filtered_customer_data.append(customer)
+            
+            per_run_logger.info(f"Filtreleme sonrası {len(filtered_customer_data)} adet cari kaldı.")
+            customer_data = filtered_customer_data # Filtrelenmiş veriyle devam et
+
+        per_run_logger.info(f"Çekilen ve filtrelenen cari verileri {SOURCE_JSON_PATH} dosyasına kaydediliyor...")
         try:
             with open(SOURCE_JSON_PATH, "w", encoding="utf-8") as f_source:
                 json.dump(customer_data, f_source, ensure_ascii=False, indent=4, default=decimal_serializer)
