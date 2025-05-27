@@ -250,7 +250,7 @@
 
             async function fetchAvailableCustomersForCart() {
                 try {
-                    const response = await fetch('/static/json_data/all_customers_for_dropdown.json');
+                    const response = await fetch('/static/json_data/filtrelenen_cariler.json');
                     if (!response.ok) {
                         throw new Error(`Müşteri listesi yüklenemedi: ${response.status} ${response.statusText}`);
                     }
@@ -268,33 +268,42 @@
             function populateCartCustomerDropdown(customers) {
                 if (!customerCartSelectDropdown) return;
 
-                customerCartSelectDropdown.innerHTML = ''; // Önceki seçenekleri temizle
-                if (customers.length === 0) {
-                    customerCartSelectDropdown.innerHTML = '<option value="" selected disabled>Uygun müşteri bulunamadı.</option>';
-                    // Sipariş butonunu belki burada disable etmek gerekebilir, ancak müşteri seçimi zorunluysa zaten saveOrderAndProceed\'de kontrol ediliyor.
-                    return;
-                }
+                // Mevcut seçenekleri temizle (placeholder hariç, eğer Select2 kendi yönetiyorsa gerek yok)
+                // customerCartSelectDropdown.innerHTML = '<option value="" selected disabled>Bir müşteri seçin veya arayın...</option>';
 
-                const defaultOption = document.createElement('option');
-                defaultOption.value = ""; // Değerini boş yapalım ki seçilmemiş olsun
-                defaultOption.textContent = "Bir müşteri seçin...";
-                defaultOption.selected = true;
-                defaultOption.disabled = true; // Kullanıcı bunu seçemesin
-                customerCartSelectDropdown.appendChild(defaultOption);
+                customers.forEach(function(customer) {
+                    // CARI_ISIM ve CARI_KOD'un varlığını ve geçerli bir string olup olmadığını kontrol et
+                    const cariIsim = (typeof customer.CARI_ISIM === 'string' && customer.CARI_ISIM.trim()) ? customer.CARI_ISIM.trim() : 'İsim Yok';
+                    const cariKod = (typeof customer.CARI_KOD === 'string' && customer.CARI_KOD.trim()) ? customer.CARI_KOD.trim() : 'Kod Yok';
 
-                customers.forEach(customer => {
                     const option = document.createElement('option');
-                    option.value = customer.CARI_KOD; // Değer olarak CARI_KOD
-                    option.textContent = `${customer.CARI_ISIM} (${customer.CARI_KOD})`;
-                    option.dataset.cariIsim = customer.CARI_ISIM; // CARI_ISIM'i data attribute olarak sakla
+                    option.value = cariKod;
+                    option.textContent = `${cariIsim} (${cariKod})`;
                     customerCartSelectDropdown.appendChild(option);
                 });
-                
+
+                // Select2'yi yeniden başlat veya güncelle (veriler eklendikten sonra)
+                if ($(customerCartSelectDropdown).data('select2')) {
+                    $(customerCartSelectDropdown).select2('destroy').empty(); // Önce yok et ve içini boşalt
+                } 
+                // Placeholder'ı Select2 ayarlarında tanımlamak daha iyi bir pratik olabilir
                 $(customerCartSelectDropdown).select2({
-                    theme: "bootstrap-5",
                     placeholder: "Bir müşteri seçin veya arayın...",
-                    allowClear: true // Boş seçim ("Bir müşteri seçin...") seçeneğine geri dönmeyi sağlar
+                    allowClear: true,
+                    data: customers.map(customer => {
+                        const cariIsim = (typeof customer.CARI_ISIM === 'string' && customer.CARI_ISIM.trim()) ? customer.CARI_ISIM.trim() : 'İsim Yok';
+                        const cariKod = (typeof customer.CARI_KOD === 'string' && customer.CARI_KOD.trim()) ? customer.CARI_KOD.trim() : 'Kod Yok';
+                        return { id: cariKod, text: `${cariIsim} (${cariKod})` };
+                    })
                 });
+                 // Seçim yapıldığında müşteri ID'sini input'a yaz (bu kısım zaten vardı, kontrol amaçlı)
+                $(customerCartSelectDropdown).on('select2:select', function (e) {
+                    var data = e.params.data;
+                    if(document.getElementById('selected_customer_id_cart')){
+                        document.getElementById('selected_customer_id_cart').value = data.id;
+                    }
+                });
+
             }
 
             window.saveOrderAndProceed = async function() {

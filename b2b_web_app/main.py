@@ -544,53 +544,35 @@ async def update_order_status(
 
 # --- Yeni API Endpoint'i: Cari Bakiyelerini Güncelleme ---
 @app.post("/api/update-customer-balances", dependencies=[Depends(verify_customer_sync_api_key)])
-async def update_customer_balances_api(payload: Dict[str, List[Dict]]):
+async def update_customer_balances_api(customer_balances: List[Dict]):
     """
-    Yeni cari bakiye verilerini (hem filtrelenmiş hem de tüm cariler) alır ve sunucu tarafında ilgili JSON dosyalarına kaydeder.
-    Yerel `background_scheduler_cariler.pyw` script'inden gelen cari listelerini kabul eder.
-    Gelen payload'da 'all_customers' ve 'filtered_customers' anahtarları beklenir.
+    Yeni cari bakiye verilerini alır ve sunucu tarafında filtrelenen_cariler.json dosyasına kaydeder.
+    Yerel `background_scheduler_cariler.pyw` script'inden gelen cari listesini kabul eder.
     """
-    all_customers_data = payload.get("all_customers", [])
-    filtered_customers_data = payload.get("filtered_customers", [])
+    # STATIC_DIR global olarak tanımlı, dosya yolunu bununla oluşturacağız
+    # b2b_web_app/static/json_data/filtrelenen_cariler.json
+    target_file_name = "filtrelenen_cariler.json"
+    target_dir = os.path.join(STATIC_DIR, "json_data")
+    customer_balances_file_path = os.path.join(target_dir, target_file_name)
 
-    # STATIC_DIR global olarak tanımlı, dosya yollarını bununla oluşturacağız
-    target_base_dir = os.path.join(STATIC_DIR, "json_data")
-
-    all_customers_file_name = "all_customers_for_dropdown.json"
-    filtered_customers_file_name = "filtrelenen_cariler.json"
-
-    all_customers_file_path = os.path.join(target_base_dir, all_customers_file_name)
-    filtered_customers_file_path = os.path.join(target_base_dir, filtered_customers_file_name)
-
-    # Hedef dizinin var olduğundan emin ol (Render'da ilk dağıtımda olmayabilir)
-    if not os.path.exists(target_base_dir):
-        try:
-            os.makedirs(target_base_dir)
-            print(f"Hedef dizin ({target_base_dir}) oluşturuldu.")
-        except OSError as e:
-            print(f"HATA: Hedef dizin ({target_base_dir}) oluşturulamadı: {e}")
-            raise HTTPException(status_code=500, detail=f"JSON kayıt dizini oluşturulamadı: {str(e)}")
+    if not customer_balances: # Gelen liste boş olabilir, bu bir hata değil, boş dosya oluştururuz.
+        print("Bilgi: Boş cari bakiye listesi alındı. Mevcut dosya (varsa) silinip boş dosya oluşturulacak.")
+        # pass # Ya da bir şey yapmayabiliriz, isteğe bağlı
 
     try:
-        # Tüm carileri kaydet
-        with open(all_customers_file_path, "w", encoding="utf-8") as f_all:
-            json.dump(all_customers_data, f_all, ensure_ascii=False, indent=4)
-        print(f"{len(all_customers_data)} adet tam cari listesi alındı ve {all_customers_file_path} dosyasına kaydedildi.")
+        # Hedef dizinin var olduğundan emin ol (Render'da ilk dağıtımda olmayabilir)
+        if not os.path.exists(target_dir):
+            os.makedirs(target_dir)
+            print(f"Hedef dizin ({target_dir}) oluşturuldu.")
 
-        # Filtrelenmiş carileri kaydet
-        with open(filtered_customers_file_path, "w", encoding="utf-8") as f_filtered:
-            json.dump(filtered_customers_data, f_filtered, ensure_ascii=False, indent=4)
-        print(f"{len(filtered_customers_data)} adet filtrelenmiş cari listesi alındı ve {filtered_customers_file_path} dosyasına kaydedildi.")
-        
-        return {
-            "message": "Cari verileri başarıyla alındı ve kaydedildi.",
-            "counts": {
-                "all_customers": len(all_customers_data),
-                "filtered_customers": len(filtered_customers_data)
-            }
-        }
+        # Gelen veriyi doğrudan JSON dosyasına yazalım (var olanın üzerine yazar)
+        with open(customer_balances_file_path, "w", encoding="utf-8") as f:
+            json.dump(customer_balances, f, ensure_ascii=False, indent=4)
+        print(f"{len(customer_balances)} adet cari bakiye verisi alındı ve {customer_balances_file_path} dosyasına kaydedildi.")
+        return {"message": f"{len(customer_balances)} adet cari bakiye başarıyla alındı ve kaydedildi."}
     except Exception as e:
         print(f"Cari bakiye verileri kaydedilirken hata oluştu: {e}")
+        # Yerel script'e daha detaylı hata bilgisi vermek için hata mesajını döndürebiliriz.
         raise HTTPException(status_code=500, detail=f"Cari bakiyeleri kaydedilemedi: {str(e)}")
 
 if __name__ == "__main__":

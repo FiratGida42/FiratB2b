@@ -21,10 +21,6 @@ if BASE_DIR not in sys.path:
 API_KEY = None
 RENDER_API_URL = "https://firatb2b.onrender.com/api/update-customer-balances"
 
-# Ana dizinde (yerelde) oluşturulacak/güncellenecek JSON dosyası (yedek veya test amaçlı kalabilir)
-SOURCE_JSON_FILE_NAME = "filtrelenen_cariler_yerel.json" # API'ye gönderildiği için adı değiştirildi
-SOURCE_JSON_PATH = os.path.join(BASE_DIR, SOURCE_JSON_FILE_NAME)
-
 # Render API endpoint URL'si ve API anahtarı için ayarlar
 RENDER_API_URL = "https://firatb2b.onrender.com/api/update-customer-balances"
 # API Anahtarını settings.json'dan okumak için bir fonksiyon veya doğrudan data_extractor'dan import edilebilir
@@ -155,14 +151,7 @@ def perform_customer_data_sync_task():
         # Yukarıdaki loglama job_controller_customers tarafından yapılacak.
         per_run_logger.info(f"Cari veri senkronizasyon görevi başlatılıyor (Detay log dosyası: {current_run_log_file_name}).")
     
-        # 1. Mevcut dosyaları sil (hem kaynakta hem hedefte)
-        for file_path in [SOURCE_JSON_PATH]:
-            if os.path.exists(file_path):
-                try:
-                    os.remove(file_path)
-                    per_run_logger.info(f"Mevcut dosya silindi: {file_path}")
-                except OSError as e:
-                    per_run_logger.error(f"Dosya silinemedi: {file_path}. Hata: {e}")
+        # Yerel JSON yedek dosyası artık oluşturulmadığı için ilgili işlemler (silme ve oluşturma) kaldırıldı.
 
         db_conn = None
         per_run_logger.info("Veritabanı bağlantısı kuruluyor...")
@@ -172,90 +161,61 @@ def perform_customer_data_sync_task():
             return False, current_run_log_file_name
 
         per_run_logger.info("Veritabanı bağlantısı başarılı. Cari özet verileri çekiliyor...")
-        all_customer_data_from_db = fetch_customer_summary(db_conn=db_conn) 
+        customer_data = fetch_customer_summary(db_conn=db_conn) 
 
-        if all_customer_data_from_db is None:
+        if customer_data is None:
             per_run_logger.error("fetch_customer_summary None döndürdü. Veri çekilemedi veya bir hata oluştu.")
             return False, current_run_log_file_name
         
-        if not all_customer_data_from_db:
+        if not customer_data:
             per_run_logger.info("Veritabanından senkronize edilecek cari verisi bulunamadı.")
-            all_customer_data_for_api = []
-            filtered_customer_data_for_api_and_local_backup = []
+            customer_data = [] # Boş liste olarak API'ye gönderilebilir
         else:
-            per_run_logger.info(f"{len(all_customer_data_from_db)} adet cari verisi çekildi. Şimdi filtreleniyor...")
+            per_run_logger.info(f"{len(customer_data)} adet cari verisi çekildi. Şimdi filtreleniyor...")
             
-            # Tüm cariler API için ayrı bir listede tutulacak (filtresiz)
-            all_customer_data_for_api = all_customer_data_from_db # Orijinal, filtresiz liste
-            
-            # Filtrelenmiş cari verisi (hem API'ye hem yerel yedeklemeye gidecek)
-            filtered_customer_data_for_api_and_local_backup = []
+            # İstenen filtrelemeyi burada yapalım
+            filtered_customer_data_list = [] # Filtrelenmiş listeyi tutmak için yeni değişken
             allowed_group_codes = ["SERVÝS", "TOPTAN", None, ""] # İzin verilen grup kodları (None ve boş string dahil)
             
-            for customer in all_customer_data_from_db: # Filtreleme için orijinal listeyi kullan
-                grup_kodu = customer.get("GRUP_KODU")
-                net_bakiye_str = customer.get("NET_BAKIYE", "0")
+            for customer_item in customer_data: # Orijinal customer_data üzerinde döngü
+                grup_kodu = customer_item.get("GRUP_KODU")
+                net_bakiye_str = customer_item.get("NET_BAKIYE", "0")
 
                 try:
-                    # "0E-8" gibi bilimsel gösterimleri ve normal sayıları float'a çevir
                     net_bakiye_float = float(net_bakiye_str)
                 except (ValueError, TypeError):
-                    net_bakiye_float = 0.0 # Hatalı veya eksikse 0 kabul et
+                    net_bakiye_float = 0.0
                 
-                # Grup kodu kontrolü
                 is_group_allowed = False
-                if grup_kodu is None or grup_kodu.strip() == "": # None veya sadece boşluklardan oluşanlar "" olarak kabul edilir
+                if grup_kodu is None or grup_kodu.strip() == "":
                     is_group_allowed = True
-                elif isinstance(grup_kodu, str) and grup_kodu.upper() in [agc.upper() if agc else "" for agc in allowed_group_codes if agc]: # Büyük/küçük harf duyarsız kontrol
+                elif isinstance(grup_kodu, str) and grup_kodu.upper() in [agc.upper() if agc else "" for agc in allowed_group_codes if agc]:
                     is_group_allowed = True
 
-                # Bakiye kontrolü (0 olmayanlar)
-                is_bakiye_valid = abs(net_bakiye_float) > 1e-7 # Kayan nokta hassasiyeti için epsilon kontrolü
+                is_bakiye_valid = abs(net_bakiye_float) > 1e-7
 
                 if is_group_allowed and is_bakiye_valid:
-                    filtered_customer_data_for_api_and_local_backup.append(customer)
+                    filtered_customer_data_list.append(customer_item)
             
-            per_run_logger.info(f"Filtreleme sonrası {len(filtered_customer_data_for_api_and_local_backup)} adet cari kaldı (filtrelenmiş liste).")
-            per_run_logger.info(f"API'ye gönderilecek toplam cari sayısı (filtresiz liste): {len(all_customer_data_for_api)}.")
-            # customer_data = filtered_customer_data # Eski satır, artık iki ayrı liste var
+            per_run_logger.info(f"Filtreleme sonrası {len(filtered_customer_data_list)} adet cari kaldı.")
+            customer_data = filtered_customer_data_list # customer_data değişkenini filtrelenmiş liste ile güncelle
 
-        # İsteğe bağlı: Filtrelenmiş veriyi yerel bir dosyaya yedek olarak kaydet
-        per_run_logger.info(f"Filtrelenmiş cari verileri yerel yedek olarak {SOURCE_JSON_PATH} dosyasına kaydediliyor...")
-        try:
-            # Yerel yedekleme için sadece filtrelenmiş olanı kullan
-            with open(SOURCE_JSON_PATH, "w", encoding="utf-8") as f_source:
-                json.dump(filtered_customer_data_for_api_and_local_backup, f_source, ensure_ascii=False, indent=4, default=decimal_serializer)
-            per_run_logger.info(f"Filtrelenmiş cari verileri başarıyla yerel yedek dosyasına ({SOURCE_JSON_PATH}) kaydedildi.")
-        except IOError as e:
-            per_run_logger.warning(f"Yerel yedek dosyasına ({SOURCE_JSON_PATH}) yazılırken hata (bu işlem API gönderimini engellemez): {e}")
-        except TypeError as e:
-            per_run_logger.warning(f"Yerel yedek için JSON serileştirme hatası ({SOURCE_JSON_PATH}) (API gönderimini engellemez): {e}.")
+        # Yerel JSON yedek dosyası (`filtrelenen_cariler_yerel.json`) artık oluşturulmuyor. İlgili blok kaldırıldı.
 
-        # API anahtarı artık global değişkenden okunacak (load_configuration ile yüklendi)
         if not API_KEY:
             per_run_logger.error("API anahtarı yüklenemedi (settings.json kontrol edin). Canlı sunucuya veri gönderilemiyor.")
             return False, current_run_log_file_name
         
         headers = {
-            "X-API-Key": API_KEY, # Global API_KEY kullanılıyor
+            "X-API-Key": API_KEY,
             "Content-Type": "application/json"
         }
 
-        # API'ye gönderilecek payload'ı hazırla
-        api_payload = {
-            "all_customers": all_customer_data_for_api,
-            "filtered_customers": filtered_customer_data_for_api_and_local_backup
-        }
-
-        per_run_logger.info(f"Hazırlanan API payload'ı {RENDER_API_URL} adresine gönderiliyor ({len(all_customer_data_for_api)} filtresiz, {len(filtered_customer_data_for_api_and_local_backup)} filtrelenmiş cari)...")
+        per_run_logger.info(f"{len(customer_data)} adet filtrelenmiş cari verisi {RENDER_API_URL} adresine gönderiliyor...")
         try:
-            # api_payload doğrudan JSON serileştirilebilir bir Python dict olmalı.
-            # json.dumps ile stringe çevirip data= parametresi ile gönderebiliriz ya da doğrudan json= parametresi ile dict/list.
-            # `requests` kütüphanesi json parametresini otomatik olarak application/json olarak serialize eder.
-            # ANCAK Decimal tipi için özel serializer kullanmamız gerekiyor.
-            payload_json_string = json.dumps(api_payload, ensure_ascii=False, default=decimal_serializer)
-            response = requests.post(RENDER_API_URL, headers=headers, data=payload_json_string, timeout=60) # Timeout artırıldı
-            response.raise_for_status() # HTTP 4xx veya 5xx hatalarında exception fırlatır
+            customer_data_json_string = json.dumps(customer_data, ensure_ascii=False, default=decimal_serializer)
+            response = requests.post(RENDER_API_URL, headers=headers, data=customer_data_json_string, timeout=30)
+            response.raise_for_status()
             
             per_run_logger.info(f"Veriler başarıyla API'ye gönderildi. Sunucu yanıtı ({response.status_code}): {response.json()}")
             return True, current_run_log_file_name
