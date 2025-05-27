@@ -307,9 +307,21 @@
             }
 
             window.saveOrderAndProceed = async function() {
-                const selectedOption = customerCartSelectDropdown.options[customerCartSelectDropdown.selectedIndex];
-                const customerCode = customerCartSelectDropdown.value;
-                const customerName = selectedOption && selectedOption.dataset.cariIsim ? selectedOption.dataset.cariIsim : null;
+                // Select2'den seçili veriyi al
+                const selectedData = $(customerCartSelectDropdown).select2('data');
+                let customerCode = null;
+                let customerName = null;
+
+                if (selectedData && selectedData.length > 0 && selectedData[0].id && selectedData[0].text) {
+                    customerCode = selectedData[0].id; // 'id' Select2'de value'ya karşılık gelir
+                    const fullText = selectedData[0].text;
+                    const lastParen = fullText.lastIndexOf(' (');
+                    if (lastParen !== -1) {
+                        customerName = fullText.substring(0, lastParen);
+                    } else {
+                        customerName = fullText; // Parantezli kod yoksa, text'in tamamı isimdir.
+                    }
+                }
 
                 const cartItems = getCartItemsFromStorage();
 
@@ -318,22 +330,21 @@
                     return;
                 }
                 
-                if (!customerCode || !customerName) { // Hem kod hem isim olmalı (isim data attribute'tan geliyor)
+                if (!customerCode || !customerName || customerName === 'İsim Yok') { // Hem kod hem isim olmalı ve isim geçerli olmalı
                     alert("Lütfen siparişi tamamlamak için bir Cari seçiniz.");
-                    // Select2 için hata gösterme biraz daha farklı olabilir, focus() doğrudan çalışmayabilir.
-                    // Şimdilik sadece alert ile yetinelim. Gerekirse Select2 için özel stil eklenebilir.
                     $(customerCartSelectDropdown).select2('open'); // Dropdown'ı açmayı dene
                     return;
                 }
 
                 const orderPayload = {
-                    customer_name: customerName, // Seçilen müşterinin adı
+                    customer_code: customerCode, // API'ye müşteri kodunu da gönderelim
+                    customer_name: customerName, 
                     items: cartItems.map(item => ({
                         product_code: item.stokKodu,
                         product_name: item.stokAdi,
                         quantity: item.quantity,
                         unit_price: item.price,
-                        barcode: item.barkod || null // barkod bilgisini de ekleyelim (eğer varsa)
+                        barcode: item.barkod || null
                     }))
                 };
 
