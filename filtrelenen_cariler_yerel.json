@@ -35,8 +35,8 @@
         "CARI_KOD": "0101067126",
         "CARI_ISIM": "  MURAT PASTANESİ SALAHATTİN KIZILTAY",
         "BORC_BAKIYESI": "96454.22000000",
-        "ALACAK_BAKIYESI": "95898.80000000",
-        "NET_BAKIYE": "555.42000000",
+        "ALACAK_BAKIYESI": "96453.80000000",
+        "NET_BAKIYE": "0.42000000",
         "GRUP_KODU": null
     },
     {
@@ -50,9 +50,9 @@
     {
         "CARI_KOD": "0508070934",
         "CARI_ISIM": "3A TEMİZLİK HAYVANCILIK SANAYİ TİCARET LİMİTED ŞİRKETİ",
-        "BORC_BAKIYESI": "9024650.00000000",
+        "BORC_BAKIYESI": "9524650.00000000",
         "ALACAK_BAKIYESI": "9794205.00000000",
-        "NET_BAKIYE": "-769555.00000000",
+        "NET_BAKIYE": "-269555.00000000",
         "GRUP_KODU": null
     },
     {
@@ -114,9 +114,9 @@
     {
         "CARI_KOD": "120-1015",
         "CARI_ISIM": "AKASYA MARKET - İSMAİL YAPICI",
-        "BORC_BAKIYESI": "350259.85000000",
-        "ALACAK_BAKIYESI": "325900.00000000",
-        "NET_BAKIYE": "24359.85000000",
+        "BORC_BAKIYESI": "379086.55000000",
+        "ALACAK_BAKIYESI": "365900.00000000",
+        "NET_BAKIYE": "13186.55000000",
         "GRUP_KODU": null
     },
     {
@@ -138,9 +138,9 @@
     {
         "CARI_KOD": "120-109",
         "CARI_ISIM": "AKYOLLAR GIDA MADDELERİ BESİCİLİK LTD ŞTİ.",
-        "BORC_BAKIYESI": "90034.50000000",
+        "BORC_BAKIYESI": "96219.50000000",
         "ALACAK_BAKIYESI": "47713.00000000",
-        "NET_BAKIYE": "42321.50000000",
+        "NET_BAKIYE": "48506.50000000",
         "GRUP_KODU": null
     },
     {
@@ -154,17 +154,25 @@
     {
         "CARI_KOD": "120-006",
         "CARI_ISIM": "ALTINBAŞ BÜFE",
-        "BORC_BAKIYESI": "15211.00000000",
+        "BORC_BAKIYESI": "15782.00000000",
         "ALACAK_BAKIYESI": "13647.50000000",
-        "NET_BAKIYE": "1563.50000000",
+        "NET_BAKIYE": "2134.50000000",
+        "GRUP_KODU": null
+    },
+    {
+        "CARI_KOD": "120-164",
+        "CARI_ISIM": "ALTINEKİNLİ AVM PET VE YAK ÜRÜN HAYV.TAŞ.TİC.LTD.ŞTİ",
+        "BORC_BAKIYESI": "188947.59000000",
+        "ALACAK_BAKIYESI": "187627.59000000",
+        "NET_BAKIYE": "1320.00000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "120-196",
         "CARI_ISIM": "ALTUNBAŞ ATTARİYE KOZMETİK KIRTASİYE SAN.TİC.LTD. ŞTİ",
         "BORC_BAKIYESI": "43570.00000000",
-        "ALACAK_BAKIYESI": "52590.00000000",
-        "NET_BAKIYE": "-9020.00000000",
+        "ALACAK_BAKIYESI": "55740.00000000",
+        "NET_BAKIYE": "-12170.00000000",
         "GRUP_KODU": null
     },
     {
@@ -178,9 +186,9 @@
     {
         "CARI_KOD": "0101067035",
         "CARI_ISIM": "ALİ GÖKSEL",
-        "BORC_BAKIYESI": "237371.13000000",
-        "ALACAK_BAKIYESI": "237371.10000000",
-        "NET_BAKIYE": "0.03000000",
+        "BORC_BAKIYESI": "258831.73000000",
+        "ALACAK_BAKIYESI": "258831.10000000",
+        "NET_BAKIYE": "0.63000000",
         "GRUP_KODU": null
     },
     {
@@ -210,9 +218,9 @@
     {
         "CARI_KOD": "120-1211",
         "CARI_ISIM": "ANLAR DÜĞÜN MALZEMESİ -SÜLEYMAN ANLAR",
-        "BORC_BAKIYESI": "186937.60000000",
-        "ALACAK_BAKIYESI": "160000.00000000",
-        "NET_BAKIYE": "26937.60000000",
+        "BORC_BAKIYESI": "197027.60000000",
+        "ALACAK_BAKIYESI": "170000.00000000",
+        "NET_BAKIYE": "27027.60000000",
         "GRUP_KODU": null
     },
     {
@@ -229,14 +237,6 @@
         "BORC_BAKIYESI": "655117.94920000",
         "ALACAK_BAKIYESI": "655117.95000000",
         "NET_BAKIYE": "-0.00080000",
-        "GRUP_KODU": null
-    },
-    {
-        "CARI_KOD": "120-1233",
-        "CARI_ISIM": "ARİF MARKET - ARAFA SANLI",
-        "BORC_BAKIYESI": "76261.49000000",
-        "ALACAK_BAKIYESI": "67061.49000000",
-        "NET_BAKIYE": "9200.00000000",
         "GRUP_KODU": null
     },
     {
@@ -258,9 +258,9 @@
     {
         "CARI_KOD": "0102135",
         "CARI_ISIM": "AV SHOP - KARŞI KOMŞU",
-        "BORC_BAKIYESI": "43436.35000000",
+        "BORC_BAKIYESI": "43810.85000000",
         "ALACAK_BAKIYESI": "39755.00000000",
-        "NET_BAKIYE": "3681.35000000",
+        "NET_BAKIYE": "4055.85000000",
         "GRUP_KODU": null
     },
     {
@@ -282,9 +282,9 @@
     {
         "CARI_KOD": "320-078",
         "CARI_ISIM": "AYDIN ÜNLÜER TURİZM İNŞAAT GIDA SAN.TİC.LTD.ŞTİ.",
-        "BORC_BAKIYESI": "2528379.34650000",
+        "BORC_BAKIYESI": "2603812.26650000",
         "ALACAK_BAKIYESI": "2603812.27000000",
-        "NET_BAKIYE": "-75432.92350000",
+        "NET_BAKIYE": "-0.00350000",
         "GRUP_KODU": null
     },
     {
@@ -330,8 +330,8 @@
     {
         "CARI_KOD": "120-112",
         "CARI_ISIM": "BABACAN TİCARET - MEHMET BABACAN",
-        "BORC_BAKIYESI": "2819701.53000000",
-        "ALACAK_BAKIYESI": "2816300.00000000",
+        "BORC_BAKIYESI": "2864701.53000000",
+        "ALACAK_BAKIYESI": "2861300.00000000",
         "NET_BAKIYE": "3401.53000000",
         "GRUP_KODU": null
     },
@@ -360,14 +360,6 @@
         "GRUP_KODU": null
     },
     {
-        "CARI_KOD": "0101067294",
-        "CARI_ISIM": "BEDİROĞLU HAYVANCILIK GIDA NAKLİYAT LTD.ŞTİ",
-        "BORC_BAKIYESI": "90689.40000000",
-        "ALACAK_BAKIYESI": "79249.40000000",
-        "NET_BAKIYE": "11440.00000000",
-        "GRUP_KODU": null
-    },
-    {
         "CARI_KOD": "320-150",
         "CARI_ISIM": "BERİCAN TURİZM OTOMOTİV GIDA VE KUYUMCULUK LTD ŞTİ",
         "BORC_BAKIYESI": "275110.92000000",
@@ -381,14 +373,6 @@
         "BORC_BAKIYESI": "2.00000000",
         "ALACAK_BAKIYESI": "0E-8",
         "NET_BAKIYE": "2.00000000",
-        "GRUP_KODU": null
-    },
-    {
-        "CARI_KOD": "120-1144",
-        "CARI_ISIM": "BULUT SPOT",
-        "BORC_BAKIYESI": "108398.00000000",
-        "ALACAK_BAKIYESI": "108879.00000000",
-        "NET_BAKIYE": "-481.00000000",
         "GRUP_KODU": null
     },
     {
@@ -406,14 +390,6 @@
         "ALACAK_BAKIYESI": "331650.50000000",
         "NET_BAKIYE": "10701.10410000",
         "GRUP_KODU": null
-    },
-    {
-        "CARI_KOD": "120-689",
-        "CARI_ISIM": "BİR-PA TİCARET - SEVDE KEŞLİ",
-        "BORC_BAKIYESI": "70951.55000000",
-        "ALACAK_BAKIYESI": "49311.55000000",
-        "NET_BAKIYE": "21640.00000000",
-        "GRUP_KODU": "SERVÝS"
     },
     {
         "CARI_KOD": "320-027",
@@ -450,9 +426,9 @@
     {
         "CARI_KOD": "120-482",
         "CARI_ISIM": "CANITEZ MARKET - MUSTAFA CANITEZ",
-        "BORC_BAKIYESI": "410284.50000000",
-        "ALACAK_BAKIYESI": "410020.10000000",
-        "NET_BAKIYE": "264.40000000",
+        "BORC_BAKIYESI": "438415.00000000",
+        "ALACAK_BAKIYESI": "455912.10000000",
+        "NET_BAKIYE": "-17497.10000000",
         "GRUP_KODU": null
     },
     {
@@ -490,9 +466,9 @@
     {
         "CARI_KOD": "120-159",
         "CARI_ISIM": "ÇORBACI HARUN USTA",
-        "BORC_BAKIYESI": "16420.50000000",
-        "ALACAK_BAKIYESI": "14521.50000000",
-        "NET_BAKIYE": "1899.00000000",
+        "BORC_BAKIYESI": "17095.50000000",
+        "ALACAK_BAKIYESI": "16695.50000000",
+        "NET_BAKIYE": "400.00000000",
         "GRUP_KODU": null
     },
     {
@@ -522,17 +498,17 @@
     {
         "CARI_KOD": "320-369",
         "CARI_ISIM": "DERESAL TİCARET - MEHMET DERESAL",
-        "BORC_BAKIYESI": "34567.00000000",
+        "BORC_BAKIYESI": "35932.00000000",
         "ALACAK_BAKIYESI": "40135.00000000",
-        "NET_BAKIYE": "-5568.00000000",
+        "NET_BAKIYE": "-4203.00000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "320-064",
         "CARI_ISIM": "DERESALLAR GIDA VE İHT.MAD.TİC.VE SAN.A.Ş.",
         "BORC_BAKIYESI": "1564327.20000000",
-        "ALACAK_BAKIYESI": "1806046.99000000",
-        "NET_BAKIYE": "-241719.79000000",
+        "ALACAK_BAKIYESI": "1852046.99000000",
+        "NET_BAKIYE": "-287719.79000000",
         "GRUP_KODU": null
     },
     {
@@ -586,25 +562,17 @@
     {
         "CARI_KOD": "120-048",
         "CARI_ISIM": "EBU GIDA - EBUBEKİR TAVLAN",
-        "BORC_BAKIYESI": "148334.75000000",
+        "BORC_BAKIYESI": "117402.75000000",
         "ALACAK_BAKIYESI": "120720.75000000",
-        "NET_BAKIYE": "27614.00000000",
+        "NET_BAKIYE": "-3318.00000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "120-1022",
         "CARI_ISIM": "EKECİKLİLER  MARKET - CELALETTİN SARIKAYA",
-        "BORC_BAKIYESI": "484289.72000000",
-        "ALACAK_BAKIYESI": "435294.50000000",
-        "NET_BAKIYE": "48995.22000000",
-        "GRUP_KODU": null
-    },
-    {
-        "CARI_KOD": "010106733428",
-        "CARI_ISIM": "ELMA GIDA MUSTAFA ELMA",
-        "BORC_BAKIYESI": "36594.64000000",
-        "ALACAK_BAKIYESI": "36593.50000000",
-        "NET_BAKIYE": "1.14000000",
+        "BORC_BAKIYESI": "549714.12000000",
+        "ALACAK_BAKIYESI": "454294.50000000",
+        "NET_BAKIYE": "95419.62000000",
         "GRUP_KODU": null
     },
     {
@@ -642,17 +610,17 @@
     {
         "CARI_KOD": "120-015",
         "CARI_ISIM": "ENVEROĞLU TİCARET - ENVER KOCABAŞ",
-        "BORC_BAKIYESI": "1962184.86000000",
+        "BORC_BAKIYESI": "2002254.86000000",
         "ALACAK_BAKIYESI": "2179983.58000000",
-        "NET_BAKIYE": "-217798.72000000",
+        "NET_BAKIYE": "-177728.72000000",
         "GRUP_KODU": "TOPTAN"
     },
     {
         "CARI_KOD": "320-382",
         "CARI_ISIM": "ERBAK ULUDAĞ PAZARLAMA SATIŞ DAĞITIM A.Ş.",
-        "BORC_BAKIYESI": "1202213.26000000",
+        "BORC_BAKIYESI": "1243875.75000000",
         "ALACAK_BAKIYESI": "1305716.18000000",
-        "NET_BAKIYE": "-103502.92000000",
+        "NET_BAKIYE": "-61840.43000000",
         "GRUP_KODU": null
     },
     {
@@ -698,41 +666,33 @@
     {
         "CARI_KOD": "320-104",
         "CARI_ISIM": "ERKPA İHALE ÜRÜNLERİ",
-        "BORC_BAKIYESI": "1753155.00370000",
-        "ALACAK_BAKIYESI": "1384518.00000000",
-        "NET_BAKIYE": "368637.00370000",
+        "BORC_BAKIYESI": "1761255.00370000",
+        "ALACAK_BAKIYESI": "1434518.00000000",
+        "NET_BAKIYE": "326737.00370000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "0101067248",
         "CARI_ISIM": "ERTUNÇLAR MARKET - MUSTAFA ERTUNÇ",
         "BORC_BAKIYESI": "183752.70000000",
-        "ALACAK_BAKIYESI": "166686.00000000",
-        "NET_BAKIYE": "17066.70000000",
-        "GRUP_KODU": null
-    },
-    {
-        "CARI_KOD": "120-1184",
-        "CARI_ISIM": "ERYAP GIDA VE TEMİZLİK  SANAYİ VE TİCARET LTD.ŞTİ.",
-        "BORC_BAKIYESI": "501899.00000000",
-        "ALACAK_BAKIYESI": "443189.00000000",
-        "NET_BAKIYE": "58710.00000000",
+        "ALACAK_BAKIYESI": "176686.00000000",
+        "NET_BAKIYE": "7066.70000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "120-1248",
         "CARI_ISIM": "ES TİCARET - EMRULLAH SEVİNDİK",
-        "BORC_BAKIYESI": "2000843.00000000",
+        "BORC_BAKIYESI": "2200843.00000000",
         "ALACAK_BAKIYESI": "2285603.00000000",
-        "NET_BAKIYE": "-284760.00000000",
+        "NET_BAKIYE": "-84760.00000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "010106733432",
         "CARI_ISIM": "ESİN PETROL LOJİSTİK A.Ş.",
-        "BORC_BAKIYESI": "275633.45000000",
+        "BORC_BAKIYESI": "292327.45000000",
         "ALACAK_BAKIYESI": "179985.00000000",
-        "NET_BAKIYE": "95648.45000000",
+        "NET_BAKIYE": "112342.45000000",
         "GRUP_KODU": null
     },
     {
@@ -786,17 +746,9 @@
     {
         "CARI_KOD": "01030589",
         "CARI_ISIM": "FAVORİM ZÜCCAYİ TEKST GIDA SAN VE TİC LTD ŞTİ",
-        "BORC_BAKIYESI": "227240.00000000",
-        "ALACAK_BAKIYESI": "38240.00000000",
-        "NET_BAKIYE": "189000.00000000",
-        "GRUP_KODU": null
-    },
-    {
-        "CARI_KOD": "120-292",
-        "CARI_ISIM": "FAZIL SAÇIN",
-        "BORC_BAKIYESI": "13589.50000000",
-        "ALACAK_BAKIYESI": "7616.00000000",
-        "NET_BAKIYE": "5973.50000000",
+        "BORC_BAKIYESI": "254420.00000000",
+        "ALACAK_BAKIYESI": "38542.00000000",
+        "NET_BAKIYE": "215878.00000000",
         "GRUP_KODU": null
     },
     {
@@ -835,32 +787,40 @@
         "CARI_KOD": "320-055",
         "CARI_ISIM": "GIDASAN İHTİYAÇ MADDELERİ İMALAT VE PAZARLAMA",
         "BORC_BAKIYESI": "855480.55000000",
-        "ALACAK_BAKIYESI": "1333561.78000000",
-        "NET_BAKIYE": "-478081.23000000",
+        "ALACAK_BAKIYESI": "1701006.58000000",
+        "NET_BAKIYE": "-845526.03000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "01026658",
         "CARI_ISIM": "GÖKHAN BULUT",
-        "BORC_BAKIYESI": "46244.90000000",
+        "BORC_BAKIYESI": "56316.90000000",
         "ALACAK_BAKIYESI": "34726.00000000",
-        "NET_BAKIYE": "11518.90000000",
+        "NET_BAKIYE": "21590.90000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "120-038",
         "CARI_ISIM": "GÖKSU PASTA VE BİSKÜVİ LTD.ŞTİ.",
-        "BORC_BAKIYESI": "920230.56000000",
+        "BORC_BAKIYESI": "1032968.06000000",
         "ALACAK_BAKIYESI": "841338.06000000",
-        "NET_BAKIYE": "78892.50000000",
+        "NET_BAKIYE": "191630.00000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "120-624",
         "CARI_ISIM": "GÖVEZ TİCARET  ABDÜLCELİL GÖVEZ",
-        "BORC_BAKIYESI": "58040.00000000",
-        "ALACAK_BAKIYESI": "42840.00000000",
-        "NET_BAKIYE": "15200.00000000",
+        "BORC_BAKIYESI": "101540.00000000",
+        "ALACAK_BAKIYESI": "52840.00000000",
+        "NET_BAKIYE": "48700.00000000",
+        "GRUP_KODU": null
+    },
+    {
+        "CARI_KOD": "010106733439",
+        "CARI_ISIM": "GÖZDE AVM - MEHMET FARTLI",
+        "BORC_BAKIYESI": "78217.30000000",
+        "ALACAK_BAKIYESI": "78202.30000000",
+        "NET_BAKIYE": "15.00000000",
         "GRUP_KODU": null
     },
     {
@@ -882,41 +842,41 @@
     {
         "CARI_KOD": "010106632",
         "CARI_ISIM": "HAKAN AYDIN E-TİCARET LİMİTED ŞİRKETİ",
-        "BORC_BAKIYESI": "776678.00000000",
+        "BORC_BAKIYESI": "794503.00000000",
         "ALACAK_BAKIYESI": "720978.00000000",
-        "NET_BAKIYE": "55700.00000000",
+        "NET_BAKIYE": "73525.00000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "120-277",
         "CARI_ISIM": "HAKKI SİNAN TUNCER  TUNCERLER HESAPLI TÜKETİM MERKEZİ",
-        "BORC_BAKIYESI": "439566.30000000",
+        "BORC_BAKIYESI": "448930.30000000",
         "ALACAK_BAKIYESI": "345264.00000000",
-        "NET_BAKIYE": "94302.30000000",
+        "NET_BAKIYE": "103666.30000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "120-2067",
         "CARI_ISIM": "HALİL GÜLVEREN",
-        "BORC_BAKIYESI": "499373.10000000",
+        "BORC_BAKIYESI": "519373.10000000",
         "ALACAK_BAKIYESI": "499303.10000000",
-        "NET_BAKIYE": "70.00000000",
+        "NET_BAKIYE": "20070.00000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "120-1078",
         "CARI_ISIM": "HALİME YAKARGÜNEŞ.",
-        "BORC_BAKIYESI": "67249.80000000",
+        "BORC_BAKIYESI": "67922.30000000",
         "ALACAK_BAKIYESI": "83111.30000000",
-        "NET_BAKIYE": "-15861.50000000",
+        "NET_BAKIYE": "-15189.00000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "120-674",
         "CARI_ISIM": "HAN MARKET- HASALNUR SAN.TİC.LTD.ŞTİ",
         "BORC_BAKIYESI": "959103.15000000",
-        "ALACAK_BAKIYESI": "743524.00000000",
-        "NET_BAKIYE": "215579.15000000",
+        "ALACAK_BAKIYESI": "798524.00000000",
+        "NET_BAKIYE": "160579.15000000",
         "GRUP_KODU": null
     },
     {
@@ -930,33 +890,33 @@
     {
         "CARI_KOD": "120-588",
         "CARI_ISIM": "HAS İLHANLAR GIDA - HASAN İLHAN (TOPTANCILAR)",
-        "BORC_BAKIYESI": "2372340.00000000",
+        "BORC_BAKIYESI": "2427340.00000000",
         "ALACAK_BAKIYESI": "2477340.00000000",
-        "NET_BAKIYE": "-105000.00000000",
+        "NET_BAKIYE": "-50000.00000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "0101067018",
         "CARI_ISIM": "HASAN BERAT ARICI - KARAZOR AVM",
-        "BORC_BAKIYESI": "375492.40000000",
-        "ALACAK_BAKIYESI": "366762.40000000",
-        "NET_BAKIYE": "8730.00000000",
+        "BORC_BAKIYESI": "418764.90000000",
+        "ALACAK_BAKIYESI": "387762.40000000",
+        "NET_BAKIYE": "31002.50000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "120-1028",
         "CARI_ISIM": "HASAN GÖKÇE - ALTERNATİF GIDA",
         "BORC_BAKIYESI": "753426.00000000",
-        "ALACAK_BAKIYESI": "793746.00000000",
-        "NET_BAKIYE": "-40320.00000000",
+        "ALACAK_BAKIYESI": "946674.00000000",
+        "NET_BAKIYE": "-193248.00000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "120-289",
         "CARI_ISIM": "HASAN HÜSEYİN KÜÇÜKBARDASLI",
-        "BORC_BAKIYESI": "2198838.07000000",
-        "ALACAK_BAKIYESI": "2147185.50000000",
-        "NET_BAKIYE": "51652.57000000",
+        "BORC_BAKIYESI": "2241476.07000000",
+        "ALACAK_BAKIYESI": "2187185.50000000",
+        "NET_BAKIYE": "54290.57000000",
         "GRUP_KODU": "SERVÝS"
     },
     {
@@ -965,6 +925,14 @@
         "BORC_BAKIYESI": "155692.95000000",
         "ALACAK_BAKIYESI": "149436.00000000",
         "NET_BAKIYE": "6256.95000000",
+        "GRUP_KODU": null
+    },
+    {
+        "CARI_KOD": "120-1174",
+        "CARI_ISIM": "HASAN HÜSEYİN TULUKÇU - TULUKÇU TOPTAN GIDA",
+        "BORC_BAKIYESI": "334175.73000000",
+        "ALACAK_BAKIYESI": "331746.73000000",
+        "NET_BAKIYE": "2429.00000000",
         "GRUP_KODU": null
     },
     {
@@ -986,8 +954,8 @@
     {
         "CARI_KOD": "010106733530",
         "CARI_ISIM": "HAYAT AKARYAKIT NAKLİYE OTOMOTİC GIDA A.Ş.",
-        "BORC_BAKIYESI": "452192.41000000",
-        "ALACAK_BAKIYESI": "445191.71000000",
+        "BORC_BAKIYESI": "453192.41000000",
+        "ALACAK_BAKIYESI": "446191.71000000",
         "NET_BAKIYE": "7000.70000000",
         "GRUP_KODU": null
     },
@@ -1043,8 +1011,8 @@
         "CARI_KOD": "120-910",
         "CARI_ISIM": "KAMALI MARKET -  MEVLÜT KAMALI",
         "BORC_BAKIYESI": "770189.81000000",
-        "ALACAK_BAKIYESI": "634001.85000000",
-        "NET_BAKIYE": "136187.96000000",
+        "ALACAK_BAKIYESI": "674001.85000000",
+        "NET_BAKIYE": "96187.96000000",
         "GRUP_KODU": null
     },
     {
@@ -1066,17 +1034,9 @@
     {
         "CARI_KOD": "120-941",
         "CARI_ISIM": "KAYA TOPTAN GIDA",
-        "BORC_BAKIYESI": "106026.45000000",
-        "ALACAK_BAKIYESI": "87132.75000000",
-        "NET_BAKIYE": "18893.70000000",
-        "GRUP_KODU": null
-    },
-    {
-        "CARI_KOD": "010608735",
-        "CARI_ISIM": "KAYI İNOVASYON İÇ VE DIŞ TİCARET LTD ŞTİ",
-        "BORC_BAKIYESI": "357033.70000000",
-        "ALACAK_BAKIYESI": "326196.20000000",
-        "NET_BAKIYE": "30837.50000000",
+        "BORC_BAKIYESI": "107241.45000000",
+        "ALACAK_BAKIYESI": "107021.45000000",
+        "NET_BAKIYE": "220.00000000",
         "GRUP_KODU": null
     },
     {
@@ -1138,9 +1098,9 @@
     {
         "CARI_KOD": "320-009",
         "CARI_ISIM": "KULEKAYA TİCARET -  BÜSAN SANAYİ",
-        "BORC_BAKIYESI": "705525.88000000",
-        "ALACAK_BAKIYESI": "1040948.47000000",
-        "NET_BAKIYE": "-335422.59000000",
+        "BORC_BAKIYESI": "805525.88000000",
+        "ALACAK_BAKIYESI": "1059848.47000000",
+        "NET_BAKIYE": "-254322.59000000",
         "GRUP_KODU": null
     },
     {
@@ -1155,16 +1115,16 @@
         "CARI_KOD": "320-100",
         "CARI_ISIM": "MAHİR ÇINAR GIDA LTD.ŞTİ.",
         "BORC_BAKIYESI": "3082829.38000000",
-        "ALACAK_BAKIYESI": "3357618.63000000",
-        "NET_BAKIYE": "-274789.25000000",
+        "ALACAK_BAKIYESI": "3423218.63000000",
+        "NET_BAKIYE": "-340389.25000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "120-560",
         "CARI_ISIM": "MALAS BAKKALİYESİ- SALİM ÇALI",
-        "BORC_BAKIYESI": "243876.77000000",
+        "BORC_BAKIYESI": "248972.77000000",
         "ALACAK_BAKIYESI": "232141.75000000",
-        "NET_BAKIYE": "11735.02000000",
+        "NET_BAKIYE": "16831.02000000",
         "GRUP_KODU": null
     },
     {
@@ -1192,14 +1152,6 @@
         "GRUP_KODU": null
     },
     {
-        "CARI_KOD": "120-036",
-        "CARI_ISIM": "MEHMET AĞRIS",
-        "BORC_BAKIYESI": "263979.89000000",
-        "ALACAK_BAKIYESI": "263979.90000000",
-        "NET_BAKIYE": "-0.01000000",
-        "GRUP_KODU": null
-    },
-    {
         "CARI_KOD": "01026597",
         "CARI_ISIM": "MEHMET EMİN BİLDİK - İDEAL MANDIRA",
         "BORC_BAKIYESI": "19142.25000000",
@@ -1219,8 +1171,8 @@
         "CARI_KOD": "01010608058",
         "CARI_ISIM": "MERKER GRUP GIDA LTD ŞTİ",
         "BORC_BAKIYESI": "1522467.20000000",
-        "ALACAK_BAKIYESI": "2197353.00000000",
-        "NET_BAKIYE": "-674885.80000000",
+        "ALACAK_BAKIYESI": "2198953.00000000",
+        "NET_BAKIYE": "-676485.80000000",
         "GRUP_KODU": null
     },
     {
@@ -1242,9 +1194,9 @@
     {
         "CARI_KOD": "010106595",
         "CARI_ISIM": "MEVSİM GIDA - ZÜLEYHA DEMİR",
-        "BORC_BAKIYESI": "832027.80000000",
-        "ALACAK_BAKIYESI": "768910.80000000",
-        "NET_BAKIYE": "63117.00000000",
+        "BORC_BAKIYESI": "866441.30000000",
+        "ALACAK_BAKIYESI": "815595.80000000",
+        "NET_BAKIYE": "50845.50000000",
         "GRUP_KODU": null
     },
     {
@@ -1274,17 +1226,25 @@
     {
         "CARI_KOD": "120-1123",
         "CARI_ISIM": "MUAMMER COŞKUN - COŞKUN GIDA",
-        "BORC_BAKIYESI": "45698.29000000",
-        "ALACAK_BAKIYESI": "45360.79000000",
-        "NET_BAKIYE": "337.50000000",
+        "BORC_BAKIYESI": "72804.69000000",
+        "ALACAK_BAKIYESI": "72466.79000000",
+        "NET_BAKIYE": "337.90000000",
+        "GRUP_KODU": null
+    },
+    {
+        "CARI_KOD": "120-001",
+        "CARI_ISIM": "MUHTELİF PEŞİN",
+        "BORC_BAKIYESI": "4406710.51000000",
+        "ALACAK_BAKIYESI": "4406560.51000000",
+        "NET_BAKIYE": "150.00000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "120-1131",
         "CARI_ISIM": "MURAT KARAKURT",
-        "BORC_BAKIYESI": "33896.70000000",
-        "ALACAK_BAKIYESI": "31837.30000000",
-        "NET_BAKIYE": "2059.40000000",
+        "BORC_BAKIYESI": "36191.70000000",
+        "ALACAK_BAKIYESI": "32767.30000000",
+        "NET_BAKIYE": "3424.40000000",
         "GRUP_KODU": null
     },
     {
@@ -1354,9 +1314,9 @@
     {
         "CARI_KOD": "120-967",
         "CARI_ISIM": "NAZAR BİRLİK GIDA SANAYİ TİCARET LİMİTED ŞİRKETİ",
-        "BORC_BAKIYESI": "378940.00000000",
+        "BORC_BAKIYESI": "389091.50000000",
         "ALACAK_BAKIYESI": "320438.50000000",
-        "NET_BAKIYE": "58501.50000000",
+        "NET_BAKIYE": "68653.00000000",
         "GRUP_KODU": null
     },
     {
@@ -1378,9 +1338,9 @@
     {
         "CARI_KOD": "120-901",
         "CARI_ISIM": "NURETTİN ESEN",
-        "BORC_BAKIYESI": "1299293.96630000",
+        "BORC_BAKIYESI": "1313541.96630000",
         "ALACAK_BAKIYESI": "1299293.97000000",
-        "NET_BAKIYE": "-0.00370000",
+        "NET_BAKIYE": "14247.99630000",
         "GRUP_KODU": "SERVÝS"
     },
     {
@@ -1389,14 +1349,6 @@
         "BORC_BAKIYESI": "13679.75000000",
         "ALACAK_BAKIYESI": "35000.00000000",
         "NET_BAKIYE": "-21320.25000000",
-        "GRUP_KODU": null
-    },
-    {
-        "CARI_KOD": "08090708",
-        "CARI_ISIM": "ÖMER ERTÜRK",
-        "BORC_BAKIYESI": "0E-8",
-        "ALACAK_BAKIYESI": "8500.00000000",
-        "NET_BAKIYE": "-8500.00000000",
         "GRUP_KODU": null
     },
     {
@@ -1427,16 +1379,24 @@
         "CARI_KOD": "120-1186",
         "CARI_ISIM": "ÖZ MUMCU GIDA ANONİM ŞİRKETİ",
         "BORC_BAKIYESI": "2778723.76000000",
-        "ALACAK_BAKIYESI": "3693314.12540000",
-        "NET_BAKIYE": "-914590.36540000",
+        "ALACAK_BAKIYESI": "3886967.12540000",
+        "NET_BAKIYE": "-1108243.36540000",
+        "GRUP_KODU": null
+    },
+    {
+        "CARI_KOD": "120-249",
+        "CARI_ISIM": "ÖZGÜVEN MARKET - FATİH İLHAN",
+        "BORC_BAKIYESI": "70590.60000000",
+        "ALACAK_BAKIYESI": "68830.60000000",
+        "NET_BAKIYE": "1760.00000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "120-136",
         "CARI_ISIM": "ÖZNUR GÜNGÖR - GÜNGÖR TİCARET",
-        "BORC_BAKIYESI": "664722.36000000",
+        "BORC_BAKIYESI": "680862.36000000",
         "ALACAK_BAKIYESI": "656902.36000000",
-        "NET_BAKIYE": "7820.00000000",
+        "NET_BAKIYE": "23960.00000000",
         "GRUP_KODU": null
     },
     {
@@ -1456,6 +1416,14 @@
         "GRUP_KODU": null
     },
     {
+        "CARI_KOD": "120-2055",
+        "CARI_ISIM": "PİL DÜNYASI  İNCİ EL TİCARET",
+        "BORC_BAKIYESI": "3510.00000000",
+        "ALACAK_BAKIYESI": "3150.00000000",
+        "NET_BAKIYE": "360.00000000",
+        "GRUP_KODU": null
+    },
+    {
         "CARI_KOD": "0101124",
         "CARI_ISIM": "RAFET BAĞCI - BAĞCI MARKET",
         "BORC_BAKIYESI": "57460.50000000",
@@ -1466,9 +1434,9 @@
     {
         "CARI_KOD": "04050605",
         "CARI_ISIM": "RAMAZAN AVCU",
-        "BORC_BAKIYESI": "197500.08000000",
-        "ALACAK_BAKIYESI": "241375.00000000",
-        "NET_BAKIYE": "-43874.92000000",
+        "BORC_BAKIYESI": "285250.08000000",
+        "ALACAK_BAKIYESI": "285250.00000000",
+        "NET_BAKIYE": "0.08000000",
         "GRUP_KODU": null
     },
     {
@@ -1491,8 +1459,8 @@
         "CARI_KOD": "CR101081",
         "CARI_ISIM": "RÜZGAR EXPORT TİCARET LİMİTED ŞİRKETİ",
         "BORC_BAKIYESI": "4795950.98000000",
-        "ALACAK_BAKIYESI": "4724816.03000000",
-        "NET_BAKIYE": "71134.95000000",
+        "ALACAK_BAKIYESI": "4774816.03000000",
+        "NET_BAKIYE": "21134.95000000",
         "GRUP_KODU": null
     },
     {
@@ -1509,6 +1477,14 @@
         "BORC_BAKIYESI": "4050.00000000",
         "ALACAK_BAKIYESI": "0E-8",
         "NET_BAKIYE": "4050.00000000",
+        "GRUP_KODU": null
+    },
+    {
+        "CARI_KOD": "120-746",
+        "CARI_ISIM": "SALİM BAĞCI - KONSAN MARKET",
+        "BORC_BAKIYESI": "176322.15000000",
+        "ALACAK_BAKIYESI": "163652.15000000",
+        "NET_BAKIYE": "12670.00000000",
         "GRUP_KODU": null
     },
     {
@@ -1546,33 +1522,33 @@
     {
         "CARI_KOD": "120-1054",
         "CARI_ISIM": "SEÇKİN KADİR GÜNDOĞDU - İSMAİL - GÜNDOĞDU ÜNAL ORTAKLIĞI",
-        "BORC_BAKIYESI": "927374.60000000",
-        "ALACAK_BAKIYESI": "920136.00000000",
-        "NET_BAKIYE": "7238.60000000",
+        "BORC_BAKIYESI": "946924.60000000",
+        "ALACAK_BAKIYESI": "946886.00000000",
+        "NET_BAKIYE": "38.60000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "120-2005",
         "CARI_ISIM": "SELMAN BUDAK GARANTİ BANKASI",
-        "BORC_BAKIYESI": "4060540.71000000",
+        "BORC_BAKIYESI": "4063040.71000000",
         "ALACAK_BAKIYESI": "4314581.62000000",
-        "NET_BAKIYE": "-254040.91000000",
+        "NET_BAKIYE": "-251540.91000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "320-019",
         "CARI_ISIM": "SELVER GIDA VE İHTİYAÇ MADDELERİ LTD.ŞTİ.",
         "BORC_BAKIYESI": "316753.99000000",
-        "ALACAK_BAKIYESI": "476366.99000000",
-        "NET_BAKIYE": "-159613.00000000",
+        "ALACAK_BAKIYESI": "516566.99000000",
+        "NET_BAKIYE": "-199813.00000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "320-025",
         "CARI_ISIM": "SENA ALTINYILDIZ GIDA VE İHT.MAD.SAN. VE TİC.A.Ş-2020",
         "BORC_BAKIYESI": "120000.00000000",
-        "ALACAK_BAKIYESI": "241748.40000000",
-        "NET_BAKIYE": "-121748.40000000",
+        "ALACAK_BAKIYESI": "249747.60000000",
+        "NET_BAKIYE": "-129747.60000000",
         "GRUP_KODU": null
     },
     {
@@ -1707,8 +1683,8 @@
         "CARI_KOD": "320-323",
         "CARI_ISIM": "TUĞBA GIDA SANAYİ LTD.ŞTİ.",
         "BORC_BAKIYESI": "3449712.00000000",
-        "ALACAK_BAKIYESI": "3639788.92000000",
-        "NET_BAKIYE": "-190076.92000000",
+        "ALACAK_BAKIYESI": "3733100.92000000",
+        "NET_BAKIYE": "-283388.92000000",
         "GRUP_KODU": null
     },
     {
@@ -1722,17 +1698,17 @@
     {
         "CARI_KOD": "320-360",
         "CARI_ISIM": "TUĞRUL KARDEŞLER GIDA VE İHT.MAD.LTD.ŞTİ. ANKARA",
-        "BORC_BAKIYESI": "4697071.00000000",
+        "BORC_BAKIYESI": "4707071.00000000",
         "ALACAK_BAKIYESI": "6031596.00000000",
-        "NET_BAKIYE": "-1334525.00000000",
+        "NET_BAKIYE": "-1324525.00000000",
         "GRUP_KODU": null
     },
     {
         "CARI_KOD": "010106700",
         "CARI_ISIM": "UGİ GIDA SAN TİC LTD ŞTİ",
-        "BORC_BAKIYESI": "819824.26000000",
-        "ALACAK_BAKIYESI": "758571.26000000",
-        "NET_BAKIYE": "61253.00000000",
+        "BORC_BAKIYESI": "935024.26000000",
+        "ALACAK_BAKIYESI": "788571.26000000",
+        "NET_BAKIYE": "146453.00000000",
         "GRUP_KODU": null
     },
     {
@@ -1747,8 +1723,8 @@
         "CARI_KOD": "01026615",
         "CARI_ISIM": "UĞURBEY ÇİKOLATA DAĞITIM PAZARLAMA SAN.TİC.A.Ş",
         "BORC_BAKIYESI": "747718.00000000",
-        "ALACAK_BAKIYESI": "930471.14000000",
-        "NET_BAKIYE": "-182753.14000000",
+        "ALACAK_BAKIYESI": "933861.74000000",
+        "NET_BAKIYE": "-186143.74000000",
         "GRUP_KODU": null
     },
     {
@@ -1762,9 +1738,9 @@
     {
         "CARI_KOD": "0102141",
         "CARI_ISIM": "VYS TOPTAN GIDA SANAYİ TİC A.Ş",
-        "BORC_BAKIYESI": "4438412.52000000",
+        "BORC_BAKIYESI": "4448412.52000000",
         "ALACAK_BAKIYESI": "4875557.44000000",
-        "NET_BAKIYE": "-437144.92000000",
+        "NET_BAKIYE": "-427144.92000000",
         "GRUP_KODU": null
     },
     {
@@ -1794,9 +1770,9 @@
     {
         "CARI_KOD": "0101136",
         "CARI_ISIM": "YAYAROĞLU GIDA - MUZAFFER YAYAR",
-        "BORC_BAKIYESI": "395502.37000000",
-        "ALACAK_BAKIYESI": "355485.00000000",
-        "NET_BAKIYE": "40017.37000000",
+        "BORC_BAKIYESI": "399422.37000000",
+        "ALACAK_BAKIYESI": "380485.00000000",
+        "NET_BAKIYE": "18937.37000000",
         "GRUP_KODU": null
     },
     {
@@ -1826,9 +1802,9 @@
     {
         "CARI_KOD": "120-819",
         "CARI_ISIM": "YAŞAROĞULLARI ALIŞVERİŞ MERKEZİ LTD.ŞTİ.",
-        "BORC_BAKIYESI": "788226.30000000",
+        "BORC_BAKIYESI": "794596.30000000",
         "ALACAK_BAKIYESI": "756226.30000000",
-        "NET_BAKIYE": "32000.00000000",
+        "NET_BAKIYE": "38370.00000000",
         "GRUP_KODU": null
     },
     {
@@ -1842,9 +1818,9 @@
     {
         "CARI_KOD": "120-5003",
         "CARI_ISIM": "YETKİN GIDA -MUSTAFA YETKİN",
-        "BORC_BAKIYESI": "135450.00000000",
+        "BORC_BAKIYESI": "370450.00000000",
         "ALACAK_BAKIYESI": "408974.20000000",
-        "NET_BAKIYE": "-273524.20000000",
+        "NET_BAKIYE": "-38524.20000000",
         "GRUP_KODU": null
     },
     {
@@ -1859,8 +1835,8 @@
         "CARI_KOD": "120-332",
         "CARI_ISIM": "İHSAN YAĞCILAR GIDA MAD. SAN. TİC. LTD. ŞTİ.",
         "BORC_BAKIYESI": "2773466.13000000",
-        "ALACAK_BAKIYESI": "2232253.38000000",
-        "NET_BAKIYE": "541212.75000000",
+        "ALACAK_BAKIYESI": "2251628.38000000",
+        "NET_BAKIYE": "521837.75000000",
         "GRUP_KODU": null
     },
     {
@@ -1957,14 +1933,6 @@
         "BORC_BAKIYESI": "1192288.59000000",
         "ALACAK_BAKIYESI": "1280617.66000000",
         "NET_BAKIYE": "-88329.07000000",
-        "GRUP_KODU": null
-    },
-    {
-        "CARI_KOD": "010106733507",
-        "CARI_ISIM": "ŞAHİN AVM ŞAHİN AYDOĞAN",
-        "BORC_BAKIYESI": "131834.00000000",
-        "ALACAK_BAKIYESI": "131570.00000000",
-        "NET_BAKIYE": "264.00000000",
         "GRUP_KODU": null
     },
     {
