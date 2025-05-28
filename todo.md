@@ -83,3 +83,4 @@
 - [ ] Web sitesine kullanıcı girişi ve yetkilendirme modülü.
 - [ ] Çoklu dil desteği.
 - [ ] Görsel yükleme ve gösterim mekanizması. (Not: Web'de mevcut görseller gösteriliyor, düzenli güncelleniyor. Yeni görsel yükleme/yönetim arayüzü ayrıca değerlendirilebilir.)
+..
