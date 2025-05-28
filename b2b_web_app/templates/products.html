@@ -670,12 +670,35 @@
                         
                         const tdImage = document.createElement('td');
                         const img = document.createElement('img');
-                        const imgSrc = product.IMAGE_PATH_WEB ? `/static/${product.IMAGE_PATH_WEB}` : '/static/images/image_placeholder.png';
+                        const imgSrc = product.IMAGE_PATH_WEB ? `/static/${product.IMAGE_PATH_WEB}` : '/static/images/urun_yok.png';
                         img.src = imgSrc;
                         img.alt = product.STOK_ADI || product.STOK_KODU;
                         img.className = 'product-image product-image-clickable';
                         img.dataset.src = imgSrc; 
-                        img.onerror = function() { this.onerror=null; this.src='/static/images/image_placeholder.png'; this.dataset.src='/static/images/image_placeholder.png';};
+                        img.onerror = function() { 
+                            if (this.src.endsWith('.png') && !this.src.endsWith('urun_yok.png')) {
+                                const jpgSrc = this.src.substring(0, this.src.length - 4) + '.jpg';
+                                this.src = jpgSrc;
+                                this.dataset.src = jpgSrc; // Lightgallery için de güncelle
+                                // İkinci denemede de hata olursa placeholder'a dön
+                                this.onerror = function() {
+                                    this.onerror = null;
+                                    this.src = '/static/images/urun_yok.png';
+                                    this.dataset.src = '/static/images/urun_yok.png';
+                                };
+                            } else if (this.src.endsWith('.jpg') && !this.src.endsWith('urun_yok.png')) {
+                                // Eğer .jpg denemesi de başarısız olursa direkt urun_yok.png ata
+                                // Bu blok aslında bir önceki onerror içinde ele alındığı için buraya gelmemeli ama güvenlik amaçlı.
+                                this.onerror = null;
+                                this.src = '/static/images/urun_yok.png';
+                                this.dataset.src = '/static/images/urun_yok.png';
+                            } else if (!this.src.endsWith('urun_yok.png')) {
+                                // İlk src .png veya .jpg değildi veya zaten urun_yok.png denendi, son çare
+                                this.onerror = null;
+                                this.src = '/static/images/urun_yok.png';
+                                this.dataset.src = '/static/images/urun_yok.png';
+                            }
+                        };
                         tdImage.appendChild(img);
                         tdImage.style.verticalAlign = 'middle';
                         tr.appendChild(tdImage);

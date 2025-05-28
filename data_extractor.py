@@ -7,16 +7,15 @@ import pyodbc
 import json
 import keyring
 import os
-import requests # requests kütüphanesini import et
-from helpers import to_decimal, format_currency_tr # format_currency_tr eklendi
-from decimal import Decimal # Decimal tipi için import eklendi (eğer __main__ dışında kullanılacaksa)
-import image_processor # image_processor.py dosyamız
-import logging # logging modülünü import et
+import requests
+from helpers import to_decimal, format_currency_tr
+from decimal import Decimal
+import logging
 
 # Decimal nesnelerini JSON'a serileştirmek için yardımcı fonksiyon
 def decimal_serializer(obj):
     if isinstance(obj, Decimal):
-        return str(obj) # veya float(obj) - string genellikle daha güvenlidir kayıp yaşamamak için
+        return str(obj)
     raise TypeError(f"Object of type {obj.__class__.__name__} is not JSON serializable")
 
 # Loglama yapılandırması
@@ -28,26 +27,18 @@ LOG_FILE = os.path.join(LOG_DIR, LOG_FILE_NAME) # Tam log dosyası yolu
 if not os.path.exists(LOG_DIR):
     try:
         os.makedirs(LOG_DIR)
-        print(f"Log dizini oluşturuldu: {LOG_DIR}") # Bilgilendirme için konsola yazdır
-    except OSError as e:
-        print(f"Log dizini oluşturulamadı ({LOG_DIR}): {e}")
-        # Hata durumunda loglamayı mevcut dizine yönlendirebilir veya programı durdurabilirsiniz.
-        # Şimdilik, hata olursa loglama varsayılan yere (veya hiç) yapılmayabilir.
-        # Bu durumu daha robust hale getirmek isteyebilirsiniz.
+    except OSError:
+        pass # Hata durumunda sessiz kal
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(module)s - %(funcName)s - %(message)s",
-    handlers=[
-        logging.FileHandler(LOG_FILE),
-        # logging.StreamHandler() # Konsola da loglamak isterseniz bu satırı aktif edin
-    ]
+    handlers=[logging.FileHandler(LOG_FILE)]
 )
 
 # db_connection_ui.py'deki sabitlerle aynı olmalı veya merkezi bir yerden alınmalı
 SERVICE_NAME = "B2B_App_DB_Credentials"
-SETTINGS_FILE = "settings.json"
-DEFAULT_PLACEHOLDER_IMAGE = "images/urun_yok.png" # Varsayılan yer tutucu resim yolu
+SETTINGS_FILE = os.path.join(os.path.dirname(__file__), 'settings.json')
 
 # Türkçe karakter düzeltme eşlemesi
 CHAR_CORRECTION_MAP = {
@@ -79,8 +70,7 @@ def _convert_numeric_fields_in_row(row_dict, field_list=NUMERIC_FIELDS_TO_CONVER
     """Belirtilen sayısal alanları (field_list kullanarak) Decimal tipine çevirir."""
     for key in field_list:
         if key in row_dict:
-            # to_decimal None dönerse None olarak bırak, aksi halde Decimal olur.
-            row_dict[key] = to_decimal(row_dict[key]) 
+            row_dict[key] = to_decimal(row_dict[key])
     return row_dict
 
 def get_db_connection_settings():
@@ -90,13 +80,13 @@ def get_db_connection_settings():
             settings = json.load(f)
             return settings.get("server_address"), settings.get("username"), settings.get("db_name")
     except FileNotFoundError:
-        print(f"Hata: {SETTINGS_FILE} dosyası bulunamadı.")
+        logging.error(f"{SETTINGS_FILE} dosyası bulunamadı.")
         return None, None, None
     except json.JSONDecodeError:
-        print(f"Hata: {SETTINGS_FILE} dosyası geçerli bir JSON formatında değil.")
+        logging.error(f"{SETTINGS_FILE} dosyası geçerli bir JSON formatında değil.")
         return None, None, None
     except Exception as e:
-        print(f"{SETTINGS_FILE} okunurken beklenmedik bir hata oluştu: {e}")
+        logging.error(f"{SETTINGS_FILE} okunurken beklenmedik bir hata oluştu: {e}")
         return None, None, None
 
 def get_db_connection(caller_info: str = "Unknown"):
@@ -142,7 +132,6 @@ def fetch_product_data(connection, excluded_groups=None):
     Eğer excluded_groups listesi verilirse, bu gruplara ait ürünler sorguya dahil edilmez.
     '''
     if connection is None:
-        print("fetch_product_data: Veritabanı bağlantısı None.")
         logging.warning("fetch_product_data çağrıldı ancak veritabanı bağlantısı None.")
         return None
 
@@ -202,35 +191,27 @@ def fetch_product_data(connection, excluded_groups=None):
             stok_kodu_str = str(converted_row_dict.get('STOK_KODU', '')).strip()
             stok_adi_raw = converted_row_dict.get('STOK_ADI', '') # Zaten düzeltilmiş olmalı
             
-            # image_processor.clean_product_name ürün adını arama için temizler.
-            # find_image_url_for_product şu anda None döndürüyor.
-            # Bu, batch_image_downloader.py geliştirildikten sonra anlamlı olacak.
-            # Şimdilik, download_and_save_image'ı None URL ile çağırarak sadece yerel varlık kontrolü yapacağız.
-            # cleaned_stok_adi = image_processor.clean_product_name(stok_adi_raw) 
-            # image_url_found = find_image_url_for_product(cleaned_stok_adi, stok_adi_raw, stok_kodu_str)
-            
             # Doğrudan None URL ile çağırarak yerel resmi kontrol et/kullan
-            image_path_web = image_processor.download_and_save_image(None, stok_kodu_str)
+            # image_path_web = image_processor.download_and_save_image(None, stok_kodu_str) # Bu satır silinecek
             
-            if not image_path_web:
-                image_path_web = DEFAULT_PLACEHOLDER_IMAGE # images/urun_yok.png
+            # if not image_path_web: # Bu blok silinecek
+            # image_path_web = DEFAULT_PLACEHOLDER_IMAGE # images/urun_yok.png
             
-            converted_row_dict['IMAGE_PATH_WEB'] = image_path_web
+            # converted_row_dict['IMAGE_PATH_WEB'] = image_path_web # Bu satır değiştirilecek
+            converted_row_dict['IMAGE_PATH_WEB'] = f"images/product_{stok_kodu_str.replace('/', '_')}.png"
             results.append(converted_row_dict)
             
             # Her 50 üründe bir ilerleme mesajı (isteğe bağlı)
             # if (row_idx + 1) % 50 == 0:
             #     print(f"  {row_idx + 1} ürün işlendi (resim yolları eklendi)...")
 
-        print(f"{len(results)} adet ürün verisi çekildi ve resim yolları eklendi.")
+        logging.info(f"{len(results)} adet ürün verisi çekildi ve resim yolları eklendi.")
         return results
     except pyodbc.Error as ex:
         sqlstate = ex.args[0]
-        print(f"Veri çekme sırasında SQL hatası (fetch_product_data): {sqlstate} - {ex}")
         logging.error(f"Veri çekme sırasında SQL hatası (fetch_product_data): {sqlstate} - {ex}. Sorgu: {query}, Parametreler: {params}", exc_info=True)
         return None
     except Exception as e:
-        print(f"Veri çekme sırasında beklenmedik bir hata oluştu (fetch_product_data): {e}")
         logging.error(f"Veri çekme sırasında beklenmedik bir hata (fetch_product_data): {e}. Sorgu: {query}, Parametreler: {params}", exc_info=True)
         return None
     # finally bloğu burada olmamalı, bağlantıyı çağıran yer kapatmalı
@@ -246,7 +227,7 @@ def extract_data_from_db(connection_params):
 
     if not all([server, database, username, password]):
         missing = [k for k,v in {'server':server, 'database':database, 'username':username, 'password':password}.items() if not v]
-        print(f"Veritabanı bağlantı bilgileri eksik: {missing}. Lütfen ayarları kontrol edin.")
+        logging.error(f"Veritabanı bağlantı bilgileri eksik (extract_data_from_db): {missing}.")
         return []
 
     products = []
@@ -289,13 +270,13 @@ def extract_data_from_db(connection_params):
                 grup_kodu_corrected = grup_kodu_raw.replace('Ý','İ').replace('Þ','Ş').replace('Ð','Ğ') if grup_kodu_raw else ''
                 
                 stok_kodu_str = str(row.STOK_KODU).strip()
-                cleaned_stok_adi = image_processor.clean_product_name(stok_adi_corrected)
+                # cleaned_stok_adi = image_processor.clean_product_name(stok_adi_corrected) # Bu satır silinecek
                 
-                image_url_found = find_image_url_for_product(cleaned_stok_adi, stok_adi_corrected, stok_kodu_str)
-                image_path_web = image_processor.download_and_save_image(image_url_found, stok_kodu_str)
+                # image_url_found = find_image_url_for_product(cleaned_stok_adi, stok_adi_corrected, stok_kodu_str) # Bu satır silinecek
+                # image_path_web = image_processor.download_and_save_image(image_url_found, stok_kodu_str) # Bu satır silinecek
                 
-                if not image_path_web:
-                    image_path_web = DEFAULT_PLACEHOLDER_IMAGE
+                # if not image_path_web: # Bu blok silinecek
+                #     image_path_web = DEFAULT_PLACEHOLDER_IMAGE
 
                 product_data = {
                     'STOK_KODU': stok_kodu_str,
@@ -304,21 +285,22 @@ def extract_data_from_db(connection_params):
                     'SATIS_FIAT1': to_decimal(row.SATIS_FIAT1),
                     'GRUP_KODU': grup_kodu_corrected,
                     'BARKOD1': row.BARKOD1.strip() if row.BARKOD1 else '',
-                    'IMAGE_PATH_WEB': image_path_web
+                    # 'IMAGE_PATH_WEB': image_path_web # Bu satır değiştirilecek
+                    'IMAGE_PATH_WEB': f"images/product_{stok_kodu_str.replace('/', '_')}.png"
                 }
                 products.append(product_data)
             except Exception as e:
                 stok_kodu_debug = row.STOK_KODU if hasattr(row, 'STOK_KODU') and row.STOK_KODU else 'Bilinmiyor'
-                print(f"Satır işlenirken hata (STOK_KODU: {stok_kodu_debug}): {e}")
+                logging.error(f"Satır işlenirken hata (STOK_KODU: {stok_kodu_debug}): {e}")
                 continue
         
         conn.close()
 
     except pyodbc.Error as ex:
         sqlstate = ex.args[0]
-        print(f"Veritabanı hatası (extract_data_from_db): {sqlstate} - {ex}")
+        logging.error(f"Veritabanı hatası (extract_data_from_db): {sqlstate} - {ex}")
     except Exception as e:
-        print(f"Veri çekme sırasında genel bir hata (extract_data_from_db): {e}")
+        logging.error(f"Veri çekme sırasında genel bir hata (extract_data_from_db): {e}")
     
     return products
 
@@ -328,11 +310,10 @@ def save_data_to_json(data, filename="urun_verileri_onizleme.json"):
         with open(filename, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=4, default=decimal_serializer)
         
-        print(f"{filename} dosyasına {len(data)} kayıt başarıyla yazıldı.")
         logging.info(f"{filename} dosyasına {len(data)} kayıt başarıyla yazıldı.")
         return True
     except Exception as e:
-        print(f"JSON dosyasına yazılırken hata: {e}")
+        logging.error(f"JSON dosyasına yazılırken hata: {e}")
         return False
 
 def send_data_to_web_api(product_data: list, api_url: str = DEFAULT_API_URL) -> tuple[bool, str]:
@@ -428,36 +409,21 @@ def load_settings():
                 # print(f"Ayarlar yüklendi: {settings}") # Debug için
                 return settings
     except Exception as e:
-        print(f"Ayarlar yüklenirken hata: {e}")
+        logging.error(f"Ayarlar yüklenirken hata: {e}")
     return {}
 
 def get_password(username):
     """Belirtilen kullanıcı adı için şifreyi keyring'den alır."""
     if not username:
-        print("Şifre almak için kullanıcı adı belirtilmedi.")
+        logging.warning("get_password çağrıldı ancak kullanıcı adı boş.")
         return None
     try:
         password = keyring.get_password(SERVICE_NAME, username)
         # print(f"'{username}' için şifre keyring'den alındı.") # Debug için
         return password
     except Exception as e:
-        print(f"Keyring'den şifre alınırken hata ({SERVICE_NAME} - {username}): {e}")
+        logging.error(f"Keyring'den şifre alınırken hata ({SERVICE_NAME} - {username}): {e}")
         return None
-
-# (KULLANICI TARAFINDAN GELİŞTİRİLECEK YER)
-def find_image_url_for_product(cleaned_product_name: str, original_stok_adi: str, stok_kodu: str) -> str | None:
-    """
-    (KULLANICI TARAFINDAN GELİŞTİRİLECEK YER - batch_image_downloader.py'deki ile benzer)
-    Temizlenmiş ürün adını kullanarak (örneğin DuckDuckGo + AI ile) bir resim URL'i bulur.
-    Bu fonksiyon, sizin özel mantığınızı içerecektir.
-    Şimdilik test için None döndürür.
-    """
-    # print(f"  [FIND IMAGE URL YER TUTUCUSU] '{cleaned_product_name}' için resim URL'i aranıyor (STOK_KODU: {stok_kodu})...")
-    # Gerçek implementasyonunuz burada olacak.
-    # Örnek:
-    # if "COCA COLA" in cleaned_product_name.upper():
-    #     return "https://www.example.com/images/coca_cola.jpg" 
-    return None # Şimdilik her zaman None
 
 def fetch_unique_group_codes(db_conn=None):
     """
