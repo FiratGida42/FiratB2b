@@ -729,15 +729,79 @@
                         img.setAttribute('data-src', imgSrcValue); 
 
                         img.onerror = function() {
-                            const failedSrc = this.src; // Hata veren URL'yi yakala (bu noktada zaten imgSrcValue olmalı)
-                            if (typeof console !== 'undefined' && console.error) { // console.error kontrolü
-                                console.error(`Resim yüklenemedi (onerror): ${failedSrc}. Yerel yedek resme geçiliyor: /static/images/urun_yok.png`);
+                            const originalSrc = this.src;
+                            const fallbackSrc = '/static/images/urun_yok.png';
+                            // DEBUG LOGGING START
+                            if (typeof console !== 'undefined' && console.warn) {
+                                console.warn(`[WARN] onerror: Initial image load failed for: ${originalSrc}. Product ID: ${product.STOK_KODU || 'N/A'}`);
                             }
-                            this.src = '/static/images/urun_yok.png'; // Thumbnail için yedek resim
-                            // LightGallery'nin de yedek resmi kullanması için data-src'yi güncelle
-                            this.setAttribute('data-src', '/static/images/urun_yok.png');
+                            // DEBUG LOGGING END
+
+                            // Eğer zaten yedek resmi deniyorsak veya denenecek uzantı kalmadıysa döngüden çık
+                            if (this.src === (new URL(fallbackSrc, window.location.origin)).href || (this.triedExtensions && this.triedExtensions.length === 0)) {
+                                if (this.src !== (new URL(fallbackSrc, window.location.origin)).href) {
+                                    if (typeof console !== 'undefined' && console.warn) {
+                                        console.warn(`[WARN] onerror: All extension attempts failed for original path '${debugOriginalPath}'. Switching to fallback: ${fallbackSrc}`);
+                                    }
+                                    this.src = fallbackSrc;
+                                    this.setAttribute('data-src', fallbackSrc); // LightGallery için de yedek resim
+                                }
+                                return; // Daha fazla deneme yapma
+                            }
+
+                            // Eğer bu ilk hata ise (yani henüz uzantı denemeleri başlamadıysa)
+                            if (!this.triedExtensions) {
+                                // Sadece dosya adını (uzantısız) almayı dene (correctedForSpaces zaten uzantısız olabilir)
+                                let baseName = correctedForSpaces;
+                                const lastDotIndex = correctedForSpaces.lastIndexOf('.');
+                                if (lastDotIndex > -1) {
+                                    // Eğer correctedForSpaces içinde bir uzantı varsa, onu çıkar
+                                    // Örneğin: "product_image.png" -> "product_image"
+                                    baseName = correctedForSpaces.substring(0, lastDotIndex);
+                                }
+                                
+                                // DEBUG LOGGING START
+                                if (typeof console !== 'undefined' && console.log) {
+                                    console.log(`[DEBUG] onerror: Base name for extension trial: '${baseName}'. Original correctedForSpaces: '${correctedForSpaces}'`);
+                                }
+                                // DEBUG LOGGING END
+
+                                this.potentialBaseName = baseName; // Sonraki denemeler için sakla
+                                this.triedExtensions = ['.png', '.jpg', '.jpeg', '.webp', '.gif']; // Denenecek uzantılar
+                            }
+
+                            const nextExtension = this.triedExtensions.shift(); // Sıradaki uzantıyı al ve listeden çıkar
+                            if (nextExtension) {
+                                const newSrc = `/static/images/${this.potentialBaseName}${nextExtension}`;
+                                // DEBUG LOGGING START
+                                if (typeof console !== 'undefined' && console.log) {
+                                    console.log(`[DEBUG] onerror: Attempting next extension: ${newSrc}`);
+                                }
+                                // DEBUG LOGGING END
+                                this.src = newSrc; // Yeni kaynakla yüklemeyi dene
+                                // LightGallery data-src'sini henüz güncelleme, başarılı olursa güncellenecek
+                            } else {
+                                // Denenecek başka uzantı kalmadı, yedek resme geç
+                                if (typeof console !== 'undefined' && console.warn) {
+                                     console.warn(`[WARN] onerror: No more extensions to try for base '${this.potentialBaseName}'. Switching to fallback: ${fallbackSrc}`);
+                                }
+                                this.src = fallbackSrc;
+                                this.setAttribute('data-src', fallbackSrc);
+                            }
                         };
                         
+                        // Başarılı yükleme durumunda LightGallery için data-src'yi güncelle
+                        img.onload = function() {
+                            if (this.src !== (new URL(fallbackSrc, window.location.origin)).href) {
+                                this.setAttribute('data-src', this.src);
+                                // DEBUG LOGGING START
+                                if (typeof console !== 'undefined' && console.log) {
+                                    console.log(`[DEBUG] onload: Image successfully loaded and data-src updated for: ${this.src}`);
+                                }
+                                // DEBUG LOGGING END
+                            }
+                        };
+
                         tdImage.appendChild(img);
                         tr.appendChild(tdImage);
 
