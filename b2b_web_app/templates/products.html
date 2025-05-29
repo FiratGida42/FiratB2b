@@ -632,7 +632,7 @@
                         plugins: [], // lgZoom eklentisi geçici olarak kaldırılmıştı
                     });
                 } catch (e) {
-                    console.error("LightGallery başlatılırken hata oluştu:", e);
+                    console.error("LightGallery başlatılırken hata oluştu:", e); // BU MESAJI KONSOLDA GÖRÜYOR MUSUNUZ?
                 }
             }
 
@@ -681,7 +681,7 @@
                         img.src = imgSrc;
                         img.alt = product.STOK_ADI || product.STOK_KODU;
                         img.className = 'product-image product-image-clickable';
-                        img.dataset.src = imgSrc; 
+                        img.dataset.src = imgSrc; // LightGallery bu özniteliği kullanır
                         img.onerror = function() { 
                             if (this.src.endsWith('.png') && !this.src.endsWith('urun_yok.png')) {
                                 const jpgSrc = this.src.substring(0, this.src.length - 4) + '.jpg';
