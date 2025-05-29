@@ -671,57 +671,50 @@
                         const tdImage = document.createElement('td');
                         const img = document.createElement('img');
                         
-                        let correctedImagePath = product.IMAGE_PATH_WEB;
+                        let debugOriginalPath = product.IMAGE_PATH_WEB;
+                        let correctedForSpaces = '';
+                        
                         // DEBUG LOGGING START
-                        if (typeof console !== 'undefined' && console.log) { // console.log'un varlığını kontrol et
-                            console.log(`[DEBUG] Product ID: ${product.STOK_KODU || 'N/A'}, Original IMAGE_PATH_WEB: '${product.IMAGE_PATH_WEB}'`);
+                        if (typeof console !== 'undefined' && console.log) {
+                            console.log(`[DEBUG] Product ID: ${product.STOK_KODU || 'N/A'}, Original IMAGE_PATH_WEB: '${debugOriginalPath}'`);
                         }
                         // DEBUG LOGGING END
 
-                        // Gelen IMAGE_PATH_WEB string ise ve boşluk içeriyorsa düzelt, başındaki/sonundaki boşlukları temizle
-                        if (product.IMAGE_PATH_WEB && typeof product.IMAGE_PATH_WEB === 'string') {
-                            correctedImagePath = product.IMAGE_PATH_WEB.replace(/ /g, '_').trim();
+                        if (debugOriginalPath && typeof debugOriginalPath === 'string') {
+                            correctedForSpaces = debugOriginalPath.replace(/ /g, '_').trim();
                         }
                         // DEBUG LOGGING START
                         if (typeof console !== 'undefined' && console.log) {
-                           console.log(`[DEBUG] Corrected IMAGE_PATH_WEB: '${correctedImagePath}'`);
+                           console.log(`[DEBUG] Path after space correction & trim: '${correctedForSpaces}'`);
                         }
                         // DEBUG LOGGING END
                         
-                        let imgSrcValue; // Resmin son URL'si için değişken
+                        let imgSrcValue;
                         
-                        // GitHub bilgileri (Bu değerlerin doğru olduğundan emin olun)
-                        const githubUser = 'FiratGida42'; 
-                        const githubRepo = 'FiratB2b'; 
-                        const githubBranch = 'refs/heads/main';
-                        
-                        let relativePathInRepo;
-
-                        if (correctedImagePath) {
-                            // product.IMAGE_PATH_WEB'in ne içerdiğine göre GitHub deposundaki doğru yolu oluşturalım:
-                            if (correctedImagePath.startsWith('b2b_web_app/static/images/')) {
-                                relativePathInRepo = correctedImagePath;
-                            } else if (correctedImagePath.startsWith('static/images/')) {
-                                relativePathInRepo = `b2b_web_app/${correctedImagePath}`;
-                            } else if (correctedImagePath.startsWith('images/')) {
-                                relativePathInRepo = `b2b_web_app/static/${correctedImagePath}`;
+                        if (correctedForSpaces) {
+                            if (correctedForSpaces.startsWith('b2b_web_app/static/')) { 
+                                imgSrcValue = `/${correctedForSpaces.substring('b2b_web_app/'.length)}`; 
+                            } else if (correctedForSpaces.startsWith('static/')) { 
+                                imgSrcValue = `/${correctedForSpaces}`;             
+                            } else if (correctedForSpaces.startsWith('images/')) { 
+                                imgSrcValue = `/static/${correctedForSpaces}`;      
+                            } else if (!correctedForSpaces.includes('/')) {       
+                                imgSrcValue = `/static/images/${correctedForSpaces}`; 
                             } else {
-                                // Varsayılan olarak, dosya adının doğrudan images klasörü altında olduğunu varsayalım
-                                // ve tam GitHub yolunu oluşturalım.
-                                relativePathInRepo = `b2b_web_app/static/images/${correctedImagePath}`;
+                                if (typeof console !== 'undefined' && console.warn) {
+                                    console.warn(`[WARN] Unexpected image path format from DB: '${correctedForSpaces}'. Attempting to use as '/static/images/${correctedForSpaces}'`);
+                                }
+                                imgSrcValue = `/static/images/${correctedForSpaces}`; 
                             }
-                            // DEBUG LOGGING START
-                            if (typeof console !== 'undefined' && console.log) {
-                                console.log(`[DEBUG] Relative path in repo: '${relativePathInRepo}'`);
-                            }
-                            // DEBUG LOGGING END
-                            imgSrcValue = `https://raw.githubusercontent.com/${githubUser}/${githubRepo}/${githubBranch}/${relativePathInRepo}`;
                         } else {
-                            imgSrcValue = '/static/images/urun_yok.png'; // Varsayılan yedek resim
+                            imgSrcValue = '/static/images/urun_yok.png';
                         }
+
+                        imgSrcValue = '/' + imgSrcValue.replace(/\/\/+/g, '/').replace(/^\/*/, '');
+
                         // DEBUG LOGGING START
                         if (typeof console !== 'undefined' && console.log) {
-                            console.log(`[DEBUG] Final imgSrcValue for thumbnail and LightGallery: '${imgSrcValue}'`);
+                            console.log(`[DEBUG] Final local imgSrcValue for thumbnail and LightGallery: '${imgSrcValue}'`);
                         }
                         // DEBUG LOGGING END
                         
@@ -928,24 +921,23 @@
             fetch('/api/products')
                 .then(response => response.json())
                 .then(products => {
-                    // STOK_ADI'na göre Türkçe karakterleri dikkate alarak sırala
                     products.sort((a, b) => {
-                        const nameA = a.STOK_ADI || ''; // STOK_ADI yoksa boş string kullan
-                        const nameB = b.STOK_ADI || ''; // STOK_ADI yoksa boş string kullan
+                        const nameA = a.STOK_ADI || '';
+                        const nameB = b.STOK_ADI || '';
                         return nameA.localeCompare(nameB, 'tr', { sensitivity: 'base' });
                     });
                     allProducts = products;
                     updateActiveCategoriesAndRenderNavbar(allProducts); 
                     filterAndRenderProducts(); 
                     updateActiveLinks(); 
-                    updateCartBadge(); // Sayfa ilk ürünleri yüklediğinde de badge güncellensin.
+                    updateCartBadge();
                 })
                 .catch(error => {
                     console.error('Ürünler yüklenirken hata oluştu:', error);
                     productTableContainer.innerHTML = '<p class="text-danger text-center">Ürünler yüklenirken bir sorun oluştu. Lütfen daha sonra tekrar deneyin.</p>';
                 });
             
-            updateCartBadge(); // Sayfa ilk yüklendiğinde badge için (fetch öncesi)
+            updateCartBadge();
         });
 
         window.initiateOrderDownload = function() {
@@ -956,46 +948,32 @@
             }
 
             const customerName = document.getElementById('customerName').value.trim() || "Bilinmeyen Cari";
-            const exportFormat = document.getElementById('exportFormat').value; // Şimdilik excel (csv) destekli
+            const exportFormat = document.getElementById('exportFormat').value;
 
             let dataToExport = [];
-            // Başlık satırı
             dataToExport.push(["Stok Kodu", "Barkod", "Ürün Adı", "Miktar", "Birim Fiyat", "Toplam Fiyat"]);
-            console.log("allProducts içeriği (ilk 5 ürün):", allProducts.slice(0, 5)); // allProducts kontrolü
 
             cartItems.forEach(item => {
-                console.log("Sepetteki ürün (item):", item);
-                // Tam ürün bilgisini allProducts listesinden bulalım (barkod için)
                 const productInfo = allProducts.find(p => p.STOK_KODU === item.stokKodu);
-                console.log(`Stok Kodu "${item.stokKodu}" için bulunan productInfo:`, productInfo);
-
-                const barkod = productInfo ? (productInfo.BARKOD1 || '') : ''; // Barkod varsa al, yoksa boş string
-                console.log(`Elde edilen barkod: "${barkod}"`);
-                
+                const barkod = productInfo ? (productInfo.BARKOD1 || '') : '';
                 dataToExport.push([
                     item.stokKodu,
                     barkod,
                     item.stokAdi,
-                    "'" + String(item.quantity), // Miktarın başına tek tırnak ekle ve string olarak aktar
+                    "'" + String(item.quantity),
                     formatCurrency(item.price),
                     formatCurrency(item.quantity * item.price)
                 ]);
             });
 
-            // Genel Toplamı ekleyebiliriz (isteğe bağlı)
             const grandTotal = cartItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
-            dataToExport.push([]); // Boş satır
+            dataToExport.push([]); 
             dataToExport.push(["", "", "", "", "Genel Toplam:", formatCurrency(grandTotal)]);
 
-            if (exportFormat === 'excel') { // CSV olarak dışa aktar
-                // UTF-8 BOM (Byte Order Mark) Türkçe karakterlerin Excel'de doğru görüntülenmesi için.
-                // https://stackoverflow.com/questions/17879198/adding-utf-8-bom-to-string-blob
-                let csvContent = '\uFEFF'; // UTF-8 BOM
-
+            if (exportFormat === 'excel') {
+                let csvContent = '\uFEFF';
                 dataToExport.forEach(function(rowArray) {
                     let row = rowArray.map(function(val) {
-                        // Değeri string'e çevir, içindeki çift tırnakları iki çift tırnakla değiştir
-                        // ve tüm değeri çift tırnak içine al.
                         let cell = String(val);
                         cell = cell.replace(/"/g, '""'); 
                         return '"' + cell + '"';
@@ -1015,8 +993,6 @@
                 alert("Sipariş CSV olarak indirildi: " + fileName);
             } else if (exportFormat === 'pdf') {
                 alert("PDF dışa aktarma özelliği henüz geliştirilmemiştir.");
-                // TODO: jsPDF veya benzeri bir kütüphane ile PDF oluşturma mantığı buraya eklenebilir.
-                // Bu, daha karmaşık bir işlemdir.
             }
         }
     </script>
@@ -1027,4 +1003,4 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/lightgallery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/plugins/zoom/lg-zoom.min.js"></script>
 </body>
-</html> 
+</html>
