@@ -677,35 +677,47 @@
                             correctedImagePath = product.IMAGE_PATH_WEB.replace(/ /g, '_');
                         }
                         
-                        const imgSrc = correctedImagePath ? `/static/${correctedImagePath}` : '/static/images/urun_yok.png';
-                        img.src = imgSrc;
+                        let imgSrcValue; // Resmin son URL'si için değişken
+                        
+                        if (correctedImagePath) {
+                            // Varsayımlar:
+                            const githubUser = 'FiratGida42'; 
+                            const githubRepo = 'FiratB2b'; // DEPO ADI GÜNCELLENDİ
+                            const githubBranch = 'main'; 
+                            
+                            let relativePathInRepo;
+
+                            // product.IMAGE_PATH_WEB'in ne içerdiğine göre GitHub deposundaki doğru yolu oluşturalım:
+                            if (correctedImagePath.startsWith('b2b_web_app/static/images/')) {
+                                relativePathInRepo = correctedImagePath;
+                            } else if (correctedImagePath.startsWith('static/images/')) {
+                                relativePathInRepo = `b2b_web_app/${correctedImagePath}`;
+                            } else if (correctedImagePath.includes('/')) { // Muhtemelen "images/product_123.png" gibi
+                                relativePathInRepo = `b2b_web_app/static/${correctedImagePath}`;
+                            } else { // Sadece dosya adı olduğunu varsay (örn: "product_123.png")
+                                relativePathInRepo = `b2b_web_app/static/images/${correctedImagePath}`;
+                            }
+                            
+                            imgSrcValue = `https://raw.githubusercontent.com/${githubUser}/${githubRepo}/${githubBranch}/${relativePathInRepo}`;
+                        } else {
+                            imgSrcValue = '/static/images/urun_yok.png'; // Bu hala OnRender'dan yerel yedek
+                        }
+                        
+                        img.src = imgSrcValue;
                         img.alt = product.STOK_ADI || product.STOK_KODU;
                         img.className = 'product-image product-image-clickable';
-                        img.dataset.src = imgSrc; // LightGallery bu özniteliği kullanır
+                        img.dataset.src = imgSrcValue; 
+
                         img.onerror = function() { 
-                            if (this.src.endsWith('.png') && !this.src.endsWith('urun_yok.png')) {
-                                const jpgSrc = this.src.substring(0, this.src.length - 4) + '.jpg';
-                                this.src = jpgSrc;
-                                this.dataset.src = jpgSrc; // Lightgallery için de güncelle
-                                // İkinci denemede de hata olursa placeholder'a dön
-                                this.onerror = function() {
-                                    this.onerror = null;
-                                    this.src = '/static/images/urun_yok.png';
-                                    this.dataset.src = '/static/images/urun_yok.png';
-                                };
-                            } else if (this.src.endsWith('.jpg') && !this.src.endsWith('urun_yok.png')) {
-                                // Eğer .jpg denemesi de başarısız olursa direkt urun_yok.png ata
-                                // Bu blok aslında bir önceki onerror içinde ele alındığı için buraya gelmemeli ama güvenlik amaçlı.
-                                this.onerror = null;
-                                this.src = '/static/images/urun_yok.png';
-                                this.dataset.src = '/static/images/urun_yok.png';
-                            } else if (!this.src.endsWith('urun_yok.png')) {
-                                // İlk src .png veya .jpg değildi veya zaten urun_yok.png denendi, son çare
-                                this.onerror = null;
-                                this.src = '/static/images/urun_yok.png';
-                                this.dataset.src = '/static/images/urun_yok.png';
+                            const localFallbackSrc = '/static/images/urun_yok.png';
+                            if (this.src !== localFallbackSrc) {
+                                console.warn(`Resim yüklenemedi: ${this.src}. Yerel yedek resme geçiliyor: ${localFallbackSrc}`);
+                                this.src = localFallbackSrc;
+                                this.dataset.src = localFallbackSrc; 
                             }
+                            this.onerror = null; 
                         };
+                        
                         tdImage.appendChild(img);
                         tdImage.style.verticalAlign = 'middle';
                         tr.appendChild(tdImage);
