@@ -307,6 +307,7 @@
             let selectedMainCategoryId = 'all'; 
             let selectedSubCategoryId = null;   
             let lightGalleryInstance = null;
+            const debouncedLgRefresh = debounce(initializeOrRefreshLightGallery, 250); // DEBOUNCED FONKSİYON TANIMLAMASI
 
             const cartItemCountBadge = document.getElementById('cartItemCountBadge');
 
@@ -625,7 +626,7 @@
                 }
                 try {
                     lightGalleryInstance = lightGallery(productTableContainer, {
-                        selector: '.product-image-clickable',
+                        selector: '.product-image',
                         dynamic: false, 
                         download: false, 
                         counter: true, 
@@ -669,141 +670,49 @@
                         const tr = document.createElement('tr');
                         
                         const tdImage = document.createElement('td');
+                        tdImage.style.textAlign = 'center';
+                        tdImage.style.verticalAlign = 'middle';
+                        const imgContainer = document.createElement('div'); // Lightgallery'nin her bir öğeyi sarması için
+                        imgContainer.className = 'lightgallery-item'; // Lightgallery'nin bulması için
+                        
                         const img = document.createElement('img');
+                        const baseImagePath = `/static/images/product_${product.STOK_KODU}`;
+                        const placeholderPath = '/static/images/urun_yok.png';
                         
-                        let debugOriginalPath = product.IMAGE_PATH_WEB;
-                        let correctedForSpaces = '';
-                        
-                        // DEBUG LOGGING START
-                        if (typeof console !== 'undefined' && console.log) {
-                            console.log(`[DEBUG] Product ID: ${product.STOK_KODU || 'N/A'}, Original IMAGE_PATH_WEB: '${debugOriginalPath}'`);
-                        }
-                        // DEBUG LOGGING END
-
-                        if (debugOriginalPath && typeof debugOriginalPath === 'string') {
-                            correctedForSpaces = debugOriginalPath.replace(/ /g, '_').trim();
-                        }
-                        // DEBUG LOGGING START
-                        if (typeof console !== 'undefined' && console.log) {
-                           console.log(`[DEBUG] Path after space correction & trim: '${correctedForSpaces}'`);
-                        }
-                        // DEBUG LOGGING END
-                        
-                        let imgSrcValue;
-                        
-                        if (correctedForSpaces) {
-                            if (correctedForSpaces.startsWith('b2b_web_app/static/')) { 
-                                imgSrcValue = `/${correctedForSpaces.substring('b2b_web_app/'.length)}`; 
-                            } else if (correctedForSpaces.startsWith('static/')) { 
-                                imgSrcValue = `/${correctedForSpaces}`;             
-                            } else if (correctedForSpaces.startsWith('images/')) { 
-                                imgSrcValue = `/static/${correctedForSpaces}`;      
-                            } else if (!correctedForSpaces.includes('/')) {       
-                                imgSrcValue = `/static/images/${correctedForSpaces}`; 
-                            } else {
-                                if (typeof console !== 'undefined' && console.warn) {
-                                    console.warn(`[WARN] Unexpected image path format from DB: '${correctedForSpaces}'. Attempting to use as '/static/images/${correctedForSpaces}'`);
-                                }
-                                imgSrcValue = `/static/images/${correctedForSpaces}`; 
-                            }
-                        } else {
-                            imgSrcValue = '/static/images/urun_yok.png';
-                        }
-
-                        imgSrcValue = '/' + imgSrcValue.replace(/\/\/+/g, '/').replace(/^\/*/, '');
-
-                        // DEBUG LOGGING START
-                        if (typeof console !== 'undefined' && console.log) {
-                            console.log(`[DEBUG] Final local imgSrcValue for thumbnail and LightGallery: '${imgSrcValue}'`);
-                        }
-                        // DEBUG LOGGING END
-                        
-                        img.src = imgSrcValue;
                         img.alt = product.STOK_ADI || 'Ürün Resmi';
-                        img.className = 'product-image-clickable img-fluid'; 
-                        img.style.maxWidth = '80px';
-                        img.style.maxHeight = '80px';
-                        img.style.cursor = 'pointer';
+                        img.className = 'product-image';
+                        
+                        img.dataset.src = `${baseImagePath}.jpg`; // Başlangıçta .jpg olarak ayarla
 
-                        // LightGallery için büyük resim yolunu data-src olarak ayarla
-                        img.setAttribute('data-src', imgSrcValue); 
+                        img.onload = function() {
+                            // .jpg başarıyla yüklendi. dataset.src zaten doğru.
+                        };
 
-                        img.onerror = function() {
-                            const originalSrc = this.src;
-                            const fallbackSrc = '/static/images/urun_yok.png';
-                            // DEBUG LOGGING START
-                            if (typeof console !== 'undefined' && console.warn) {
-                                console.warn(`[WARN] onerror: Initial image load failed for: ${originalSrc}. Product ID: ${product.STOK_KODU || 'N/A'}`);
-                            }
-                            // DEBUG LOGGING END
+                        img.onerror = function() { // .jpg yüklenemedi
+                            this.src = `${baseImagePath}.png`;      // .png'yi yüklemeyi dene (thumbnail için)
+                            this.dataset.src = `${baseImagePath}.png`; // Lightgallery için dataset.src'yi .png olarak güncelle
+                            debouncedLgRefresh();   // Lightgallery'yi yenilemesi için işaretle
 
-                            // Eğer zaten yedek resmi deniyorsak veya denenecek uzantı kalmadıysa döngüden çık
-                            if (this.src === (new URL(fallbackSrc, window.location.origin)).href || (this.triedExtensions && this.triedExtensions.length === 0)) {
-                                if (this.src !== (new URL(fallbackSrc, window.location.origin)).href) {
-                                    if (typeof console !== 'undefined' && console.warn) {
-                                        console.warn(`[WARN] onerror: All extension attempts failed for original path '${debugOriginalPath}'. Switching to fallback: ${fallbackSrc}`);
-                                    }
-                                    this.src = fallbackSrc;
-                                    this.setAttribute('data-src', fallbackSrc); // LightGallery için de yedek resim
-                                }
-                                return; // Daha fazla deneme yapma
-                            }
-
-                            // Eğer bu ilk hata ise (yani henüz uzantı denemeleri başlamadıysa)
-                            if (!this.triedExtensions) {
-                                // Sadece dosya adını (uzantısız) almayı dene (correctedForSpaces zaten uzantısız olabilir)
-                                let baseName = correctedForSpaces;
-                                const lastDotIndex = correctedForSpaces.lastIndexOf('.');
-                                if (lastDotIndex > -1) {
-                                    // Eğer correctedForSpaces içinde bir uzantı varsa, onu çıkar
-                                    // Örneğin: "product_image.png" -> "product_image"
-                                    baseName = correctedForSpaces.substring(0, lastDotIndex);
-                                }
+                            this.onload = function() {
+                                // .png başarıyla yüklendi.
+                            };
+                            this.onerror = function() { // .png de yüklenemedi
+                                this.src = placeholderPath;      // urun_yok.png'yi yükle (thumbnail için)
+                                this.dataset.src = placeholderPath; // Lightgallery için dataset.src'yi placeholder olarak güncelle
+                                debouncedLgRefresh();      // Lightgallery'yi yenilemesi için işaretle
                                 
-                                // DEBUG LOGGING START
-                                if (typeof console !== 'undefined' && console.log) {
-                                    console.log(`[DEBUG] onerror: Base name for extension trial: '${baseName}'. Original correctedForSpaces: '${correctedForSpaces}'`);
-                                }
-                                // DEBUG LOGGING END
-
-                                this.potentialBaseName = baseName; // Sonraki denemeler için sakla
-                                this.triedExtensions = ['.png', '.jpg', '.jpeg', '.webp', '.gif']; // Denenecek uzantılar
-                            }
-
-                            const nextExtension = this.triedExtensions.shift(); // Sıradaki uzantıyı al ve listeden çıkar
-                            if (nextExtension) {
-                                const newSrc = `/static/images/${this.potentialBaseName}${nextExtension}`;
-                                // DEBUG LOGGING START
-                                if (typeof console !== 'undefined' && console.log) {
-                                    console.log(`[DEBUG] onerror: Attempting next extension: ${newSrc}`);
-                                }
-                                // DEBUG LOGGING END
-                                this.src = newSrc; // Yeni kaynakla yüklemeyi dene
-                                // LightGallery data-src'sini henüz güncelleme, başarılı olursa güncellenecek
-                            } else {
-                                // Denenecek başka uzantı kalmadı, yedek resme geç
-                                if (typeof console !== 'undefined' && console.warn) {
-                                     console.warn(`[WARN] onerror: No more extensions to try for base '${this.potentialBaseName}'. Switching to fallback: ${fallbackSrc}`);
-                                }
-                                this.src = fallbackSrc;
-                                this.setAttribute('data-src', fallbackSrc);
-                            }
+                                this.onload = function() {
+                                    // urun_yok.png başarıyla yüklendi
+                                };
+                                this.onerror = null; // Hata döngüsünü engelle
+                            };
                         };
                         
-                        // Başarılı yükleme durumunda LightGallery için data-src'yi güncelle
-                        img.onload = function() {
-                            if (this.src !== (new URL(fallbackSrc, window.location.origin)).href) {
-                                this.setAttribute('data-src', this.src);
-                                // DEBUG LOGGING START
-                                if (typeof console !== 'undefined' && console.log) {
-                                    console.log(`[DEBUG] onload: Image successfully loaded and data-src updated for: ${this.src}`);
-                                }
-                                // DEBUG LOGGING END
-                            }
-                        };
-
-                        tdImage.appendChild(img);
-                        tr.appendChild(tdImage);
+                        img.src = `${baseImagePath}.jpg`; // .jpg'yi yüklemeye başla (thumbnail için)
+                        
+                        imgContainer.appendChild(img);
+                        tdImage.appendChild(imgContainer);
+                        tr.insertBefore(tdImage, tr.firstChild); // Resmi ilk sütuna ekle
 
                         const tdAction = document.createElement('td');
                         tdAction.className = 'action-cell';
