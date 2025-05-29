@@ -895,6 +895,17 @@
                 .then(response => response.json())
                 .then(products => {
                     products.sort((a, b) => {
+                        const grupA = a.GRUP_KODU || '';
+                        const grupB = b.GRUP_KODU || '';
+
+                        if (grupA < grupB) {
+                            return -1;
+                        }
+                        if (grupA > grupB) {
+                            return 1;
+                        }
+
+                        // GRUP_KODU aynı ise STOK_ADI'na göre sırala
                         const nameA = a.STOK_ADI || '';
                         const nameB = b.STOK_ADI || '';
                         return nameA.localeCompare(nameB, 'tr', { sensitivity: 'base' });
