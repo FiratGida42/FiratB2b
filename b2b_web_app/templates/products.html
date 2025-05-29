@@ -672,54 +672,80 @@
                         const img = document.createElement('img');
                         
                         let correctedImagePath = product.IMAGE_PATH_WEB;
-                        // Gelen IMAGE_PATH_WEB string ise ve boşluk içeriyorsa düzelt
-                        if (product.IMAGE_PATH_WEB && typeof product.IMAGE_PATH_WEB === 'string') {
-                            correctedImagePath = product.IMAGE_PATH_WEB.replace(/ /g, '_');
+                        // DEBUG LOGGING START
+                        if (typeof console !== 'undefined' && console.log) { // console.log'un varlığını kontrol et
+                            console.log(`[DEBUG] Product ID: ${product.STOK_KODU || 'N/A'}, Original IMAGE_PATH_WEB: '${product.IMAGE_PATH_WEB}'`);
                         }
+                        // DEBUG LOGGING END
+
+                        // Gelen IMAGE_PATH_WEB string ise ve boşluk içeriyorsa düzelt, başındaki/sonundaki boşlukları temizle
+                        if (product.IMAGE_PATH_WEB && typeof product.IMAGE_PATH_WEB === 'string') {
+                            correctedImagePath = product.IMAGE_PATH_WEB.replace(/ /g, '_').trim();
+                        }
+                        // DEBUG LOGGING START
+                        if (typeof console !== 'undefined' && console.log) {
+                           console.log(`[DEBUG] Corrected IMAGE_PATH_WEB: '${correctedImagePath}'`);
+                        }
+                        // DEBUG LOGGING END
                         
                         let imgSrcValue; // Resmin son URL'si için değişken
                         
-                        if (correctedImagePath) {
-                            // Varsayımlar:
-                            const githubUser = 'FiratGida42'; 
-                            const githubRepo = 'FiratB2b'; // DEPO ADI GÜNCELLENDİ
-                            const githubBranch = 'main'; 
-                            
-                            let relativePathInRepo;
+                        // GitHub bilgileri (Bu değerlerin doğru olduğundan emin olun)
+                        const githubUser = 'FiratGida42'; 
+                        const githubRepo = 'FiratB2b'; 
+                        const githubBranch = 'refs/heads/main';
+                        
+                        let relativePathInRepo;
 
+                        if (correctedImagePath) {
                             // product.IMAGE_PATH_WEB'in ne içerdiğine göre GitHub deposundaki doğru yolu oluşturalım:
                             if (correctedImagePath.startsWith('b2b_web_app/static/images/')) {
                                 relativePathInRepo = correctedImagePath;
                             } else if (correctedImagePath.startsWith('static/images/')) {
                                 relativePathInRepo = `b2b_web_app/${correctedImagePath}`;
-                            } else if (correctedImagePath.includes('/')) { // Muhtemelen "images/product_123.png" gibi
+                            } else if (correctedImagePath.startsWith('images/')) {
                                 relativePathInRepo = `b2b_web_app/static/${correctedImagePath}`;
-                            } else { // Sadece dosya adı olduğunu varsay (örn: "product_123.png")
+                            } else {
+                                // Varsayılan olarak, dosya adının doğrudan images klasörü altında olduğunu varsayalım
+                                // ve tam GitHub yolunu oluşturalım.
                                 relativePathInRepo = `b2b_web_app/static/images/${correctedImagePath}`;
                             }
-                            
+                            // DEBUG LOGGING START
+                            if (typeof console !== 'undefined' && console.log) {
+                                console.log(`[DEBUG] Relative path in repo: '${relativePathInRepo}'`);
+                            }
+                            // DEBUG LOGGING END
                             imgSrcValue = `https://raw.githubusercontent.com/${githubUser}/${githubRepo}/${githubBranch}/${relativePathInRepo}`;
                         } else {
-                            imgSrcValue = '/static/images/urun_yok.png'; // Bu hala OnRender'dan yerel yedek
+                            imgSrcValue = '/static/images/urun_yok.png'; // Varsayılan yedek resim
                         }
+                        // DEBUG LOGGING START
+                        if (typeof console !== 'undefined' && console.log) {
+                            console.log(`[DEBUG] Final imgSrcValue for thumbnail and LightGallery: '${imgSrcValue}'`);
+                        }
+                        // DEBUG LOGGING END
                         
                         img.src = imgSrcValue;
-                        img.alt = product.STOK_ADI || product.STOK_KODU;
-                        img.className = 'product-image product-image-clickable';
-                        img.dataset.src = imgSrcValue; 
+                        img.alt = product.STOK_ADI || 'Ürün Resmi';
+                        img.className = 'product-image-clickable img-fluid'; 
+                        img.style.maxWidth = '80px';
+                        img.style.maxHeight = '80px';
+                        img.style.cursor = 'pointer';
 
-                        img.onerror = function() { 
-                            const localFallbackSrc = '/static/images/urun_yok.png';
-                            if (this.src !== localFallbackSrc) {
-                                console.warn(`Resim yüklenemedi: ${this.src}. Yerel yedek resme geçiliyor: ${localFallbackSrc}`);
-                                this.src = localFallbackSrc;
-                                this.dataset.src = localFallbackSrc; 
+                        // LightGallery için büyük resim yolunu data-src olarak ayarla
+                        img.setAttribute('data-src', imgSrcValue); 
+
+                        img.onerror = function() {
+                            const failedSrc = this.src; // Hata veren URL'yi yakala (bu noktada zaten imgSrcValue olmalı)
+                            if (typeof console !== 'undefined' && console.error) { // console.error kontrolü
+                                console.error(`Resim yüklenemedi (onerror): ${failedSrc}. Yerel yedek resme geçiliyor: /static/images/urun_yok.png`);
                             }
-                            this.onerror = null; 
+                            this.src = '/static/images/urun_yok.png'; // Thumbnail için yedek resim
+                            // LightGallery'nin de yedek resmi kullanması için data-src'yi güncelle
+                            this.setAttribute('data-src', '/static/images/urun_yok.png');
                         };
                         
                         tdImage.appendChild(img);
-                        tdImage.style.verticalAlign = 'middle';
                         tr.appendChild(tdImage);
 
                         const tdAction = document.createElement('td');
