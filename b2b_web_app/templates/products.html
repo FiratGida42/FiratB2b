@@ -670,7 +670,14 @@
                         
                         const tdImage = document.createElement('td');
                         const img = document.createElement('img');
-                        const imgSrc = product.IMAGE_PATH_WEB ? `/static/${product.IMAGE_PATH_WEB}` : '/static/images/urun_yok.png';
+                        
+                        let correctedImagePath = product.IMAGE_PATH_WEB;
+                        // Gelen IMAGE_PATH_WEB string ise ve boşluk içeriyorsa düzelt
+                        if (product.IMAGE_PATH_WEB && typeof product.IMAGE_PATH_WEB === 'string') {
+                            correctedImagePath = product.IMAGE_PATH_WEB.replace(/ /g, '_');
+                        }
+                        
+                        const imgSrc = correctedImagePath ? `/static/${correctedImagePath}` : '/static/images/urun_yok.png';
                         img.src = imgSrc;
                         img.alt = product.STOK_ADI || product.STOK_KODU;
                         img.className = 'product-image product-image-clickable';
