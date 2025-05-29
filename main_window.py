@@ -54,7 +54,7 @@ from data_extractor import (
     LOG_FILE
 )
 # batch_image_downloader ve image_processor'dan gerekli importlar
-from image_processor import download_and_save_image as save_image_from_url, clean_product_name
+# from image_processor import download_and_save_image as save_image_from_url, clean_product_name # YORUMA ALINDI
 from customers_module import CustomersPage # <<< YENİ: Cari modülünü import et
 try:
     from duckduckgo_search import DDGS
@@ -1396,7 +1396,9 @@ class MainWindow(QMainWindow):
 
         # 2. Ürün adı ile ara (barkodla bulunamazsa veya barkod yoksa)
         if not image_url_found and stok_adi:
-            cleaned_name = clean_product_name(stok_adi)
+            # clean_product_name artık import edilmiyor, bu yüzden bu satırı yorumlayalım veya stok_adi'ni doğrudan kullanalım
+            # cleaned_name = clean_product_name(stok_adi)
+            cleaned_name = stok_adi # Geçici olarak doğrudan stok_adi kullanılıyor
             search_term_used = cleaned_name + " ürün"
             try:
                 with DDGS() as ddgs:
@@ -1419,8 +1421,9 @@ class MainWindow(QMainWindow):
             self.status_bar.showMessage(f"'{stok_kodu}' için resim bulundu, indiriliyor: {image_url_found[:70]}...", 0)
             QApplication.processEvents()
             
-            # image_processor.download_and_save_image yeni adıyla save_image_from_url oldu
-            saved_image_path = save_image_from_url(image_url_found, stok_kodu)
+            # save_image_from_url artık import edilmiyor, bu yüzden bu çağrıyı yorumlayalım.
+            # saved_image_path = save_image_from_url(image_url_found, stok_kodu)
+            saved_image_path = None # Geçici olarak None atayalım
 
             if saved_image_path:
                 QMessageBox.information(self, "Başarılı", 

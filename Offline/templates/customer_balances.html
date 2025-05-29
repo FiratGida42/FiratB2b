@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - B2B Portalı (Offline)</title>
+
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#212529">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/static/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registered for customer balances: ', registration.scope);
+                    })
+                    .catch(registrationError => {
+                        console.log('ServiceWorker registration failed for customer balances: ', registrationError);
+                    });
+            });
+        }
+    </script>
+
+    <!-- Yerel CSS Dosyaları -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap-icons.css">
+
+    <style>
+        body {
+            padding-top: 56px;
+            background-color: #f8f9fa;
+        }
+        .table th.text-end, .table td.text-end {
+            text-align: right !important;
+        }
+        div.dataTables_wrapper div.dataTables_filter input {
+            margin-left: 0.5em;
+            display: inline-block;
+            width: auto;
+            margin-bottom: 10px;
+        }
+        div.dataTables_wrapper div.dataTables_length select {
+            width: auto;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        /* Offline indicator */
+        .offline-indicator {
+            background: #ffc107;
+            color: #343a40;
+            padding: 8px 15px;
+            font-size: 0.9em;
+            position: fixed;
+            top: 56px; /* Navbar'ın hemen altına */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1050;
+            border-radius: 0 0 5px 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <img src="/static/images/Logo.png" alt="Fırat Toptan Logo" style="height: 30px; margin-right: 10px; vertical-align: middle;">
+                B2B Portalı (Offline)
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Ürünler</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a href="/cart" class="btn btn-primary position-relative me-2" id="cartLinkButton">
+                            Sepetim
+                            <span id="cartItemCountBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                                0
+                            </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/orders" class="btn btn-info me-2">Siparişlerim</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/customer-balances" class="btn btn-success me-2 active">Cari Bakiyeler</a>
+                    </li>
+                    {% if admin_user %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarUserDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ admin_user }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarUserDropdown">
+                            <li><a class="dropdown-item" href="/admin/me">Admin Paneli</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout">Çıkış Yap</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div id="offline-status-indicator" class="offline-indicator">
+        Çevrimdışı Mod Aktif. Veriler en son senkronizasyondan.
+    </div>
+
+    <div class="container mt-4" style="padding-top: 20px;">
+        <h1 class="mb-4">{{ title }}</h1>
+
+        {% if customers %}
+        <div class="table-responsive">
+            <table id="customerBalancesTable" class="table table-striped table-hover table-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Cari Kodu</th>
+                        <th scope="col">Cari İsim</th>
+                        <th scope="col" class="text-end">Borç Bakiyesi</th>
+                        <th scope="col" class="text-end">Alacak Bakiyesi</th>
+                        <th scope="col" class="text-end">Net Bakiye</th>
+                        <th scope="col">Grup Kodu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %}
+                    <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ customer.CARI_KOD if customer.CARI_KOD else '-' }}</td>
+                        <td>
+                            {% set cari_isim = customer.CARI_ISIM.strip() if customer.CARI_ISIM else '' %}
+                            {{ cari_isim if cari_isim else 'İsim Belirtilmemiş' }}
+                        </td>
+                        <td class="text-end" data-order="{{ customer.BORC_BAKIYESI | float }}">{{ customer.BORC_BAKIYESI | currency_tr }}</td>
+                        <td class="text-end" data-order="{{ customer.ALACAK_BAKIYESI | float }}">{{ customer.ALACAK_BAKIYESI | currency_tr }}</td>
+                        <td class="text-end fw-bold" data-order="{{ customer.NET_BAKIYE | float }}">{{ customer.NET_BAKIYE | currency_tr }}</td>
+                        <td>{{ customer.GRUP_KODU if customer.GRUP_KODU else '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> Gösterilecek cari bakiye bilgisi bulunamadı veya cari listesi boş.
+        </div>
+        <p>Lütfen masaüstü uygulamasından carilerinizi filtreleyip "JSON Olarak Kaydet" işlemini yapınız ve bu verinin (`filtrelenen_cariler.json`) `Offline/static/json_data/` klasöründe olduğundan emin olunuz. Çevrimdışı kullanım için bu dosya gereklidir.</p>
+        {% endif %}
+    </div>
+
+    <!-- Yerel JS Dosyaları -->
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/jquery.dataTables.min.js"></script>
+    <script src="/static/js/dataTables.bootstrap5.min.js"></script>
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const offlineIndicator = document.getElementById('offline-status-indicator');
+
+            function updateOnlineStatus() {
+                if (navigator.onLine) {
+                    offlineIndicator.style.display = 'none';
+                } else {
+                    offlineIndicator.style.display = 'block';
+                }
+            }
+            window.addEventListener('online', updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
+            updateOnlineStatus(); // Initial check
+
+            // Sepet badge güncellemesi (products.html'den alınabilir)
+            function getCartItemsFromStorage() {
+                const items = localStorage.getItem('b2bOfflineCartItems');
+                return items ? JSON.parse(items) : [];
+            }
+
+            function updateCartBadge() {
+                const cartItemCountBadge = document.getElementById('cartItemCountBadge');
+                if (!cartItemCountBadge) return;
+                const cartItems = getCartItemsFromStorage();
+                const totalItems = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0); // item.quantity kontrolü
+                if (totalItems > 0) {
+                    cartItemCountBadge.textContent = totalItems;
+                    cartItemCountBadge.style.display = 'inline-block';
+                } else {
+                    cartItemCountBadge.style.display = 'none';
+                }
+            }
+            updateCartBadge(); // Sayfa yüklenince çalıştır
+
+
+            // DataTables başlatma
+            if (document.getElementById('customerBalancesTable')) {
+                $('#customerBalancesTable').DataTable({
+                    "language": {
+                        // Yerel tr.json dosyasına referans veriyoruz
+                        "url": "/static/json_data/tr.json",
+                         "search": "Ara:",
+                         "lengthMenu": "Sayfada _MENU_ kayıt göster",
+                         "info": "Toplam _TOTAL_ kayıttan _START_ ile _END_ arası gösteriliyor",
+                         "infoEmpty": "Kayıt bulunamadı",
+                         "infoFiltered": "(_MAX_ toplam kayıttan filtrelendi)",
+                         "paginate": {
+                            "first": "İlk",
+                            "last": "Son",
+                            "next": "Sonraki",
+                            "previous": "Önceki"
+                        }
+                    },
+                    "pageLength": 25,
+                    "order": [], // Backend'den zaten sıralı geldiği için varsayılan sıralamayı kaldır.
+                                 // Veya [[ 5, "desc" ]] gibi bir sıralama bırakılabilir (Net Bakiye).
+                    "columnDefs": [
+                        // data-order Jinja'da eklendiği için 'type: "num"' yeterli olacaktır.
+                        { "type": "num", "targets": [3, 4, 5] }
+                    ]
+                });
+            }
+        });
+    </script>
+</body>
+</html>

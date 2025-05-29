@@ -189,16 +189,12 @@ def fetch_product_data(connection, excluded_groups=None):
 
             # Resim yolunu ekle
             stok_kodu_str = str(converted_row_dict.get('STOK_KODU', '')).strip()
-            stok_adi_raw = converted_row_dict.get('STOK_ADI', '') # Zaten düzeltilmiş olmalı
             
-            # Doğrudan None URL ile çağırarak yerel resmi kontrol et/kullan
-            # image_path_web = image_processor.download_and_save_image(None, stok_kodu_str) # Bu satır silinecek
+            # Doğrudan yolu oluştur (varsayılan .png)
+            stok_kodu_clean = stok_kodu_str.replace('/', '_')
+            image_path_web = f"images/product_{stok_kodu_clean}.png"
             
-            # if not image_path_web: # Bu blok silinecek
-            # image_path_web = DEFAULT_PLACEHOLDER_IMAGE # images/urun_yok.png
-            
-            # converted_row_dict['IMAGE_PATH_WEB'] = image_path_web # Bu satır değiştirilecek
-            converted_row_dict['IMAGE_PATH_WEB'] = f"images/product_{stok_kodu_str.replace('/', '_')}.png"
+            converted_row_dict['IMAGE_PATH_WEB'] = image_path_web
             results.append(converted_row_dict)
             
             # Her 50 üründe bir ilerleme mesajı (isteğe bağlı)
@@ -270,13 +266,10 @@ def extract_data_from_db(connection_params):
                 grup_kodu_corrected = grup_kodu_raw.replace('Ý','İ').replace('Þ','Ş').replace('Ð','Ğ') if grup_kodu_raw else ''
                 
                 stok_kodu_str = str(row.STOK_KODU).strip()
-                # cleaned_stok_adi = image_processor.clean_product_name(stok_adi_corrected) # Bu satır silinecek
                 
-                # image_url_found = find_image_url_for_product(cleaned_stok_adi, stok_adi_corrected, stok_kodu_str) # Bu satır silinecek
-                # image_path_web = image_processor.download_and_save_image(image_url_found, stok_kodu_str) # Bu satır silinecek
-                
-                # if not image_path_web: # Bu blok silinecek
-                #     image_path_web = DEFAULT_PLACEHOLDER_IMAGE
+                # Doğrudan yolu oluştur (varsayılan .png)
+                stok_kodu_clean = stok_kodu_str.replace('/', '_')
+                image_path_web = f"images/product_{stok_kodu_clean}.png"
 
                 product_data = {
                     'STOK_KODU': stok_kodu_str,
@@ -285,8 +278,7 @@ def extract_data_from_db(connection_params):
                     'SATIS_FIAT1': to_decimal(row.SATIS_FIAT1),
                     'GRUP_KODU': grup_kodu_corrected,
                     'BARKOD1': row.BARKOD1.strip() if row.BARKOD1 else '',
-                    # 'IMAGE_PATH_WEB': image_path_web # Bu satır değiştirilecek
-                    'IMAGE_PATH_WEB': f"images/product_{stok_kodu_str.replace('/', '_')}.png"
+                    'IMAGE_PATH_WEB': image_path_web
                 }
                 products.append(product_data)
             except Exception as e:
@@ -318,16 +310,10 @@ def save_data_to_json(data, filename="urun_verileri_onizleme.json"):
 
 def send_data_to_web_api(product_data: list, api_url: str = DEFAULT_API_URL) -> tuple[bool, str]:
     settings = load_settings() # Ayarları yükle
-    PRODUCTS_API_KEY_VALUE = settings.get("products_api_key") # settings.json'dan oku
+    PRODUCTS_API_KEY_VALUE = settings.get("products_api_key") 
 
     if not PRODUCTS_API_KEY_VALUE:
         logging.error("KRİTİK HATA: PRODUCTS_API_KEY, settings.json dosyasında bulunamadı veya boş.")
-        logging.warning("Lütfen settings.json dosyasına 'products_api_key': 'DEĞERİNİZ' şeklinde ekleyin.")
-        # Ortam değişkeni fallback'ini kaldırabilir veya bırakabilirsiniz, ama settings.json öncelikli olmalı.
-        # PRODUCTS_API_KEY_VALUE = os.environ.get("PRODUCTS_API_KEY") # Fallback
-        # if not PRODUCTS_API_KEY_VALUE:
-        #     logging.warning("Ortam değişkeni olarak da PRODUCTS_API_KEY bulunamadı.")
-        #     PRODUCTS_API_KEY_VALUE = "dev-temporary-products-api-key-replace-me"
         return False, "API Anahtarı settings.json dosyasında bulunamadı. Lütfen ayarları kontrol edin."
 
     if not product_data:
@@ -335,69 +321,59 @@ def send_data_to_web_api(product_data: list, api_url: str = DEFAULT_API_URL) -> 
         logging.warning(message)
         return False, message
 
-    # Decimal nesnelerini string'e çevir (JSON için)
     data_for_json = []
     for item_dict in product_data:
         processed_item = {}
         for key, value in item_dict.items():
             if isinstance(value, Decimal):
                 processed_item[key] = str(value)
-            # IMAGE_PATH_WEB için özel bir işlem gerekmiyor, zaten string olmalı
             else:
                 processed_item[key] = value
         data_for_json.append(processed_item)
     
     headers = {
         "Content-Type": "application/json",
-        "X-API-Key": PRODUCTS_API_KEY_VALUE  # API anahtarını header'a ekle
+        "X-API-Key": PRODUCTS_API_KEY_VALUE
     }
     item_count = len(data_for_json)
-    logging.info(f"\'{api_url}\' adresine {item_count} adet ürün gönderilmeye çalışılıyor (API Anahtarı ile)...")
-
-    # --- TEST İÇİN GEÇİCİ GECİKME KALDIRILIYOR ---
-    # print("DEBUG: API isteği öncesi 2 saniye bekleniyor...")
-    # time.sleep(2) # 2 saniyelik gecikme
-    # print("DEBUG: Bekleme bitti, API isteği gönderiliyor.")
-    # --- TEST İÇİN GEÇİCİ GECİKME SONU ---
+    logging.info(f"'{api_url}' adresine {item_count} adet ürün gönderilmeye çalışılıyor (API Anahtarı ile)...")
+    
+    # Loglama için ilk birkaç ürünü göster (hassas veri olmamasına dikkat edin veya bu kısmı üretimde kaldırın)
+    if item_count > 0:
+        logging.info(f"Gönderilecek ilk ürün örneği: {json.dumps(data_for_json[0], ensure_ascii=False, default=str)}")
+    if item_count > 1:
+        logging.info(f"Gönderilecek ikinci ürün örneği (varsa): {json.dumps(data_for_json[1], ensure_ascii=False, default=str)}")
 
     try:
         response = requests.post(api_url, json=data_for_json, headers=headers, timeout=30)
-        response.raise_for_status()  # HTTP 4xx veya 5xx durum kodlarında bir HTTPError fırlatır
+        logging.info(f"API Yanıt Durum Kodu: {response.status_code}")
+        logging.info(f"API Yanıt Başlıkları: {response.headers}")
+        try:
+            response_json = response.json()
+            logging.info(f"API Yanıt İçeriği (JSON): {json.dumps(response_json, ensure_ascii=False, indent=2)}")
+        except json.JSONDecodeError:
+            logging.warning(f"API yanıtı JSON olarak parse edilemedi. Yanıt metni: {response.text[:500]}...") # İlk 500 karakter
+        
+        response.raise_for_status()  
 
-        # Başarılı yanıt
-        response_data = response.json() # API'den gelen JSON yanıtını al
-        success_message = response_data.get("message", f"{item_count} ürün başarıyla gönderildi, ancak API'den özel mesaj alınamadı.")
-        logging.info(f"Veri başarıyla gönderildi. API Yanıtı: {success_message}. HTTP Durumu: {response.status_code}")
+        success_message = response_json.get("message", f"{item_count} ürün başarıyla gönderildi, API'den özel mesaj alınamadı.")
+        logging.info(f"Veri başarıyla gönderildi. API Mesajı: {success_message}")
         return True, success_message
 
-    except requests.exceptions.ConnectionError as e:
-        error_message = f"API bağlantı hatası ({api_url}): {e}"
-        logging.error(error_message)
-        return False, error_message
-    except requests.exceptions.Timeout as e:
-        error_message = f"API isteği zaman aşımına uğradı ({api_url}): {e}"
-        logging.error(error_message)
-        return False, error_message
     except requests.exceptions.HTTPError as e:
-        # HTTPError durumunda, response içeriğini de loglamaya çalışalım (eğer varsa)
-        error_content = ""
-        if e.response is not None:
-            try:
-                error_content = e.response.json() # JSON yanıtı varsa onu al
-            except json.JSONDecodeError:
-                error_content = e.response.text # JSON değilse text olarak al
-        error_message = f"API HTTP hatası ({api_url}): {e}. Durum Kodu: {e.response.status_code if e.response else 'N/A'}. Yanıt: {error_content}"
+        error_message = f"API HTTP hatası ({api_url}): {e}. Durum Kodu: {e.response.status_code if e.response else 'N/A'}."
         logging.error(error_message)
-        return False, f"API Hatası (Kod: {e.response.status_code if e.response else 'N/A'}): Daha fazla detay için logları kontrol edin."
+        # Hata durumunda API yanıtını loglamaya çalış (zaten yukarıda deneniyor ama burada da dursun)
+        if e.response is not None:
+            logging.error(f"HTTP Hata Detayı - Yanıt Metni: {e.response.text[:500]}...")
+        return False, f"API Hatası (Kod: {e.response.status_code if e.response else 'N/A'}). Detaylar loglarda."
     except requests.exceptions.RequestException as e:
-        # Diğer tüm requests kütüphanesi hataları için
         error_message = f"API isteğinde genel bir hata oluştu ({api_url}): {e}"
         logging.error(error_message)
         return False, error_message
     except Exception as e:
-        # Beklenmedik diğer hatalar
         error_message = f"Veri gönderimi sırasında beklenmedik bir hata oluştu: {e}"
-        logging.exception(error_message) # exception metodu stack trace'i de loglar
+        logging.exception(error_message) 
         return False, error_message
 
 def load_settings():
