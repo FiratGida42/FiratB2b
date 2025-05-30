@@ -1,5 +1,5 @@
-from fastapi import FastAPI, HTTPException, Request, Depends, status, Form, Header
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi import FastAPI, HTTPException, Request, Depends, status, Form, Header, UploadFile, File
+from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
@@ -8,6 +8,7 @@ import json
 import os
 import datetime # datetime importu eklendi
 import secrets # Güçlü anahtar üretimi için eklendi
+import shutil # Dosya işlemleri için eklendi
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session # SQLAlchemy Session importu eklendi
 from pydantic import BaseModel, field_validator # Pydantic BaseModel importu eklendi, field_validator eklendi
@@ -86,6 +87,7 @@ TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 # ADMIN_CONFIG_FILE yolunu ortam değişkeninden al, yoksa varsayılanı kullan
 ADMIN_CONFIG_FILE = os.getenv("ADMIN_CONFIG_PATH", os.path.join(os.path.dirname(BASE_DIR), "admin_config.json"))
+DISCOUNT_MATERIALS_DIR = os.path.join(STATIC_DIR, "discount_materials") # İndirim materyalleri için dizin
 
 # --- API Anahtarı Ayarı (Ortam Değişkeninden Oku) ---
 PRODUCTS_API_KEY_VALUE = os.environ.get("PRODUCTS_API_KEY")
@@ -574,6 +576,157 @@ async def update_customer_balances_api(customer_balances: List[Dict]):
         print(f"Cari bakiye verileri kaydedilirken hata oluştu: {e}")
         # Yerel script'e daha detaylı hata bilgisi vermek için hata mesajını döndürebiliriz.
         raise HTTPException(status_code=500, detail=f"Cari bakiyeleri kaydedilemedi: {str(e)}")
+
+def ensure_discount_materials_dir():
+    """İndirim materyalleri dizininin var olduğundan emin olur, yoksa oluşturur."""
+    if not os.path.exists(DISCOUNT_MATERIALS_DIR):
+        os.makedirs(DISCOUNT_MATERIALS_DIR)
+        print(f"Dizin oluşturuldu: {DISCOUNT_MATERIALS_DIR}")
+
+@app.get("/discounts", response_class=HTMLResponse, tags=["Discounts"])
+async def view_discounts(request: Request, current_user: str = Depends(get_current_admin_user_with_redirect)):
+    ensure_discount_materials_dir()
+    materials = []
+    try:
+        for filename in os.listdir(DISCOUNT_MATERIALS_DIR):
+            if os.path.isfile(os.path.join(DISCOUNT_MATERIALS_DIR, filename)):
+                materials.append({
+                    "name": filename,
+                    "url": f"/static/discount_materials/{filename}"
+                })
+    except Exception as e:
+        print(f"İndirim materyalleri listelenirken hata: {e}")
+        # Hata durumunda boş liste ile devam et
+
+    # Butonun gösterilip gösterilmeyeceğini belirlemek için resim dosyalarını filtrele
+    image_materials_for_button = []
+    allowed_image_extensions = (".jpg", ".jpeg", ".png", ".gif")
+    for material in materials:
+        if material['name'].lower().endswith(allowed_image_extensions):
+            image_materials_for_button.append(material)
+    
+    return templates.TemplateResponse("discounts.html", {
+        "request": request,
+        "title": "İndirim Materyalleri",
+        "admin_user": current_user,
+        "materials": sorted(materials, key=lambda x: x['name']), # Ada göre sırala
+        "image_materials_for_button": image_materials_for_button # Filtrelenmiş resim listesini şablona gönder
+    })
+
+@app.post("/upload-discount-material", tags=["Discounts"])
+async def upload_discount_material(
+    request: Request, 
+    file: UploadFile = File(...), 
+    current_user: str = Depends(get_current_admin_user_for_api) # API olduğu için _for_api kullandık
+):
+    ensure_discount_materials_dir()
+    
+    allowed_content_types = ["image/jpeg", "image/png", "image/gif", "application/pdf"]
+    if file.content_type not in allowed_content_types:
+        # Bu hatayı kullanıcıya göstermek için normalde bir mesaj sistemi (örn: flash messages) kullanılır.
+        # Şimdilik basit bir HTTPException veya loglama yapabiliriz.
+        # Ya da template'e bir hata mesajı parametresi ekleyip yönlendirebiliriz.
+        # Basitlik adına şimdilik loglayıp devam edelim, idealde kullanıcıya bilgi verilmeli.
+        print(f"UYARI: Geçersiz dosya türü yüklendi: {file.filename} ({file.content_type})")
+        # raise HTTPException(status_code=400, detail=f"Geçersiz dosya türü. İzin verilenler: {', '.join(allowed_content_types)}")
+
+    # Güvenlik için dosya adını temizle (isteğe bağlı ama önerilir)
+    # filename = secrets.token_hex(8) + "_" + file.filename.replace(" ", "_") # Daha güvenli bir adlandırma
+    filename = file.filename.replace(" ", "_") # Basitçe boşlukları değiştir
+    file_path = os.path.join(DISCOUNT_MATERIALS_DIR, filename)
+    
+    try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        print(f"Dosya başarıyla yüklendi: {file_path}")
+    except Exception as e:
+        print(f"Dosya kaydedilirken hata oluştu ({file_path}): {e}")
+        # Hata durumunda kullanıcıya bilgi verilmeli.
+        # raise HTTPException(status_code=500, detail="Dosya yüklenirken bir sorun oluştu.")
+    finally:
+        file.file.close()
+        
+    return RedirectResponse(url="/discounts", status_code=status.HTTP_303_SEE_OTHER)
+
+@app.get("/view-pdf/{pdf_name}", response_class=HTMLResponse, tags=["Discounts"])
+async def view_pdf_page(
+    request: Request, 
+    pdf_name: str, 
+    current_user: str = Depends(get_current_admin_user_with_redirect)
+):
+    # Güvenlik önlemi: pdf_name içinde yol manipülasyonu olmamasını kontrol et (örn: "..")
+    if ".." in pdf_name or "/" in pdf_name or "\\" in pdf_name:
+        raise HTTPException(status_code=400, detail="Geçersiz PDF adı.")
+
+    pdf_path = os.path.join(DISCOUNT_MATERIALS_DIR, pdf_name)
+    if not os.path.isfile(pdf_path):
+        raise HTTPException(status_code=404, detail="PDF dosyası bulunamadı.")
+
+    # PDF dosyasının public URL'ini oluştur (static mount üzerinden) ve genişliğe sığdırma parametresini dene
+    pdf_url = f"/static/discount_materials/{pdf_name}#view=FitH"
+    
+    return templates.TemplateResponse("view_pdf.html", {
+        "request": request,
+        "title": f"PDF Görüntüleyici: {pdf_name}",
+        "admin_user": current_user,
+        "pdf_name": pdf_name,
+        "pdf_url": pdf_url
+    })
+
+@app.post("/delete-discount-material/{material_name}", tags=["Discounts"])
+async def delete_discount_material_file(
+    request: Request, 
+    material_name: str, 
+    current_user: str = Depends(get_current_admin_user_for_api) # Admin koruması
+):
+    # Güvenlik önlemi: material_name içinde yol manipülasyonu olmamasını kontrol et
+    if ".." in material_name or "/" in material_name or "\\" in material_name:
+        # Kullanıcıya bir mesaj göstermek için session flash mesajları kullanılabilir
+        # Şimdilik basit bir yönlendirme yapalım veya hata loglayalım.
+        print(f"UYARI: Geçersiz materyal adı silme denemesi: {material_name}")
+        return RedirectResponse(url=request.url_for("view_discounts"), status_code=status.HTTP_303_SEE_OTHER)
+
+    file_path = os.path.join(DISCOUNT_MATERIALS_DIR, material_name)
+    
+    if os.path.isfile(file_path):
+        try:
+            os.remove(file_path)
+            print(f"Dosya başarıyla silindi: {file_path}")
+            # Başarı mesajı için flash mesaj eklenebilir
+        except Exception as e:
+            print(f"Dosya silinirken hata oluştu ({file_path}): {e}")
+            # Hata mesajı için flash mesaj eklenebilir
+    else:
+        print(f"Silinecek dosya bulunamadı: {file_path}")
+        # Dosya bulunamadı mesajı için flash mesaj eklenebilir
+
+    return RedirectResponse(url=request.url_for("view_discounts"), status_code=status.HTTP_303_SEE_OTHER)
+
+@app.get("/view-discount-images", response_class=HTMLResponse, tags=["Discounts"])
+async def view_discount_images_page(
+    request: Request, 
+    current_user: str = Depends(get_current_admin_user_with_redirect)
+):
+    ensure_discount_materials_dir()
+    image_materials = []
+    allowed_image_extensions = (".jpg", ".jpeg", ".png", ".gif")
+    try:
+        for filename in os.listdir(DISCOUNT_MATERIALS_DIR):
+            if os.path.isfile(os.path.join(DISCOUNT_MATERIALS_DIR, filename)) and filename.lower().endswith(allowed_image_extensions):
+                image_materials.append({
+                    "name": filename,
+                    "url": f"/static/discount_materials/{filename}"
+                })
+    except Exception as e:
+        print(f"İndirim görselleri listelenirken hata: {e}")
+        # Hata durumunda boş liste ile devam et
+    
+    return templates.TemplateResponse("view_discount_images.html", {
+        "request": request,
+        "title": "İndirim Görselleri Galerisi",
+        "admin_user": current_user,
+        "image_materials": sorted(image_materials, key=lambda x: x['name']) # Ada göre sırala
+    })
 
 if __name__ == "__main__":
     import uvicorn
