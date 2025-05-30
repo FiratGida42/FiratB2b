@@ -48,6 +48,14 @@
     <div class="container mt-4">
         <h1 class="mb-4 text-center">{{ title }}</h1>
 
+        {# Yükleme sonuç mesajları için alan #}
+        {% if upload_message %}
+        <div class="alert alert-{{ upload_message_type | default('info') }} alert-dismissible fade show" role="alert">
+            {{ upload_message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endif %}
+
         {# Resim galerisine gitmek için link #}
         {# {% set image_files = materials | selectattr("name", "match", "(?i).*\\.(jpg|jpeg|png|gif)$") | list %} #}
         {% if image_materials_for_button %}
@@ -99,6 +107,10 @@
                 <div class="mb-3">
                     <label for="file" class="form-label">Dosya Seçin (PDF, JPG, PNG, GIF)</label>
                     <input class="form-control" type="file" id="file" name="file" accept=".pdf,.jpg,.jpeg,.png,.gif" required>
+                </div>
+                <div class="mb-3">
+                    <label for="admin_password" class="form-label">Admin Şifreniz</label>
+                    <input class="form-control" type="password" id="admin_password" name="admin_password" required>
                 </div>
                 <button type="submit" class="btn btn-primary">Yükle</button>
             </form>

@@ -584,7 +584,13 @@ def ensure_discount_materials_dir():
         print(f"Dizin oluşturuldu: {DISCOUNT_MATERIALS_DIR}")
 
 @app.get("/discounts", response_class=HTMLResponse, tags=["Discounts"])
-async def view_discounts(request: Request, current_user: str = Depends(get_current_admin_user_with_redirect)):
+async def view_discounts(
+    request: Request, 
+    current_user: str = Depends(get_current_admin_user_with_redirect),
+    upload_message: Optional[str] = None, # Query parametresi olarak mesajı al
+    upload_message_type: Optional[str] = None # Query parametresi olarak mesaj tipini al
+):
+    print(f"DEBUG: /discounts erişimi. Session admin_user: {request.session.get('admin_user')}, Current User (from dep): {current_user}") # DEBUG LOG
     ensure_discount_materials_dir()
     materials = []
     try:
@@ -610,44 +616,51 @@ async def view_discounts(request: Request, current_user: str = Depends(get_curre
         "title": "İndirim Materyalleri",
         "admin_user": current_user,
         "materials": sorted(materials, key=lambda x: x['name']), # Ada göre sırala
-        "image_materials_for_button": image_materials_for_button # Filtrelenmiş resim listesini şablona gönder
+        "image_materials_for_button": image_materials_for_button, # Filtrelenmiş resim listesini şablona gönder
+        "upload_message": upload_message, # Mesajı şablona gönder
+        "upload_message_type": upload_message_type # Mesaj tipini şablona gönder
     })
 
 @app.post("/upload-discount-material", tags=["Discounts"])
 async def upload_discount_material(
     request: Request, 
     file: UploadFile = File(...), 
+    admin_password: str = Form(...), # Admin şifresini formdan al
     current_user: str = Depends(get_current_admin_user_for_api) # API olduğu için _for_api kullandık
 ):
     ensure_discount_materials_dir()
+
+    # Admin şifresini doğrula
+    admin_creds_dict = get_admin_credentials()
+    if not admin_creds_dict or not verify_password(admin_password, admin_creds_dict.get("admin_hashed_password", "")):
+        # Şifre yanlışsa, hata mesajıyla /discounts'a yönlendir
+        error_message = "Admin şifresi yanlış. Dosya yüklenemedi."
+        return RedirectResponse(url=f"/discounts?upload_message={error_message}&upload_message_type=danger", status_code=status.HTTP_303_SEE_OTHER)
     
     allowed_content_types = ["image/jpeg", "image/png", "image/gif", "application/pdf"]
     if file.content_type not in allowed_content_types:
-        # Bu hatayı kullanıcıya göstermek için normalde bir mesaj sistemi (örn: flash messages) kullanılır.
-        # Şimdilik basit bir HTTPException veya loglama yapabiliriz.
-        # Ya da template'e bir hata mesajı parametresi ekleyip yönlendirebiliriz.
-        # Basitlik adına şimdilik loglayıp devam edelim, idealde kullanıcıya bilgi verilmeli.
         print(f"UYARI: Geçersiz dosya türü yüklendi: {file.filename} ({file.content_type})")
-        # raise HTTPException(status_code=400, detail=f"Geçersiz dosya türü. İzin verilenler: {', '.join(allowed_content_types)}")
+        # Kullanıcıya bilgi vermek için mesajla yönlendirme
+        warning_message = f"Geçersiz dosya türü: {file.filename}. İzin verilenler: JPG, PNG, GIF, PDF."
+        return RedirectResponse(url=f"/discounts?upload_message={warning_message}&upload_message_type=warning", status_code=status.HTTP_303_SEE_OTHER)
 
-    # Güvenlik için dosya adını temizle (isteğe bağlı ama önerilir)
-    # filename = secrets.token_hex(8) + "_" + file.filename.replace(" ", "_") # Daha güvenli bir adlandırma
-    filename = file.filename.replace(" ", "_") # Basitçe boşlukları değiştir
+    filename = file.filename.replace(" ", "_")
     file_path = os.path.join(DISCOUNT_MATERIALS_DIR, filename)
     
     try:
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
         print(f"Dosya başarıyla yüklendi: {file_path}")
+        success_message = f"'{filename}' başarıyla yüklendi."
+        return RedirectResponse(url=f"/discounts?upload_message={success_message}&upload_message_type=success", status_code=status.HTTP_303_SEE_OTHER)
     except Exception as e:
         print(f"Dosya kaydedilirken hata oluştu ({file_path}): {e}")
-        # Hata durumunda kullanıcıya bilgi verilmeli.
-        # raise HTTPException(status_code=500, detail="Dosya yüklenirken bir sorun oluştu.")
+        error_message = "Dosya yüklenirken bir sorun oluştu."
+        return RedirectResponse(url=f"/discounts?upload_message={error_message}&upload_message_type=danger", status_code=status.HTTP_303_SEE_OTHER)
     finally:
-        file.file.close()
+        if file and not file.file.closed:
+             file.file.close()
         
-    return RedirectResponse(url="/discounts", status_code=status.HTTP_303_SEE_OTHER)
-
 @app.get("/view-pdf/{pdf_name}", response_class=HTMLResponse, tags=["Discounts"])
 async def view_pdf_page(
     request: Request, 
