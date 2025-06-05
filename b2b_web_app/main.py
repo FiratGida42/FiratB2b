@@ -196,7 +196,11 @@ async def get_current_admin_user_with_redirect(request: Request):
         # current_path = request.url.path
         # if current_path != "/login": # Sonsuz döngüyü engellemek için
         #     return RedirectResponse(url=f"/login?next={current_path}", status_code=status.HTTP_303_SEE_OTHER)
-        return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
+        raise HTTPException(
+            status_code=status.HTTP_303_SEE_OTHER,
+            detail="Not logged in. Redirecting to login page.",
+            headers={"Location": "/login"}
+        )
     return admin_user
 
 async def get_current_admin_user_for_api(request: Request):
