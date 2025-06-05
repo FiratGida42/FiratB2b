@@ -89,6 +89,18 @@ STATIC_DIR = os.path.join(BASE_DIR, "static")
 ADMIN_CONFIG_FILE = os.getenv("ADMIN_CONFIG_PATH", os.path.join(os.path.dirname(BASE_DIR), "admin_config.json"))
 DISCOUNT_MATERIALS_DIR = os.path.join(STATIC_DIR, "discount_materials") # İndirim materyalleri için dizin
 
+# Cari Bakiye JSON dosyası için yol belirleme
+CUSTOMER_BALANCES_FILE_PATH_ENV = "CUSTOMER_BALANCES_FILE_PATH"
+DEFAULT_CUSTOMER_BALANCES_FILENAME = "filtrelenen_cariler.json" # Yerel geliştirme için dosya adı
+
+CUSTOMER_BALANCES_JSON_PATH = os.getenv(CUSTOMER_BALANCES_FILE_PATH_ENV)
+if not CUSTOMER_BALANCES_JSON_PATH:
+    print(f"UYARI: {CUSTOMER_BALANCES_FILE_PATH_ENV} ortam değişkeni bulunamadı. Yerel bir yol kullanılacak.")
+    LOCAL_APP_DATA_DIR = os.path.join(BASE_DIR, "app_data") # static olmayan yerel bir klasör
+    CUSTOMER_BALANCES_JSON_PATH = os.path.join(LOCAL_APP_DATA_DIR, DEFAULT_CUSTOMER_BALANCES_FILENAME)
+    # Yerel dizinin var olduğundan emin olma işlemi, dosyaya yazılmadan hemen önce yapılacaktır.
+print(f"Cari bakiye JSON dosyası için kullanılacak yol: {CUSTOMER_BALANCES_JSON_PATH}")
+
 # --- API Anahtarı Ayarı (Ortam Değişkeninden Oku) ---
 PRODUCTS_API_KEY_VALUE = os.environ.get("PRODUCTS_API_KEY")
 if not PRODUCTS_API_KEY_VALUE:
@@ -289,7 +301,8 @@ async def read_root(request: Request):
 @app.get("/customer-balances", response_class=HTMLResponse)
 async def view_customer_balances(request: Request, current_user: str = Depends(get_current_admin_user_with_redirect)):
     customers_data = []
-    available_customers_file_path = os.path.join(STATIC_DIR, "json_data", "filtrelenen_cariler.json")
+    # available_customers_file_path = os.path.join(STATIC_DIR, "json_data", "filtrelenen_cariler.json") # ESKİ YOL
+    available_customers_file_path = CUSTOMER_BALANCES_JSON_PATH # YENİ GÜVENLİ YOL
 
     try:
         if os.path.exists(available_customers_file_path):
@@ -557,9 +570,12 @@ async def update_customer_balances_api(customer_balances: List[Dict]):
     """
     # STATIC_DIR global olarak tanımlı, dosya yolunu bununla oluşturacağız
     # b2b_web_app/static/json_data/filtrelenen_cariler.json
-    target_file_name = "filtrelenen_cariler.json"
-    target_dir = os.path.join(STATIC_DIR, "json_data")
-    customer_balances_file_path = os.path.join(target_dir, target_file_name)
+    # target_file_name = "filtrelenen_cariler.json" # ESKİ
+    # target_dir = os.path.join(STATIC_DIR, "json_data") # ESKİ
+    # customer_balances_file_path = os.path.join(target_dir, target_file_name) # ESKİ
+
+    customer_balances_file_path = CUSTOMER_BALANCES_JSON_PATH # YENİ GÜVENLİ YOL
+    target_dir = os.path.dirname(customer_balances_file_path) # Tam yoldan dizini al
 
     if not customer_balances: # Gelen liste boş olabilir, bu bir hata değil, boş dosya oluştururuz.
         print("Bilgi: Boş cari bakiye listesi alındı. Mevcut dosya (varsa) silinip boş dosya oluşturulacak.")

@@ -19,7 +19,7 @@ if BASE_DIR not in sys.path:
 
 # API Anahtarı ve Render URL için global değişkenler
 API_KEY = None
-RENDER_API_URL = "https://firatb2b.onrender.com/api/update-customer-balances"
+RENDER_API_URL = "image.pnghttps://firatb2b.onrender.com/api/update-customer-balances"
 
 # Render API endpoint URL'si ve API anahtarı için ayarlar
 RENDER_API_URL = "https://firatb2b.onrender.com/api/update-customer-balances"
