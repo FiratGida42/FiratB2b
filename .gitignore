@@ -129,6 +129,9 @@ received_products.json
 #alembic.ini
 #alembic/
 
+# Statik olarak sunulmaması gereken JSON verileri
+b2b_web_app/static/json_data/
+
 # Log dosyaları (ana log ve scheduler logu)
 b2b_web_app/logs/*.log
 b2b_web_app/logs/
