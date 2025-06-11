@@ -761,10 +761,45 @@ async def delete_discount_material_file(
 
     return RedirectResponse(url=request.url_for("view_discounts"), status_code=status.HTTP_303_SEE_OTHER)
 
+@app.post("/delete-all-discount-materials", tags=["Discounts"])
+async def delete_all_discount_materials(
+    request: Request,
+    admin_password: str = Form(...), # Bu tehlikeli işlem için şifre iste
+    current_user: str = Depends(get_current_admin_user_for_api) # Sadece admin
+):
+    ensure_discount_materials_dir()
+
+    # Admin şifresini doğrula
+    admin_creds_dict = get_admin_credentials()
+    if not admin_creds_dict or not verify_password(admin_password, admin_creds_dict.get("admin_hashed_password", "")):
+        error_message = "Admin şifresi yanlış. Materyaller silinemedi."
+        return RedirectResponse(url=f"/discounts?upload_message={error_message}&upload_message_type=danger", status_code=status.HTTP_303_SEE_OTHER)
+
+    deleted_count = 0
+    error_count = 0
+    
+    for filename in os.listdir(DISCOUNT_MATERIALS_DIR):
+        file_path = os.path.join(DISCOUNT_MATERIALS_DIR, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.remove(file_path)
+                deleted_count += 1
+        except Exception as e:
+            print(f"Dosya silinirken hata oluştu ({file_path}): {e}")
+            error_count += 1
+            
+    if error_count > 0:
+        message = f"{deleted_count} materyal başarıyla silindi, ancak {error_count} materyal silinirken hata oluştu."
+        message_type = "warning"
+    else:
+        message = f"Tüm ({deleted_count}) materyaller başarıyla silindi."
+        message_type = "success"
+        
+    return RedirectResponse(url=f"/discounts?upload_message={message}&upload_message_type={message_type}", status_code=status.HTTP_303_SEE_OTHER)
+
 @app.get("/view-discount-images", response_class=HTMLResponse, tags=["Discounts"])
 async def view_discount_images_page(
-    request: Request, 
-    current_user: str = Depends(get_current_admin_user_with_redirect)
+    request: Request
 ):
     ensure_discount_materials_dir()
     image_materials = []
@@ -780,10 +815,14 @@ async def view_discount_images_page(
         print(f"İndirim görselleri listelenirken hata: {e}")
         # Hata durumunda boş liste ile devam et
     
+    # Kimlik doğrulama zorunlu olmasa da, eğer bir admin giriş yapmışsa
+    # bunu şablona bildirmek isteyebiliriz.
+    admin_user = request.session.get("admin_user")
+
     return templates.TemplateResponse("view_discount_images.html", {
         "request": request,
         "title": "İndirim Görselleri Galerisi",
-        "admin_user": current_user,
+        "admin_user": admin_user, # Session'dan gelen kullanıcıyı (veya None) gönder
         "image_materials": sorted(image_materials, key=lambda x: x['name']) # Ada göre sırala
     })
 

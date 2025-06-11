@@ -115,6 +115,18 @@
                 <button type="submit" class="btn btn-primary">Yükle</button>
             </form>
         </div>
+
+        <div class="upload-form mt-4 p-3 border-danger">
+            <h4 class="text-danger">Tehlikeli Alan</h4>
+            <p>Bu işlem tüm yüklü materyalleri kalıcı olarak silecektir. Bu işlem geri alınamaz.</p>
+            <form action="/delete-all-discount-materials" method="post" onsubmit="return confirm('TÜM materyalleri kalıcı olarak silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!');">
+                <div class="mb-3">
+                    <label for="admin_password_delete" class="form-label">Onay için Admin Şifreniz</label>
+                    <input class="form-control" type="password" id="admin_password_delete" name="admin_password" required>
+                </div>
+                <button type="submit" class="btn btn-danger w-100">Tüm Materyalleri Kalıcı Olarak Sil</button>
+            </form>
+        </div>
         {% endif %}
     </div>
 
