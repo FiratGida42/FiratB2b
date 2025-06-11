@@ -80,6 +80,66 @@ main_logger.addHandler(main_stream_handler)
 
 last_successful_update_timestamp = 0.0
 
+def cleanup_old_logs(log_directory_to_clean, days_to_retain):
+    run_timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    cleanup_logger_name = f"LogCleanupRun_{run_timestamp_str}"
+    cleanup_logger = logging.getLogger(cleanup_logger_name)
+    cleanup_logger.setLevel(logging.INFO)
+    cleanup_logger.propagate = False
+
+    current_cleanup_log_file_name = f"log_cleanup_run_{run_timestamp_str}.log"
+    current_cleanup_log_path = os.path.join(LOG_BASE_DIR, current_cleanup_log_file_name)
+    
+    cleanup_file_handler = None
+    try:
+        cleanup_file_handler = logging.FileHandler(current_cleanup_log_path, mode='a', encoding='utf-8')
+        cleanup_file_handler.setFormatter(formatter) 
+        cleanup_logger.addHandler(cleanup_file_handler)
+
+        cleanup_logger.info(f"Log temizleme görevi başlatılıyor. Hedef klasör: {log_directory_to_clean}, Saklanacak gün sayısı: {days_to_retain} (Bu süreden eski olanlar silinecek).")
+        
+        if not os.path.isdir(log_directory_to_clean):
+            cleanup_logger.error(f"Belirtilen log klasörü bulunamadı: {log_directory_to_clean}")
+            return
+
+        cutoff_seconds = days_to_retain * 24 * 60 * 60
+        current_time_seconds = time.time()
+        files_deleted_count = 0
+        errors_count = 0
+
+        for filename in os.listdir(log_directory_to_clean):
+            file_path = os.path.join(log_directory_to_clean, filename)
+            
+            if not os.path.isfile(file_path):
+                continue
+
+            if filename == current_cleanup_log_file_name: # Kendi log dosyasını silme
+                continue
+
+            try:
+                file_mod_time = os.path.getmtime(file_path)
+                if (current_time_seconds - file_mod_time) > cutoff_seconds:
+                    os.remove(file_path)
+                    cleanup_logger.info(f"Silindi ({days_to_retain} günden eski): {file_path}")
+                    files_deleted_count += 1
+            except Exception as e:
+                cleanup_logger.error(f"Dosya silinirken hata oluştu ({file_path}): {e}")
+                errors_count += 1
+        
+        cleanup_logger.info(f"Log temizleme tamamlandı. Silinen dosya sayısı: {files_deleted_count}, Karşılaşılan hata sayısı: {errors_count}.")
+
+    except Exception as e_outer:
+        log_target = cleanup_logger if cleanup_file_handler and cleanup_logger.hasHandlers() else main_logger
+        log_target.error(f"Log temizleme görevi sırasında genel bir hata: {e_outer}", exc_info=True)
+    finally:
+        if cleanup_file_handler:
+            cleanup_logger.removeHandler(cleanup_file_handler)
+            cleanup_file_handler.close()
+
+def run_log_cleanup_job():
+    main_logger.info(f"Log temizleme görevi (run_log_cleanup_job) tetiklendi. LOG_BASE_DIR: {LOG_BASE_DIR}")
+    cleanup_old_logs(log_directory_to_clean=LOG_BASE_DIR, days_to_retain=1)
+
 def perform_actual_update_task(excluded_groups_from_settings=None, job_controller_main_logger=None):
     # job_controller_main_logger, job_controller'ın o anki file handler'ını kullanan logger'ı
     # Bu fonksiyon kendi log dosyasını oluşturacağı için buna gerek kalmayabilir.
@@ -257,8 +317,16 @@ if __name__ == "__main__":
     schedule.every(1).minutes.do(job_controller) # job_controller her 1 dakikada bir çağrılır
     main_logger.info(f"Ana ürün güncelleme kontrolcüsü (`job_controller`) her 1 dakikada bir çalışacak şekilde zamanlandı.")
 
+    # Log temizleme görevi için zamanlama (her gün sabah 03:00'te)
+    schedule.every().day.at("03:00").do(run_log_cleanup_job)
+    main_logger.info(f"Log temizleme görevi (`run_log_cleanup_job`) her gün saat 03:00'te çalışacak şekilde zamanlandı.")
+
     main_logger.info("İlk kontrol (job_controller) hemen tetikleniyor...")
     job_controller() 
+
+    # İsteğe bağlı: Başlangıçta bir log temizleme çalışması (test için veya hemen temizlik için)
+    # main_logger.info("Başlangıçta log temizleme görevi bir kerelik tetikleniyor...")
+    # run_log_cleanup_job()
 
     main_logger.info("Zamanlayıcı döngüsü başlatılıyor. Çıkmak için Ctrl+C.")
     try:

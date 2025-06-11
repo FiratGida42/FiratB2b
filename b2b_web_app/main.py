@@ -644,7 +644,7 @@ async def view_discounts(
 @app.post("/upload-discount-material", tags=["Discounts"])
 async def upload_discount_material(
     request: Request, 
-    file: UploadFile = File(...), 
+    files: List[UploadFile] = File(...), # file -> files, UploadFile -> List[UploadFile]
     admin_password: str = Form(...), # Admin şifresini formdan al
     current_user: str = Depends(get_current_admin_user_for_api) # API olduğu için _for_api kullandık
 ):
@@ -658,29 +658,55 @@ async def upload_discount_material(
         return RedirectResponse(url=f"/discounts?upload_message={error_message}&upload_message_type=danger", status_code=status.HTTP_303_SEE_OTHER)
     
     allowed_content_types = ["image/jpeg", "image/png", "image/gif", "application/pdf"]
-    if file.content_type not in allowed_content_types:
-        print(f"UYARI: Geçersiz dosya türü yüklendi: {file.filename} ({file.content_type})")
-        # Kullanıcıya bilgi vermek için mesajla yönlendirme
-        warning_message = f"Geçersiz dosya türü: {file.filename}. İzin verilenler: JPG, PNG, GIF, PDF."
-        return RedirectResponse(url=f"/discounts?upload_message={warning_message}&upload_message_type=warning", status_code=status.HTTP_303_SEE_OTHER)
-
-    filename = file.filename.replace(" ", "_")
-    file_path = os.path.join(DISCOUNT_MATERIALS_DIR, filename)
     
-    try:
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-        print(f"Dosya başarıyla yüklendi: {file_path}")
-        success_message = f"'{filename}' başarıyla yüklendi."
-        return RedirectResponse(url=f"/discounts?upload_message={success_message}&upload_message_type=success", status_code=status.HTTP_303_SEE_OTHER)
-    except Exception as e:
-        print(f"Dosya kaydedilirken hata oluştu ({file_path}): {e}")
-        error_message = "Dosya yüklenirken bir sorun oluştu."
-        return RedirectResponse(url=f"/discounts?upload_message={error_message}&upload_message_type=danger", status_code=status.HTTP_303_SEE_OTHER)
-    finally:
-        if file and not file.file.closed:
-             file.file.close()
-        
+    uploaded_files_count = 0
+    skipped_files_count = 0
+    error_files_count = 0
+    
+    for file in files:
+        try:
+            if file.content_type not in allowed_content_types:
+                print(f"UYARI: Geçersiz dosya türü atlandı: {file.filename} ({file.content_type})")
+                skipped_files_count += 1
+                continue
+
+            filename = file.filename.replace(" ", "_")
+            file_path = os.path.join(DISCOUNT_MATERIALS_DIR, filename)
+            
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+            print(f"Dosya başarıyla yüklendi: {file_path}")
+            uploaded_files_count += 1
+
+        except Exception as e:
+            print(f"Dosya kaydedilirken hata oluştu ({file.filename}): {e}")
+            error_files_count += 1
+        finally:
+            if file and not file.file.closed:
+                 file.file.close()
+
+    # Yönlendirme için özet mesaj oluştur
+    messages = []
+    if uploaded_files_count > 0:
+        messages.append(f"{uploaded_files_count} dosya başarıyla yüklendi.")
+    if skipped_files_count > 0:
+        messages.append(f"{skipped_files_count} dosya geçersiz tür nedeniyle atlandı.")
+    if error_files_count > 0:
+        messages.append(f"{error_files_count} dosyada yükleme hatası oluştu.")
+
+    final_message = " ".join(messages)
+    message_type = "success"
+    if error_files_count > 0 or skipped_files_count > 0:
+        message_type = "warning"
+    if uploaded_files_count == 0 and (error_files_count > 0 or skipped_files_count > 0):
+        message_type = "danger"
+    
+    if not final_message:
+        final_message = "Yüklenecek dosya seçilmedi veya tüm dosyalar geçersizdi."
+        message_type = "warning"
+
+    return RedirectResponse(url=f"/discounts?upload_message={final_message}&upload_message_type={message_type}", status_code=status.HTTP_303_SEE_OTHER)
+
 @app.get("/view-pdf/{pdf_name}", response_class=HTMLResponse, tags=["Discounts"])
 async def view_pdf_page(
     request: Request, 

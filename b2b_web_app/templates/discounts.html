@@ -105,8 +105,8 @@
             <h3 class="mb-3">Yeni Materyal Yükle</h3>
             <form action="/upload-discount-material" method="post" enctype="multipart/form-data">
                 <div class="mb-3">
-                    <label for="file" class="form-label">Dosya Seçin (PDF, JPG, PNG, GIF)</label>
-                    <input class="form-control" type="file" id="file" name="file" accept=".pdf,.jpg,.jpeg,.png,.gif" required>
+                    <label for="file" class="form-label">Dosya Seçin (PDF, JPG, PNG, GIF) - Çoklu seçim yapabilirsiniz.</label>
+                    <input class="form-control" type="file" id="file" name="files" accept=".pdf,.jpg,.jpeg,.png,.gif" required multiple>
                 </div>
                 <div class="mb-3">
                     <label for="admin_password" class="form-label">Admin Şifreniz</label>
