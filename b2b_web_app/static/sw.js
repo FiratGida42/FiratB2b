@@ -53,9 +53,12 @@ self.addEventListener('activate', event => {
 
 // 3. Fetch (Getirme) Aşaması: İstekleri akıllıca yönet
 self.addEventListener('fetch', event => {
-  // Sadece GET isteklerini cache stratejisi ile yönetelim.
-  // POST, PUT, DELETE gibi istekler doğrudan ağa gitmeli (şimdilik).
-  if (event.request.method !== 'GET') {
+  // Yönlendirme yapan istekleri (navigate) veya POST gibi metodları doğrudan ağa gönder.
+  // Bu, ana sayfanın /products'a yönlendirmesi gibi işlemlerin engellenmesini önler.
+  if (
+    event.request.mode === 'navigate' ||
+    event.request.method !== 'GET'
+  ) {
     event.respondWith(fetch(event.request));
     return;
   }
