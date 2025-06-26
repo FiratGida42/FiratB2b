@@ -101,6 +101,11 @@ if not CUSTOMER_BALANCES_JSON_PATH:
     # Yerel dizinin var olduğundan emin olma işlemi, dosyaya yazılmadan hemen önce yapılacaktır.
 print(f"Cari bakiye JSON dosyası için kullanılacak yol: {CUSTOMER_BALANCES_JSON_PATH}")
 
+# Galeri sayfası görüntülenme sayacı için dosya yolu
+if 'LOCAL_APP_DATA_DIR' not in locals():
+    LOCAL_APP_DATA_DIR = os.path.join(BASE_DIR, "app_data")
+VIEW_COUNTER_FILE = os.path.join(LOCAL_APP_DATA_DIR, "view_counter.json")
+
 # --- API Anahtarı Ayarı (Ortam Değişkeninden Oku) ---
 PRODUCTS_API_KEY_VALUE = os.environ.get("PRODUCTS_API_KEY")
 if not PRODUCTS_API_KEY_VALUE:
@@ -268,20 +273,30 @@ async def receive_products_api(products: List[Dict]):
 
 @app.get("/api/products")
 async def get_products_api(current_user: str = Depends(get_current_admin_user_for_api)):
-    """
-    Kaydedilmiş ürün verilerini sunar. Giriş yapmış admin kullanıcısı gerektirir.
-    """
-    products_file_path = os.getenv("PRODUCTS_FILE_PATH", "received_products.json") # Tekrar alıyoruz
-    try:
-        with open(products_file_path, "r", encoding="utf-8") as f: # products_file_path kullan
-            products = json.load(f)
-        return products
-    except FileNotFoundError:
-        print(f"'{products_file_path}' bulunamadı. Boş ürün listesi döndürülüyor.") # products_file_path kullan
+    if not os.path.exists(PRODUCTS_FILE):
         return []
-    except Exception as e:
-        print(f"Veri okunurken hata oluştu: {e}")
-        raise HTTPException(status_code=500, detail=f"Ürünler okunamadı: {str(e)}")
+    try:
+        with open(PRODUCTS_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data
+    except (json.JSONDecodeError, IOError) as e:
+        print(f"Error reading products file ({PRODUCTS_FILE}): {e}")
+        return []
+
+@app.get("/api/customers")
+async def get_customers_api(current_user: str = Depends(get_current_admin_user_for_api)):
+    """Müşteri/Cari verilerini JSON olarak döndüren API endpoint'i."""
+    if not os.path.exists(CUSTOMER_BALANCES_JSON_PATH):
+        # Dosya yoksa boş liste döndürerek istemcinin hata almasını önle
+        return []
+    try:
+        with open(CUSTOMER_BALANCES_JSON_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data
+    except (json.JSONDecodeError, IOError) as e:
+        # Hata durumunda log bas ve boş liste döndür
+        print(f"Error reading customer balances file ({CUSTOMER_BALANCES_JSON_PATH}): {e}")
+        return []
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
@@ -412,6 +427,29 @@ async def startup_event():
         print(f"Masaüstü uygulaması veri gönderdiğinde ('/api/products' POST) bu dosya oluşturulacaktır.")
     else:
         print(f"Mevcut ürün veri dosyası: '{PRODUCTS_FILE}' bulundu.")
+
+def get_view_count() -> int:
+    """Görüntülenme sayısını sayaç dosyasından okur."""
+    try:
+        if os.path.exists(VIEW_COUNTER_FILE):
+            with open(VIEW_COUNTER_FILE, "r") as f:
+                data = json.load(f)
+                return data.get("views", 0)
+        return 0
+    except (IOError, json.JSONDecodeError):
+        print(f"UYARI: Görüntülenme sayısı dosyası ({VIEW_COUNTER_FILE}) okunamadı veya bozuk.")
+        return 0
+
+def increment_view_count():
+    """Görüntülenme sayısını bir artırır ve dosyaya yazar."""
+    count = get_view_count() + 1
+    try:
+        os.makedirs(os.path.dirname(VIEW_COUNTER_FILE), exist_ok=True)
+        with open(VIEW_COUNTER_FILE, "w") as f:
+            json.dump({"views": count}, f)
+    except IOError as e:
+        print(f"HATA: Görüntülenme sayısı kaydedilemedi: {e}")
+    return count
 
 # --- Sipariş API Uç Noktaları Başlangıcı ---
 
@@ -761,15 +799,41 @@ async def delete_discount_material_file(
 
     return RedirectResponse(url=request.url_for("view_discounts"), status_code=status.HTTP_303_SEE_OTHER)
 
+@app.get("/view-discount-images", response_class=HTMLResponse, tags=["Discounts"])
+async def view_discount_images_page(
+    request: Request
+):
+    view_count = increment_view_count()
+    ensure_discount_materials_dir()
+    image_materials = []
+    allowed_image_extensions = (".jpg", ".jpeg", ".png", ".gif")
+    try:
+        for filename in os.listdir(DISCOUNT_MATERIALS_DIR):
+            if os.path.isfile(os.path.join(DISCOUNT_MATERIALS_DIR, filename)) and filename.lower().endswith(allowed_image_extensions):
+                image_materials.append({
+                    "name": filename,
+                    "url": f"/static/discount_materials/{filename}"
+                })
+    except Exception as e:
+        print(f"İndirim görselleri listelenirken hata: {e}")
+    
+    admin_user = request.session.get("admin_user")
+    
+    return templates.TemplateResponse("view_discount_images.html", {
+        "request": request,
+        "title": "İndirim Görselleri Galerisi",
+        "admin_user": admin_user,
+        "image_materials": sorted(image_materials, key=lambda x: x['name']),
+        "view_count": view_count
+    })
+
 @app.post("/delete-all-discount-materials", tags=["Discounts"])
 async def delete_all_discount_materials(
     request: Request,
-    admin_password: str = Form(...), # Bu tehlikeli işlem için şifre iste
-    current_user: str = Depends(get_current_admin_user_for_api) # Sadece admin
+    admin_password: str = Form(...),
+    current_user: str = Depends(get_current_admin_user_for_api)
 ):
     ensure_discount_materials_dir()
-
-    # Admin şifresini doğrula
     admin_creds_dict = get_admin_credentials()
     if not admin_creds_dict or not verify_password(admin_password, admin_creds_dict.get("admin_hashed_password", "")):
         error_message = "Admin şifresi yanlış. Materyaller silinemedi."
@@ -796,35 +860,6 @@ async def delete_all_discount_materials(
         message_type = "success"
         
     return RedirectResponse(url=f"/discounts?upload_message={message}&upload_message_type={message_type}", status_code=status.HTTP_303_SEE_OTHER)
-
-@app.get("/view-discount-images", response_class=HTMLResponse, tags=["Discounts"])
-async def view_discount_images_page(
-    request: Request
-):
-    ensure_discount_materials_dir()
-    image_materials = []
-    allowed_image_extensions = (".jpg", ".jpeg", ".png", ".gif")
-    try:
-        for filename in os.listdir(DISCOUNT_MATERIALS_DIR):
-            if os.path.isfile(os.path.join(DISCOUNT_MATERIALS_DIR, filename)) and filename.lower().endswith(allowed_image_extensions):
-                image_materials.append({
-                    "name": filename,
-                    "url": f"/static/discount_materials/{filename}"
-                })
-    except Exception as e:
-        print(f"İndirim görselleri listelenirken hata: {e}")
-        # Hata durumunda boş liste ile devam et
-    
-    # Kimlik doğrulama zorunlu olmasa da, eğer bir admin giriş yapmışsa
-    # bunu şablona bildirmek isteyebiliriz.
-    admin_user = request.session.get("admin_user")
-
-    return templates.TemplateResponse("view_discount_images.html", {
-        "request": request,
-        "title": "İndirim Görselleri Galerisi",
-        "admin_user": admin_user, # Session'dan gelen kullanıcıyı (veya None) gönder
-        "image_materials": sorted(image_materials, key=lambda x: x['name']) # Ada göre sırala
-    })
 
 if __name__ == "__main__":
     import uvicorn

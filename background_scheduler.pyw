@@ -138,7 +138,7 @@ def cleanup_old_logs(log_directory_to_clean, days_to_retain):
 
 def run_log_cleanup_job():
     main_logger.info(f"Log temizleme görevi (run_log_cleanup_job) tetiklendi. LOG_BASE_DIR: {LOG_BASE_DIR}")
-    cleanup_old_logs(log_directory_to_clean=LOG_BASE_DIR, days_to_retain=1)
+    cleanup_old_logs(log_directory_to_clean=LOG_BASE_DIR, days_to_retain=3)
 
 def perform_actual_update_task(excluded_groups_from_settings=None, job_controller_main_logger=None):
     # job_controller_main_logger, job_controller'ın o anki file handler'ını kullanan logger'ı
@@ -325,8 +325,8 @@ if __name__ == "__main__":
     job_controller() 
 
     # İsteğe bağlı: Başlangıçta bir log temizleme çalışması (test için veya hemen temizlik için)
-    # main_logger.info("Başlangıçta log temizleme görevi bir kerelik tetikleniyor...")
-    # run_log_cleanup_job()
+    main_logger.info("Başlangıçta log temizleme görevi bir kerelik tetikleniyor...")
+    run_log_cleanup_job()
 
     main_logger.info("Zamanlayıcı döngüsü başlatılıyor. Çıkmak için Ctrl+C.")
     try:

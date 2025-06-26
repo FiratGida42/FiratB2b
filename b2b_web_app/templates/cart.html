@@ -36,6 +36,16 @@
             text-align: right;
         }
     </style>
+    <script>
+        // Service Worker'ı kaydet (her sayfada olması iyi bir pratiktir)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/static/sw.js')
+                    .then(reg => console.log('Service Worker registered in cart page.', reg))
+                    .catch(err => console.log('Service Worker registration failed: ', err));
+            });
+        }
+    </script>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
@@ -113,8 +123,13 @@
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <button class="btn btn-success btn-lg w-100" id="saveOrderButton" onclick="saveOrderAndProceed()">Siparişi Kaydet ve Bitir</button>
+                    <button class="btn btn-success btn-lg w-100" id="saveOrderButton">Siparişi Kaydet ve Bitir</button>
                 </div>
+            </div>
+            <div id="offline-order-info" class="alert alert-info mt-3" style="display: none;">
+                <h5 class="alert-heading">Sipariş Kaydedildi!</h5>
+                <p>İnternet bağlantınız yok. Siparişiniz kaydedildi ve bağlantı kurulduğunda otomatik olarak sunucuya gönderilecektir.</p>
+                <p class="mb-0">Siparişlerinizi <a href="/orders" class="alert-link">Siparişlerim</a> sayfasından takip edebilirsiniz.</p>
             </div>
         </div>
 
@@ -137,8 +152,50 @@
             const emptyCartMessage = document.getElementById('emptyCartMessage');
             const orderActionsSection = document.getElementById('orderActions');
             const customerCartSelectDropdown = document.getElementById('customer-select-cart');
-            let availableCustomersData = []; // Müşteri verilerini saklamak için
-            
+            const saveOrderBtn = document.getElementById('saveOrderButton');
+            const offlineOrderInfo = document.getElementById('offline-order-info');
+            let db; // IndexedDB bağlantısı için
+
+            // --- IndexedDB Helper Fonksiyonları ---
+            function openDB(name, version = 1) {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(name, version);
+                    request.onupgradeneeded = (event) => {
+                        const db = request.result;
+                        if (!db.objectStoreNames.contains('keyval')) {
+                            db.createObjectStore('keyval');
+                        }
+                        // Çevrimdışı siparişler için yeni bir store oluşturalım
+                        if (!db.objectStoreNames.contains('sync-orders')) {
+                            // autoIncrement birincil anahtar oluşturur
+                            db.createObjectStore('sync-orders', { autoIncrement: true });
+                        }
+                    };
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async function getFromDB(db, storeName, key) {
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(storeName, 'readonly');
+                    const store = tx.objectStore(storeName);
+                    const request = store.get(key);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async function addToDB(db, storeName, value) {
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(storeName, 'readwrite');
+                    const store = tx.objectStore(storeName);
+                    const request = store.add(value);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
             // --- localStorage Fonksiyonları (Sepet için) ---
             function getCartItemsFromStorage() {
                 const items = localStorage.getItem('b2bCartItems');
@@ -152,19 +209,7 @@
             function clearCartFromStorage() {
                 localStorage.removeItem('b2bCartItems');
             }
-            // --- localStorage Fonksiyonları (Eski Siparişler için - ARTIK KULLANILMAYACAK) ---
-            /*
-            function getPastOrdersFromStorage() {
-                const orders = localStorage.getItem('b2bPastOrders');
-                return orders ? JSON.parse(orders) : [];
-            }
-
-            function saveOrderToPastOrders(orderData) {
-                let pastOrders = getPastOrdersFromStorage();
-                pastOrders.push(orderData);
-                localStorage.setItem('b2bPastOrders', JSON.stringify(pastOrders));
-            }
-            */
+            
             // --- Bitiş ---
 
             function formatCurrency(value) {
@@ -189,7 +234,6 @@
 
                 if (isNaN(newQuantity) || newQuantity < 0) {
                     alert("Geçersiz miktar.");
-                    // Input'u eski değerine döndür
                     const inputElement = document.querySelector(`#cartTableBody input[data-stok-kodu="${stokKodu}"]`);
                     if(inputElement) inputElement.value = currentItem.quantity;
                     return;
@@ -248,144 +292,120 @@
                 cartGrandTotalElement.textContent = formatCurrency(grandTotal);
             }
 
-            async function fetchAvailableCustomersForCart() {
+            async function populateCustomerDropdown() {
                 try {
-                    const response = await fetch('/static/json_data/filtrelenen_cariler.json');
-                    if (!response.ok) {
-                        throw new Error(`Müşteri listesi yüklenemedi: ${response.status} ${response.statusText}`);
-                    }
-                    availableCustomersData = await response.json(); // Gelen veriyi global değişkende sakla
-                    return availableCustomersData;
-                } catch (error) {
-                    console.error("Cari müşteri listesi yüklenirken hata (Sepet):", error);
-                    if(customerCartSelectDropdown) {
-                        customerCartSelectDropdown.innerHTML = '<option value="" selected disabled>Müşteriler yüklenemedi.</option>';
-                    }
-                    return [];
-                }
-            }
-
-            function populateCartCustomerDropdown(customers) {
-                if (!customerCartSelectDropdown) return;
-
-                // Mevcut seçenekleri temizle (placeholder hariç, eğer Select2 kendi yönetiyorsa gerek yok)
-                // customerCartSelectDropdown.innerHTML = '<option value="" selected disabled>Bir müşteri seçin veya arayın...</option>';
-
-                customers.forEach(function(customer) {
-                    // CARI_ISIM ve CARI_KOD'un varlığını ve geçerli bir string olup olmadığını kontrol et
-                    const cariIsim = (typeof customer.CARI_ISIM === 'string' && customer.CARI_ISIM.trim()) ? customer.CARI_ISIM.trim() : 'İsim Yok';
-                    const cariKod = (typeof customer.CARI_KOD === 'string' && customer.CARI_KOD.trim()) ? customer.CARI_KOD.trim() : 'Kod Yok';
-
-                    const option = document.createElement('option');
-                    option.value = cariKod;
-                    option.textContent = `${cariIsim} (${cariKod})`;
-                    customerCartSelectDropdown.appendChild(option);
-                });
-
-                // Select2'yi yeniden başlat veya güncelle (veriler eklendikten sonra)
-                if ($(customerCartSelectDropdown).data('select2')) {
-                    $(customerCartSelectDropdown).select2('destroy').empty(); // Önce yok et ve içini boşalt
-                } 
-                // Placeholder'ı Select2 ayarlarında tanımlamak daha iyi bir pratik olabilir
-                $(customerCartSelectDropdown).select2({
-                    placeholder: "Bir müşteri seçin veya arayın...",
-                    allowClear: true,
-                    data: customers.map(customer => {
-                        const cariIsim = (typeof customer.CARI_ISIM === 'string' && customer.CARI_ISIM.trim()) ? customer.CARI_ISIM.trim() : 'İsim Yok';
-                        const cariKod = (typeof customer.CARI_KOD === 'string' && customer.CARI_KOD.trim()) ? customer.CARI_KOD.trim() : 'Kod Yok';
-                        return { id: cariKod, text: `${cariIsim} (${cariKod})` };
-                    })
-                });
-                 // Seçim yapıldığında müşteri ID'sini input'a yaz (bu kısım zaten vardı, kontrol amaçlı)
-                $(customerCartSelectDropdown).on('select2:select', function (e) {
-                    var data = e.params.data;
-                    if(document.getElementById('selected_customer_id_cart')){
-                        document.getElementById('selected_customer_id_cart').value = data.id;
-                    }
-                });
-
-            }
-
-            window.saveOrderAndProceed = async function() {
-                // Select2'den seçili veriyi al
-                const selectedData = $(customerCartSelectDropdown).select2('data');
-                let customerCode = null;
-                let customerName = null;
-
-                if (selectedData && selectedData.length > 0 && selectedData[0].id && selectedData[0].text) {
-                    customerCode = selectedData[0].id; // 'id' Select2'de value'ya karşılık gelir
-                    const fullText = selectedData[0].text;
-                    const lastParen = fullText.lastIndexOf(' (');
-                    if (lastParen !== -1) {
-                        customerName = fullText.substring(0, lastParen);
+                    const customers = await getFromDB(db, 'keyval', 'customers');
+                    customerCartSelectDropdown.innerHTML = '<option value="" selected disabled>Lütfen bir cari seçin...</option>'; // Önce temizle
+                    if (customers && customers.length > 0) {
+                        customers.forEach(customer => {
+                            const option = document.createElement('option');
+                            option.value = customer.CARI_ISIM; // Değer olarak cari ismini kullanıyoruz
+                            option.textContent = `${customer.CARI_ISIM} (${customer.CARI_KOD})`;
+                            customerCartSelectDropdown.appendChild(option);
+                        });
                     } else {
-                        customerName = fullText; // Parantezli kod yoksa, text'in tamamı isimdir.
+                        customerCartSelectDropdown.innerHTML = '<option value="" disabled>Çevrimdışı müşteri verisi bulunamadı. Lütfen Cari Bakiyeler sayfasından verileri güncelleyin.</option>';
+                        saveOrderBtn.disabled = true;
                     }
+                } catch (error) {
+                    console.error('Müşteriler yüklenemedi:', error);
+                    customerCartSelectDropdown.innerHTML = '<option value="" disabled>Müşteriler yüklenirken hata oluştu.</option>';
+                    saveOrderBtn.disabled = true;
+                } finally {
+                    // Select2'yi başlat
+                    $('#customer-select-cart').select2({
+                        theme: 'bootstrap-5',
+                        placeholder: 'Cari arayın veya seçin'
+                    });
                 }
+            }
 
+            async function handleOrderCreation() {
+                const selectedCustomer = customerCartSelectDropdown.value;
                 const cartItems = getCartItemsFromStorage();
 
+                if (!selectedCustomer) {
+                    alert('Lütfen bir cari seçiniz.');
+                    return;
+                }
                 if (cartItems.length === 0) {
-                    alert("Sepetiniz boş. Lütfen ürün ekleyin.");
+                    alert('Sepetiniz boş.');
                     return;
                 }
                 
-                if (!customerCode || !customerName || customerName === 'İsim Yok') { // Hem kod hem isim olmalı ve isim geçerli olmalı
-                    alert("Lütfen siparişi tamamlamak için bir Cari seçiniz.");
-                    $(customerCartSelectDropdown).select2('open'); // Dropdown'ı açmayı dene
-                    return;
-                }
-
+                saveOrderBtn.disabled = true;
+                saveOrderBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Kaydediliyor...';
+                
                 const orderPayload = {
-                    customer_code: customerCode, // API'ye müşteri kodunu da gönderelim
-                    customer_name: customerName, 
+                    customer_name: selectedCustomer,
                     items: cartItems.map(item => ({
                         product_code: item.stokKodu,
                         product_name: item.stokAdi,
                         quantity: item.quantity,
-                        unit_price: item.price,
-                        barcode: item.barkod || null
+                        unit_price: item.price
                     }))
                 };
 
-                try {
-                    const response = await fetch('/api/orders', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            // CSRF token gerekirse buraya eklenecek (FastAPI'de session auth için genellikle gerekmez)
-                        },
-                        body: JSON.stringify(orderPayload)
-                    });
-
-                    if (response.ok) { // HTTP 200-299 aralığı için
-                        const newOrder = await response.json();
-                        alert(`Siparişiniz başarıyla oluşturuldu! Sipariş ID: ${newOrder.id}`);
+                // Önce Service Worker ve SyncManager desteğini kontrol et
+                if ('serviceWorker' in navigator && 'SyncManager' in window) {
+                     // İnternet yoksa veya SW destekleniyorsa senkronize etmeyi dene
+                     try {
+                        await addToDB(db, 'sync-orders', orderPayload);
+                        const swRegistration = await navigator.serviceWorker.ready;
+                        await swRegistration.sync.register('sync-new-orders');
+                        
+                        // Başarılı çevrimdışı kayıttan sonra kullanıcıya bilgi ver
+                        offlineOrderInfo.style.display = 'block';
                         clearCartFromStorage();
-                        renderCart(); // Sepeti boşaltıp arayüzü güncelle
-                        // customerNameInput.value = ''; // Eski input temizleme kaldırıldı
-                        // Dropdown'ı başlangıç durumuna getir (jQuery ve Select2 ile)
-                        $(customerCartSelectDropdown).val(null).trigger('change');
-                        // İsteğe bağlı: Kullanıcıyı siparişler sayfasına yönlendir
-                        // window.location.href = '/orders'; 
-                    } else {
-                        const errorData = await response.json().catch(() => ({ detail: "Bilinmeyen bir hata oluştu veya sunucudan JSON formatında yanıt gelmedi." }));
-                        console.error("Sipariş oluşturma hatası:", response.status, errorData);
-                        alert(`Sipariş oluşturulurken bir hata oluştu: ${errorData.detail || response.statusText}`);
+                        renderCart(); // Sepeti temizlenmiş olarak yeniden çiz
+
+                     } catch (error) {
+                        console.error('Sipariş senkronizasyon için kaydedilemedi', error);
+                        alert('Sipariş çevrimdışı kayıt için saklanamadı. Lütfen daha sonra tekrar deneyin.');
+                        saveOrderBtn.disabled = false;
+                        saveOrderBtn.textContent = 'Siparişi Kaydet ve Bitir';
+                     }
+
+                } else {
+                    // SyncManager desteklenmiyorsa, sadece online göndermeyi dene
+                    try {
+                        const response = await fetch('/api/orders', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(orderPayload)
+                        });
+
+                        if (!response.ok) {
+                           const errorData = await response.json();
+                           throw new Error(errorData.detail || 'Sipariş oluşturulamadı.');
+                        }
+                        
+                        alert('Sipariş başarıyla oluşturuldu!');
+                        clearCartFromStorage();
+                        window.location.href = '/orders'; // Siparişlerim sayfasına yönlendir
+
+                    } catch (error) {
+                        console.error('Sipariş gönderim hatası:', error);
+                        alert(`Sipariş gönderilirken bir hata oluştu: ${error.message}`);
+                        saveOrderBtn.disabled = false;
+                        saveOrderBtn.textContent = 'Siparişi Kaydet ve Bitir';
                     }
-                } catch (error) {
-                    console.error("Fetch hatası:", error);
-                    alert("Sipariş gönderilirken bir ağ hatası oluştu. Lütfen internet bağlantınızı kontrol edin.");
                 }
             }
             
-            async function initializeCartPage() {
-                renderCart(); // Sayfa yüklendiğinde sepeti render et
-                const customers = await fetchAvailableCustomersForCart();
-                populateCartCustomerDropdown(customers);
+            async function initializePage() {
+                try {
+                    db = await openDB('FiratB2B_DB', 2); // Versiyonu 2'ye çıkararak onupgradeneeded'ı tetikle
+                    renderCart();
+                    await populateCustomerDropdown();
+                    saveOrderBtn.addEventListener('click', handleOrderCreation);
+                } catch (e) {
+                    console.error("Sayfa başlatılamadı:", e);
+                    document.getElementById('cartContent').innerHTML = '<div class="alert alert-danger">Uygulama başlatılırken bir hata oluştu. Lütfen sayfayı yenileyin.</div>';
+                }
             }
 
-            initializeCartPage(); // Ana başlatma fonksiyonu
+            initializePage();
         });
     </script>
 </body>
