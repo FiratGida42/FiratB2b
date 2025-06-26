@@ -20,33 +20,41 @@ const STATIC_ASSETS = [
 
 // 1. Install (Kurulum) Aşaması: Statik varlıkları önbelleğe al
 self.addEventListener('install', event => {
-  console.log('[Service Worker] Install');
+  console.log('SW Install: Yeni Service Worker kuruluyor.');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('[Service Worker] Caching app shell');
+        console.log('SW Install: Önbellek açıldı, statik varlıklar ekleniyor.');
         return cache.addAll(STATIC_ASSETS);
       })
-      .catch(error => {
-        console.error('[Service Worker] Failed to cache app shell during install:', error);
+      .then(() => {
+        // Yeni Service Worker'ın beklemeden, hemen aktif olmasını sağla.
+        // Bu, güncelleme sürecini hızlandırır.
+        console.log('SW Install: skipWaiting() çağrıldı.');
+        return self.skipWaiting();
       })
   );
 });
 
 // 2. Activate (Aktivasyon) Aşaması: Eski önbellekleri temizle
 self.addEventListener('activate', event => {
-  console.log('[Service Worker] Activate');
+  console.log('SW Activate: Yeni Service Worker aktifleşiyor.');
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
-            console.log('[Service Worker] Deleting old cache:', cacheName);
+            console.log('SW Activate: Eski önbellek siliniyor:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
+    }).then(() => {
+      // Service Worker'ın kontrolü hemen almasını sağla.
+      // Bu, açık olan tüm sekmelerin yeni SW tarafından yönetilmesini garantiler.
+      console.log('SW Activate: clients.claim() çağrıldı.');
+      return self.clients.claim();
     })
   );
 });
