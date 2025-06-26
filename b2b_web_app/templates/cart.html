@@ -157,7 +157,7 @@
             let db; // IndexedDB bağlantısı için
 
             // --- IndexedDB Helper Fonksiyonları ---
-            function openDB(name, version = 1) {
+            function openDB(name, version = 2) {
                 return new Promise((resolve, reject) => {
                     const request = indexedDB.open(name, version);
                     request.onupgradeneeded = (event) => {
@@ -395,7 +395,7 @@
             
             async function initializePage() {
                 try {
-                    db = await openDB('FiratB2B_DB', 2); // Versiyonu 2'ye çıkararak onupgradeneeded'ı tetikle
+                    db = await openDB('FiratB2B_DB'); // Artık versiyonu belirtmeye gerek yok
                     renderCart();
                     await populateCustomerDropdown();
                     saveOrderBtn.addEventListener('click', handleOrderCreation);
