@@ -148,49 +148,73 @@
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/static/sw.js')
                     .then(registration => {
-                        console.log('Service Worker registered: ', registration);
+                        console.log('Service Worker başarıyla kaydedildi: ', registration);
+                        
+                        // Eğer yeni bir Service Worker kuruluyorsa otomatik aktif et
+                        if (registration.waiting) {
+                            registration.waiting.postMessage({type: 'SKIP_WAITING'});
+                        }
+                        
+                        registration.addEventListener('updatefound', () => {
+                            console.log('Yeni Service Worker versiyonu bulundu.');
+                        });
                     })
                     .catch(registrationError => {
-                        console.log('Service Worker registration failed: ', registrationError);
+                        console.error('Service Worker kaydı başarısız: ', registrationError);
                     });
             });
+        } else {
+            console.warn('Bu tarayıcı Service Worker desteklemiyor.');
         }
 
         // --- IndexedDB Helper Fonksiyonları Başlangıç ---
         function openDB(name, version = 2) {
             return new Promise((resolve, reject) => {
-                const request = indexedDB.open(name, version);
-                request.onupgradeneeded = () => {
-                    const db = request.result;
-                    if (!db.objectStoreNames.contains('keyval')) {
-                        db.createObjectStore('keyval');
-                    }
-                    if (!db.objectStoreNames.contains('sync-orders')) {
-                        db.createObjectStore('sync-orders', { autoIncrement: true });
-                    }
-                };
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
+                try {
+                    const request = indexedDB.open(name, version);
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+                        if (!db.objectStoreNames.contains('keyval')) {
+                            db.createObjectStore('keyval');
+                        }
+                        if (!db.objectStoreNames.contains('sync-orders')) {
+                            db.createObjectStore('sync-orders', { autoIncrement: true });
+                        }
+                    };
+                    request.onsuccess = (event) => resolve(event.target.result);
+                    request.onerror = (event) => reject(event.target.error);
+                } catch (error) {
+                    reject(error);
+                }
             });
         }
 
-        async function getFromDB(db, key) {
+        function getFromDB(db, key) {
             return new Promise((resolve, reject) => {
-                const tx = db.transaction('keyval', 'readonly');
-                const store = tx.objectStore('keyval');
-                const request = store.get(key);
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = (event) => reject(event.target.error);
+                try {
+                    const tx = db.transaction('keyval', 'readonly');
+                    const store = tx.objectStore('keyval');
+                    const request = store.get(key);
+                    request.onsuccess = (event) => resolve(event.target.result);
+                    request.onerror = (event) => reject(event.target.error);
+                } catch (error) {
+                    reject(error);
+                }
             });
         }
 
-        async function setInDB(db, key, value) {
+        function setInDB(db, key, value) {
             return new Promise((resolve, reject) => {
-                const tx = db.transaction('keyval', 'readwrite');
-                const store = tx.objectStore('keyval');
-                store.put(value, key);
-                tx.oncomplete = () => resolve();
-                tx.onerror = (event) => reject(event.target.error);
+                try {
+                    const tx = db.transaction('keyval', 'readwrite');
+                    const store = tx.objectStore('keyval');
+                    const putRequest = store.put(value, key);
+                    putRequest.onsuccess = () => resolve();
+                    putRequest.onerror = (event) => reject(event.target.error);
+                    tx.onerror = (event) => reject(event.target.error);
+                } catch (error) {
+                    reject(error);
+                }
             });
         }
         // --- IndexedDB Helper Fonksiyonları Bitiş ---
@@ -904,38 +928,56 @@
             // GÜNCELLENMİŞ Sayfa Yükleme Mantığı
             async function loadInitialData() {
                 try {
+                    console.log("IndexedDB açılıyor...");
                     db = await openDB('FiratB2B_DB');
                     console.log("IndexedDB başarıyla açıldı.");
                     
                     console.log("Başlangıç için veriler IndexedDB'den okunuyor...");
                     const products = await getFromDB(db, 'products');
 
-                    if (products && products.length > 0) {
+                    if (products && Array.isArray(products) && products.length > 0) {
                         console.log(`${products.length} ürün IndexedDB'den başarıyla okundu.`);
                         processAndRenderProducts(products);
                         
                         // Çevrimdışı uyarısı göster
-                         if (!navigator.onLine && !document.getElementById('offline-alert')) {
+                        if (!navigator.onLine && !document.getElementById('offline-alert')) {
                             const alertDiv = document.createElement('div');
                             alertDiv.className = 'alert alert-warning text-center';
                             alertDiv.id = 'offline-alert';
                             alertDiv.textContent = 'Çevrimdışı modda çalışıyorsunuz. Gösterilen veriler en son kaydedilen verilerdir.';
-                            document.querySelector('main.px-md-4').prepend(alertDiv);
+                            const mainElement = document.querySelector('main.px-md-4');
+                            if (mainElement) {
+                                mainElement.prepend(alertDiv);
+                            }
                         }
 
                     } else {
-                        console.log("IndexedDB'de ürün bulunamadı. Kullanıcının güncelleme yapması bekleniyor.");
+                        console.log("IndexedDB'de ürün bulunamadı veya geçersiz format. Kullanıcının güncelleme yapması bekleniyor.");
                         productTableContainer.innerHTML = `
                             <div class="alert alert-primary text-center">
-                                Çevrimdışı kullanım için lütfen <strong>'Verileri Güncelle'</strong> butonuna basarak en güncel ürün listesini tabletinize indirin.
+                                <h5>Hoş Geldiniz!</h5>
+                                <p>Çevrimdışı kullanım için lütfen <strong>'Verileri Güncelle'</strong> butonuna basarak en güncel ürün listesini tabletinize indirin.</p>
                             </div>
                         `;
                     }
 
                 } catch (e) {
-                    console.error("IndexedDB açılamadı veya başlangıç verileri yüklenemedi:", e);
-                    productTableContainer.innerHTML = '<p class="text-danger text-center">Uygulama veritabanı başlatılamadı. Tarayıcınızın güncel olduğundan ve özel modda olmadığınızdan emin olun.</p>';
-                    syncButton.disabled = true; // DB açılamazsa butonu devre dışı bırak
+                    console.error("IndexedDB hatası:", e);
+                    productTableContainer.innerHTML = `
+                        <div class="alert alert-danger text-center">
+                            <h5>Veritabanı Hatası</h5>
+                            <p>Uygulama veritabanı başlatılamadı. Lütfen:</p>
+                            <ul class="list-unstyled">
+                                <li>• Sayfayı yeniden yükleyin</li>
+                                <li>• Tarayıcınızın güncel olduğundan emin olun</li>
+                                <li>• Özel/gizli modda olmadığınızdan emin olun</li>
+                            </ul>
+                            <button class="btn btn-primary" onclick="location.reload()">Sayfayı Yenile</button>
+                        </div>
+                    `;
+                    if (syncButton) {
+                        syncButton.disabled = true;
+                    }
                 }
             }
             

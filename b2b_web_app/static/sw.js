@@ -1,13 +1,8 @@
 // Önbellek adını güncelliyoruz, bu sayede eski önbellekler temizlenip yenisi kurulur.
-const CACHE_NAME = 'firat-b2b-cache-v2';
+const CACHE_NAME = 'firat-b2b-cache-v3';
 
 // Uygulamanın "kabuğunu" oluşturan, çevrimdışı çalışması gereken tüm dosyalar.
 const STATIC_ASSETS = [
-  '/',
-  '/products',
-  '/cart',
-  '/orders',
-  '/customer-balances',
   '/static/manifest.json',
   '/static/images/Logo.png',
   'https://bootswatch.com/5/yeti/bootstrap.min.css',
@@ -59,74 +54,62 @@ self.addEventListener('activate', event => {
   );
 });
 
-// 3. Fetch (Getirme) Aşaması: İstekleri akıllıca yönet
+// 3. Fetch (Getirme) Aşaması: SADECE API isteklerini ve statik varlıkları yönet
 self.addEventListener('fetch', event => {
-  // Yönlendirme yapan istekleri (navigate) veya POST gibi metodları doğrudan ağa gönder.
-  // Bu, ana sayfanın /products'a yönlendirmesi gibi işlemlerin engellenmesini önler.
+  // HTML sayfalarına hiç karışma - direkt ağa git
   if (
     event.request.mode === 'navigate' ||
+    event.request.destination === 'document' ||
+    event.request.url.includes('/products') ||
+    event.request.url.includes('/cart') ||
+    event.request.url.includes('/orders') ||
+    event.request.url.includes('/customer-balances') ||
+    event.request.url.endsWith('/') ||
     event.request.method !== 'GET'
   ) {
-    event.respondWith(fetch(event.request));
+    // Bu istekleri hiç engelleme, direkt ağa git
     return;
   }
 
-  // API istekleri için (dinamik veri)
+  // API istekleri için cache-then-network stratejisi
   if (event.request.url.includes('/api/')) {
     event.respondWith(
-      // Önce ağı dene (Stale-While-Revalidate'in basitleştirilmiş hali)
       fetch(event.request)
         .then(networkResponse => {
-          // Ağdan gelen yanıtı hem önbelleğe kaydet hem de sayfaya döndür
+          // Ağdan gelen yanıtı önbelleğe kaydet
           return caches.open(CACHE_NAME).then(cache => {
             cache.put(event.request, networkResponse.clone());
             return networkResponse;
           });
         })
         .catch(() => {
-          // Ağ hatası olursa, önbellekten yanıtı döndürmeyi dene
+          // Ağ hatası olursa, önbellekten yanıtı döndür
           return caches.match(event.request);
         })
     );
     return;
   }
 
-  // Diğer tüm GET istekleri için (statik varlıklar: HTML, CSS, JS)
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Önbellekte varsa direkt oradan döndür
-        if (response) {
-          return response;
-        }
-        // Önbellekte yoksa, ağdan getirmeyi dene
-        return fetch(event.request);
-      })
-  );
-});
-
-// --- YENİ: Arka Plan Senkronizasyonu (Background Sync) ---
-self.addEventListener('sync', event => {
-  if (event.tag === 'sync-new-orders') {
-    console.log('SYNC: "sync-new-orders" etiketi yakalandı.');
-    event.waitUntil(syncNewOrders());
+  // Statik varlıklar için cache-first stratejisi
+  if (
+    event.request.url.includes('/static/') ||
+    event.request.url.includes('bootstrap') ||
+    event.request.url.includes('lightgallery') ||
+    event.request.url.includes('cdn.jsdelivr')
+  ) {
+    event.respondWith(
+      caches.match(event.request)
+        .then(response => {
+          return response || fetch(event.request);
+        })
+    );
   }
 });
 
+// --- Background Sync için helper fonksiyonlar ---
 function openSyncDB() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open('FiratB2B_DB', 2); // Versiyonun cart.html ile aynı olduğundan emin ol
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
-async function getAllFromDB(db, storeName) {
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(storeName, 'readonly');
-    const store = tx.objectStore(storeName);
-    // getAll() tüm kayıtları, anahtarlarıyla birlikte getirebilir. Biz sadece değerleri istiyoruz.
-    const request = store.getAll(); 
+    const request = indexedDB.open('FiratB2B_DB', 2);
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
   });
@@ -142,6 +125,14 @@ async function deleteFromDB(db, storeName, key) {
   });
 }
 
+// --- Background Sync Event Handler ---
+self.addEventListener('sync', event => {
+  if (event.tag === 'sync-new-orders') {
+    console.log('SYNC: "sync-new-orders" etiketi yakalandı.');
+    event.waitUntil(syncNewOrders());
+  }
+});
+
 // Bu fonksiyon tüm bekleyen siparişleri göndermeye çalışacak
 async function syncNewOrders() {
   let db;
@@ -149,13 +140,13 @@ async function syncNewOrders() {
     db = await openSyncDB();
     const tx = db.transaction('sync-orders', 'readonly');
     const store = tx.objectStore('sync-orders');
-    const request = store.openCursor(); // İmleç ile tek tek ilerleyeceğiz
+    const request = store.openCursor();
     
     request.onsuccess = event => {
       const cursor = event.target.result;
       if (cursor) {
         const orderData = cursor.value;
-        const orderKey = cursor.key; // Silme işlemi için anahtarı sakla
+        const orderKey = cursor.key;
 
         console.log('SYNC: Gönderilecek sipariş bulundu:', orderData);
 
@@ -166,26 +157,18 @@ async function syncNewOrders() {
         })
         .then(response => {
           if (!response.ok) {
-            // Sunucudan hata dönerse, tekrar denemek üzere bırakabiliriz.
-            // Veya hatayı loglayıp siparişi silebiliriz. Şimdilik loglayalım.
             console.error('SYNC: Sunucu siparişi reddetti. Status:', response.status, response.statusText);
-            // Belki 4xx hatalarında siparişi silmek mantıklı olabilir.
           } else {
-            // Başarılı olursa, siparişi IndexedDB'den sil
             console.log('SYNC: Sipariş başarıyla sunucuya gönderildi. IDBden siliniyor, key:', orderKey);
-            // Yeni bir transaction içinde silme işlemi yapmalıyız.
             return openSyncDB().then(db2 => deleteFromDB(db2, 'sync-orders', orderKey));
           }
         })
         .catch(err => {
-          // Bu ağ hatası demektir. Bir şey yapmaya gerek yok,
-          // tarayıcı sync işlemini daha sonra tekrar deneyecektir.
           console.error('SYNC: Sipariş gönderilemedi (ağ hatası). Daha sonra tekrar denenecek.', err);
-          // Hatayı re-throw ederek sync işleminin başarısız olduğunu belirtelim.
           throw err;
         });
 
-        cursor.continue(); // Bir sonraki kayda geç
+        cursor.continue();
       } else {
         console.log('SYNC: Gönderilecek başka sipariş kalmadı.');
       }
