@@ -150,13 +150,22 @@
             });
         }
         async function getFromDB(db, key) {
-            const tx = db.transaction('keyval', 'readonly');
-            return tx.objectStore('keyval').get(key);
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction('keyval', 'readonly');
+                const store = tx.objectStore('keyval');
+                const request = store.get(key);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = (event) => reject(event.target.error);
+            });
         }
         async function setInDB(db, key, value) {
-            const tx = db.transaction('keyval', 'readwrite');
-            await tx.objectStore('keyval').put(value, key);
-            return tx.done;
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction('keyval', 'readwrite');
+                const store = tx.objectStore('keyval');
+                store.put(value, key);
+                tx.oncomplete = () => resolve();
+                tx.onerror = (event) => reject(event.target.error);
+            });
         }
 
         function formatCurrency(value) {
