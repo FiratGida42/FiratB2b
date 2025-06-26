@@ -1,5 +1,5 @@
 // Önbellek adını güncelliyoruz, bu sayede eski önbellekler temizlenip yenisi kurulur.
-const CACHE_NAME = 'firat-b2b-cache-v3';
+const CACHE_NAME = 'firat-b2b-cache-v4';
 
 // Uygulamanın "kabuğunu" oluşturan, çevrimdışı çalışması gereken tüm dosyalar.
 const STATIC_ASSETS = [

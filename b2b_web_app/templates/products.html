@@ -219,12 +219,39 @@
     </main>
 
     <script>
-        // Service Worker'ı kaydet
+        // Service Worker'ı kaydet ve hard refresh zorla
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/static/sw.js')
+                // Tüm cache'leri temizle
+                if ('caches' in window) {
+                    caches.keys().then(cacheNames => {
+                        return Promise.all(
+                            cacheNames.map(cacheName => {
+                                if (cacheName.includes('firat-b2b-cache')) {
+                                    console.log('Cache siliniyor:', cacheName);
+                                    return caches.delete(cacheName);
+                                }
+                            })
+                        );
+                    });
+                }
+                
+                // Mevcut Service Worker'ları da temizle
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    registrations.forEach(registration => {
+                        console.log('Service Worker registration siliniyor');
+                        registration.unregister();
+                    });
+                });
+                
+                navigator.serviceWorker.register('/static/sw.js?v=4')
                     .then(registration => {
                         console.log('Service Worker başarıyla kaydedildi: ', registration);
+                        
+                        // Aktif Service Worker varsa güncellemeyi zorla
+                        if (registration.active) {
+                            registration.update();
+                        }
                         
                         // Eğer yeni bir Service Worker kuruluyorsa otomatik aktif et
                         if (registration.waiting) {
@@ -233,6 +260,15 @@
                         
                         registration.addEventListener('updatefound', () => {
                             console.log('Yeni Service Worker versiyonu bulundu.');
+                            const newWorker = registration.installing;
+                            if (newWorker) {
+                                newWorker.addEventListener('statechange', () => {
+                                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                        console.log('Yeni Service Worker kuruldu. Sayfa yenileniyor...');
+                                        window.location.reload();
+                                    }
+                                });
+                            }
                         });
                     })
                     .catch(registrationError => {
@@ -324,12 +360,28 @@
         ];
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Elementleri güvenli bir şekilde al
             const productTableContainer = document.getElementById('products-table-container');
             const searchInput = document.getElementById('product-search-input');
             const mainCategoriesNav = document.getElementById('main-categories-nav');
             const quickStockCodeInput = document.getElementById('quick-stock-code-input');
             const quickAddByStockCodeButton = document.getElementById('quick-add-by-stock-code-button');
-            const syncButton = document.getElementById('sync-button'); // Butonu değişkene ata
+            const syncButton = document.getElementById('sync-button');
+            
+            // Kritik elementlerin varlığını kontrol et
+            if (!productTableContainer) {
+                console.error('products-table-container elementi bulunamadı!');
+                return;
+            }
+            
+            console.log('DOM Elementleri:', {
+                productTableContainer: !!productTableContainer,
+                searchInput: !!searchInput,
+                mainCategoriesNav: !!mainCategoriesNav,
+                quickStockCodeInput: !!quickStockCodeInput,
+                quickAddByStockCodeButton: !!quickAddByStockCodeButton,
+                syncButton: !!syncButton
+            });
             
             let allProducts = []; 
             let activeCategoryStructure = []; 
