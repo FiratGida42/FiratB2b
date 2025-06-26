@@ -194,7 +194,7 @@
                         <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
                         <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
                     </svg>
-                    Verileri Güncelle
+                    Tüm Verileri Güncelle
                 </button>
             </div>
         </div>
@@ -982,26 +982,44 @@
                 });
             }
 
-            // --- GÜNCELLENMİŞ Ürün Yükleme Fonksiyonu ---
-            // Bu fonksiyon artık sadece internetten veri çekip DB'ye kaydeder.
+            // --- GÜNCELLENMİŞ Tüm Verileri Yükleme Fonksiyonu ---
+            // Bu fonksiyon hem ürünleri hem de cari bakiyeleri internetten çekip DB'ye kaydeder.
             async function fetchAndCacheProducts() {
                 syncButton.disabled = true;
                 const originalButtonHTML = syncButton.innerHTML;
-                syncButton.innerHTML = `
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    Yükleniyor...
-                `;
+                
+                let currentStep = 1;
+                const totalSteps = 2;
+                
+                function updateButtonText(step, stepName) {
+                    syncButton.innerHTML = `
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        ${stepName}... (${step}/${totalSteps})
+                    `;
+                }
 
                 try {
+                    // 1. Ürünleri çek
+                    updateButtonText(1, "Ürünler yükleniyor");
                     console.log("Ürünler internetten çekiliyor...");
-                    const response = await fetch('/api/products');
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok: ' + response.statusText);
+                    const productsResponse = await fetch('/api/products');
+                    if (!productsResponse.ok) {
+                        throw new Error('Ürünler yüklenemedi: ' + productsResponse.statusText);
                     }
-                    const products = await response.json();
-                    
-                    console.log("Ürünler internetten başarıyla çekildi, IndexedDB'ye kaydediliyor.");
+                    const products = await productsResponse.json();
+                    console.log("Ürünler başarıyla çekildi, IndexedDB'ye kaydediliyor.");
                     await setInDB(db, 'products', products);
+
+                    // 2. Cari bakiyeleri çek
+                    updateButtonText(2, "Cari bakiyeler yükleniyor");
+                    console.log("Cari bakiyeler internetten çekiliyor...");
+                    const customersResponse = await fetch('/api/customers');
+                    if (!customersResponse.ok) {
+                        throw new Error('Cari bakiyeler yüklenemedi: ' + customersResponse.statusText);
+                    }
+                    const customers = await customersResponse.json();
+                    console.log("Cari bakiyeler başarıyla çekildi, IndexedDB'ye kaydediliyor.");
+                    await setInDB(db, 'customers', customers);
 
                     // Başarı mesajını kaldır (eğer varsa) ve butonu güncelle
                     const offlineAlert = document.getElementById('offline-alert');
@@ -1012,18 +1030,20 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16" style="vertical-align: -0.125em; margin-right: 5px;">
                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
                         </svg>
-                        Veriler Güncel
+                        Tüm Veriler Güncel
                     `;
                     
-                    // Verileri ekrana bas
+                    // Ürün verilerini ekrana bas
                     processAndRenderProducts(products);
+                    
+                    console.log(`✅ Senkronizasyon tamamlandı: ${products.length} ürün, ${customers.length} cari`);
 
                 } catch (error) {
                     console.error("Veri senkronizasyonu başarısız:", error);
                     syncButton.classList.remove('btn-info', 'btn-success');
                     syncButton.classList.add('btn-danger');
                     syncButton.textContent = 'Güncelleme Başarısız!';
-                    alert('Veriler güncellenemedi. İnternet bağlantınızı kontrol edin.');
+                    alert('Veriler güncellenemedi. Hata: ' + error.message);
                 } finally {
                     // Butonu bir süre sonra eski haline getir
                     setTimeout(() => {
@@ -1090,7 +1110,14 @@
                         productTableContainer.innerHTML = `
                             <div class="alert alert-primary text-center">
                                 <h5>Hoş Geldiniz!</h5>
-                                <p>Çevrimdışı kullanım için lütfen <strong>'Verileri Güncelle'</strong> butonuna basarak en güncel ürün listesini tabletinize indirin.</p>
+                                <p>Çevrimdışı kullanım için lütfen <strong>'Tüm Verileri Güncelle'</strong> butonuna basarak en güncel verileri (ürünler + cari bakiyeler) tabletinize indirin.</p>
+                                <hr>
+                                <small class="text-muted">
+                                    <strong>İndirilen veriler:</strong><br>
+                                    • Ürün listesi ve fiyatları<br>
+                                    • Cari bakiye bilgileri<br>
+                                    • Ürün resimleri (otomatik)
+                                </small>
                             </div>
                         `;
                     }

@@ -95,14 +95,18 @@
         <h1 class="mb-4">{{ title }}</h1>
 
         <div class="row justify-content-center mb-3">
-            <div class="col-md-10 col-lg-8 text-center">
-                <button id="sync-customers-button" class="btn btn-info btn-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16" style="vertical-align: -0.125em; margin-right: 5px;">
-                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"></path>
-                        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"></path>
-                    </svg>
-                    Çevrimdışı Kullanım için Müşteri Verilerini Güncelle
-                </button>
+            <div class="col-md-10 col-lg-8">
+                <div class="alert alert-info text-center">
+                    <h5 class="alert-heading">Veri Güncelleme</h5>
+                    <p>Cari bakiye verilerini güncellemek için <strong>Ana Sayfa</strong>'daki <strong>"Tüm Verileri Güncelle"</strong> butonunu kullanın.</p>
+                    <a href="/products" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M2 13.5V7h1v6.5a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V7h1v6.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5ZM3 7V6a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v1h1a1 1 0 0 1 1 1v5.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 14.5V8a1 1 0 0 1 1-1h1Zm10-2V6H3v1h10Z"/>
+                            <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v.5h1V7.207l6-6 6 6V8h1v-.5a.5.5 0 0 0-.146-.354l-6-6Z"/>
+                        </svg>
+                        Ana Sayfaya Git
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -175,7 +179,6 @@
         }
 
         $(document).ready(function() {
-            const syncButton = $('#sync-customers-button');
             const tableContainer = $('#table-container');
             let db;
             let dataTableInstance;
@@ -190,11 +193,12 @@
 
                 if (!customers || customers.length === 0) {
                      const message = `
-                        <div class="alert alert-primary text-center mt-4">
-                            Gösterilecek müşteri verisi bulunamadı. <br>
-                            Çevrimdışı kullanım için lütfen <strong>'Verileri Güncelle'</strong> butonuna basarak en güncel listeyi tabletinize indirin.
+                        <div class="alert alert-warning text-center mt-4">
+                            <h5>Cari Bakiye Verisi Bulunamadı</h5>
+                            <p>Çevrimdışı kullanım için lütfen <strong>Ana Sayfa</strong>'daki <strong>"Tüm Verileri Güncelle"</strong> butonuna basarak en güncel cari listesini tabletinize indirin.</p>
+                            <a href="/products" class="btn btn-primary">Ana Sayfaya Git</a>
                         </div>`;
-                    tableContainer.html(message); // DataTable'ı değil, ana kabı mesajla değiştir
+                    tableContainer.html(message);
                     return;
                 }
                 
@@ -220,33 +224,7 @@
                 });
             }
 
-            async function fetchAndCacheCustomers() {
-                const originalButtonHTML = syncButton.html();
-                syncButton.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Yükleniyor...');
 
-                try {
-                    const response = await fetch('/api/customers');
-                    if (!response.ok) throw new Error('Network error');
-                    const customers = await response.json();
-                    
-                    await setInDB(db, 'customers', customers);
-                    renderTable(customers);
-
-                    const offlineAlert = $('#offline-alert');
-                    if(offlineAlert.length) offlineAlert.remove();
-                    
-                    syncButton.removeClass('btn-info btn-danger').addClass('btn-success').html('Veriler Güncel');
-
-                } catch (error) {
-                    console.error("Müşteri verileri güncellenemedi:", error);
-                    syncButton.removeClass('btn-info btn-success').addClass('btn-danger').html('Güncelleme Başarısız!');
-                    alert('Veriler güncellenemedi. İnternet bağlantınızı kontrol edin.');
-                } finally {
-                    setTimeout(() => {
-                        syncButton.prop('disabled', false).html(originalButtonHTML).removeClass('btn-success btn-danger').addClass('btn-info');
-                    }, 3000);
-                }
-            }
 
             async function loadInitialData() {
                 try {
@@ -263,11 +241,8 @@
                 } catch (e) {
                      console.error("DB açılamadı veya veri yüklenemedi:", e);
                      tableContainer.html('<p class="text-danger text-center">Uygulama veritabanı başlatılamadı.</p>');
-                     syncButton.prop('disabled', true);
                 }
             }
-            
-            syncButton.on('click', fetchAndCacheCustomers);
 
             loadInitialData();
         });
