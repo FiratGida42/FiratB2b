@@ -1,5 +1,5 @@
 // Önbellek adını güncelliyoruz, bu sayede eski önbellekler temizlenip yenisi kurulur.
-const CACHE_NAME = 'firat-b2b-cache-v4';
+const CACHE_NAME = 'firat-b2b-cache-v5';
 
 // Uygulamanın "kabuğunu" oluşturan, çevrimdışı çalışması gereken tüm dosyalar.
 const STATIC_ASSETS = [
@@ -90,19 +90,40 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Statik varlıklar için cache-first stratejisi
+  // Statik varlıklar ve resimler için cache-first stratejisi
   if (
     event.request.url.includes('/static/') ||
     event.request.url.includes('bootstrap') ||
     event.request.url.includes('lightgallery') ||
-    event.request.url.includes('cdn.jsdelivr')
+    event.request.url.includes('cdn.jsdelivr') ||
+    event.request.url.includes('/images/') ||
+    event.request.destination === 'image' ||
+    /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(event.request.url)
   ) {
     event.respondWith(
       caches.match(event.request)
         .then(response => {
-          return response || fetch(event.request);
+          if (response) {
+            return response;
+          }
+          // Cache'te yoksa, ağdan çek ve cache'e kaydet
+          return fetch(event.request).then(fetchResponse => {
+            if (fetchResponse && fetchResponse.status === 200) {
+              const responseToCache = fetchResponse.clone();
+              caches.open(CACHE_NAME).then(cache => {
+                cache.put(event.request, responseToCache);
+              });
+            }
+            return fetchResponse;
+          }).catch(() => {
+            // Resim yüklenemezse varsayılan resim döndür (isteğe bağlı)
+            if (event.request.destination === 'image') {
+              return caches.match('/static/images/Logo.png');
+            }
+          });
         })
     );
+    return;
   }
 });
 
