@@ -300,65 +300,43 @@ async def get_customers_api(current_user: str = Depends(get_current_admin_user_f
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
-    admin_user = request.session.get("admin_user")
-    if not admin_user:
-        return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
-    
-    # Kullanıcı giriş yapmışsa, şablonu render et
-    # products.html şablonunu render et ve request nesnesini context içinde gönder.
-    # Şablon içinde /api/products endpoint'inden veri çekilecek (JavaScript ile).
+    # Ana sayfa isteği geldiğinde, kullanıcıyı her zaman /products sayfasına yönlendir.
+    # /products endpoint'i zaten giriş yapılıp yapılmadığını kontrol edecektir.
+    # Bu, PWA yapısının ve client-side rendering'in doğru çalışması için gereklidir.
+    return RedirectResponse(url="/products")
+
+@app.get("/products", response_class=HTMLResponse)
+async def view_products(request: Request, current_user: str = Depends(get_current_admin_user_with_redirect)):
+    """Renders the products page."""
+    # Bu endpoint artık sadece sayfanın iskeletini (HTML) döndürür.
+    # Veriler, sayfa içindeki JavaScript tarafından /api/products'tan çekilir.
     return templates.TemplateResponse("products.html", {
-        "request": request, 
+        "request": request,
         "title": "Ürün Kataloğu",
-        "admin_user": admin_user
+        "admin_user": current_user
     })
 
 @app.get("/customer-balances", response_class=HTMLResponse)
 async def view_customer_balances(request: Request, current_user: str = Depends(get_current_admin_user_with_redirect)):
-    customers_data = []
-    # available_customers_file_path = os.path.join(STATIC_DIR, "json_data", "filtrelenen_cariler.json") # ESKİ YOL
-    available_customers_file_path = CUSTOMER_BALANCES_JSON_PATH # YENİ GÜVENLİ YOL
-
-    try:
-        if os.path.exists(available_customers_file_path):
-            with open(available_customers_file_path, "r", encoding="utf-8") as f:
-                customers_data = json.load(f)
-            
-            # Bakiye parsing ve sıralama için yardımcı fonksiyon
-            def parse_bakiye_for_sort(bakiye_str):
-                try:
-                    # "0E-8" gibi bilimsel gösterimleri float olarak doğru parse eder
-                    return float(bakiye_str)
-                except (ValueError, TypeError):
-                    return 0.0 # Hata durumunda veya null ise 0 kabul et
-
-            # NET_BAKIYE'ye göre büyükten küçüğe sırala
-            customers_data.sort(key=lambda x: parse_bakiye_for_sort(x.get("NET_BAKIYE", "0")), reverse=True)
-
-        else:
-            print(f"UYARI: Cari bakiye dosyası bulunamadı: {available_customers_file_path}")
-    except Exception as e:
-        print(f"HATA: Cari bakiye dosyası okunurken hata: {e}")
-        # Hata durumunda boş liste ile devam et, template hatayı uygun şekilde göstermeli
-
+    # Bu endpoint de artık sadece sayfanın iskeletini (HTML) döndürür.
+    # Veriler, sayfa içindeki JavaScript tarafından /api/customers'tan çekilir.
     return templates.TemplateResponse("customer_balances.html", {
         "request": request,
         "title": "Cari Bakiyeler",
-        "admin_user": current_user, # admin_user yerine current_user (dependency'den gelen)
-        "customers": customers_data
+        "admin_user": current_user,
     })
 
 @app.get("/cart", response_class=HTMLResponse)
-async def view_cart(request: Request):
-    admin_user = request.session.get("admin_user")
-    if not admin_user:
-        return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
+async def view_cart(request: Request, current_user: str = Depends(get_current_admin_user_with_redirect)):
+    # admin_user = request.session.get("admin_user") # Deprecated: Dependency'den geliyor.
+    # if not admin_user:
+    #     return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
 
     # cart.html şablonunu render et ve request nesnesini context içinde gönder.
     return templates.TemplateResponse("cart.html", {
         "request": request, 
         "title": "Sepetim",
-        "admin_user": admin_user
+        "admin_user": current_user
     })
 
 @app.get("/orders", response_class=HTMLResponse)
