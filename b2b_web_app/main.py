@@ -327,23 +327,21 @@ async def view_customer_balances(request: Request, current_user: str = Depends(g
     })
 
 @app.get("/cart", response_class=HTMLResponse)
-async def view_cart(request: Request, current_user: str = Depends(get_current_admin_user_with_redirect)):
-    # admin_user = request.session.get("admin_user") # Deprecated: Dependency'den geliyor.
-    # if not admin_user:
-    #     return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
-
-    # cart.html şablonunu render et ve request nesnesini context içinde gönder.
+async def view_cart(request: Request):
+    # Çevrimdışı çalışması için session kontrolü yapmıyoruz
+    # Client-side'da localStorage kontrolü yapılacak
+    admin_user = request.session.get("admin_user", "Admin")  # Varsayılan değer ver
+    
     return templates.TemplateResponse("cart.html", {
         "request": request, 
         "title": "Sepetim",
-        "admin_user": current_user
+        "admin_user": admin_user
     })
 
 @app.get("/orders", response_class=HTMLResponse)
 async def view_orders(request: Request):
-    admin_user = request.session.get("admin_user")
-    if not admin_user:
-        return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
+    # Çevrimdışı çalışması için session kontrolü yapmıyoruz
+    admin_user = request.session.get("admin_user", "Admin")  # Varsayılan değer ver
     
     return templates.TemplateResponse("orders.html", {
         "request": request, 

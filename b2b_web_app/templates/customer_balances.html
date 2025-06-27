@@ -35,7 +35,7 @@
         // Service Worker'ı kaydet (her sayfada olması iyi bir pratiktir)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/static/sw.js?v=5')
+                navigator.serviceWorker.register('/static/sw.js?v=6')
                     .then(reg => console.log('Service Worker registered in customers page.', reg))
                     .catch(err => console.log('Service Worker registration failed: ', err));
             });

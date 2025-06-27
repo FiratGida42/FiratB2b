@@ -1,5 +1,5 @@
 // Önbellek adını güncelliyoruz, bu sayede eski önbellekler temizlenip yenisi kurulur.
-const CACHE_NAME = 'firat-b2b-cache-v5';
+const CACHE_NAME = 'firat-b2b-cache-v6';
 
 // Uygulamanın "kabuğunu" oluşturan, çevrimdışı çalışması gereken tüm dosyalar.
 const STATIC_ASSETS = [
@@ -10,7 +10,17 @@ const STATIC_ASSETS = [
   'https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/css/lg-zoom.min.css',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/lightgallery.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/plugins/zoom/lg-zoom.min.js'
+  'https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/plugins/zoom/lg-zoom.min.js',
+  // jQuery ve Select2 bağımlılıkları (cart.html için)
+  'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css',
+  'https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-5-theme/1.3.0/select2-bootstrap-5-theme.min.css',
+  // DataTables bağımlılıkları (customer_balances.html için)
+  'https://code.jquery.com/jquery-3.7.0.js',
+  'https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js',
+  'https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js',
+  'https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css'
 ];
 
 // 1. Install (Kurulum) Aşaması: Statik varlıkları önbelleğe al
@@ -54,9 +64,14 @@ self.addEventListener('activate', event => {
   );
 });
 
-// 3. Fetch (Getirme) Aşaması: SADECE API isteklerini ve statik varlıkları yönet
+// 3. Fetch (Getirme) Aşaması: API isteklerini, statik varlıkları ve HTML sayfalarını yönet
 self.addEventListener('fetch', event => {
-  // HTML sayfalarına hiç karışma - direkt ağa git
+  // POST, PUT, DELETE gibi istekleri hiç engelleme
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // HTML sayfaları için network-first stratejisi (çevrimdışı fallback ile)
   if (
     event.request.mode === 'navigate' ||
     event.request.destination === 'document' ||
@@ -64,10 +79,52 @@ self.addEventListener('fetch', event => {
     event.request.url.includes('/cart') ||
     event.request.url.includes('/orders') ||
     event.request.url.includes('/customer-balances') ||
-    event.request.url.endsWith('/') ||
-    event.request.method !== 'GET'
+    event.request.url.endsWith('/')
   ) {
-    // Bu istekleri hiç engelleme, direkt ağa git
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          // Başarılı yanıtı cache'e kaydet
+          if (response && response.status === 200) {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseToCache);
+            });
+          }
+          return response;
+        })
+        .catch(() => {
+          // Çevrimdışıysa cache'ten döndür
+          return caches.match(event.request).then(cachedResponse => {
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+            // Cache'te de yoksa basit bir offline sayfası döndür
+            return new Response(`
+              <!DOCTYPE html>
+              <html lang="tr">
+              <head>
+                  <meta charset="UTF-8">
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                  <title>Çevrimdışı - B2B Portalı</title>
+                  <link href="https://bootswatch.com/5/yeti/bootstrap.min.css" rel="stylesheet">
+              </head>
+              <body>
+                  <div class="container mt-5 text-center">
+                      <h1 class="text-primary">Çevrimdışı Modu</h1>
+                      <p class="lead">Bu sayfa çevrimdışı kullanıma hazır değil.</p>
+                      <p>Lütfen internet bağlantınızı kontrol edin veya ana sayfaya dönün.</p>
+                      <a href="/products" class="btn btn-primary">Ana Sayfaya Dön</a>
+                      <button onclick="location.reload()" class="btn btn-secondary">Yeniden Dene</button>
+                  </div>
+              </body>
+              </html>
+            `, {
+              headers: { 'Content-Type': 'text/html' }
+            });
+          });
+        })
+    );
     return;
   }
 
