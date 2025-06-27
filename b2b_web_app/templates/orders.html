@@ -34,7 +34,7 @@
         // Service Worker'ı kaydet
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/static/sw.js?v=6')
+                navigator.serviceWorker.register('/static/sw.js?v=8')
                     .then(reg => console.log('Service Worker registered in orders page.', reg))
                     .catch(err => console.log('Service Worker registration failed: ', err));
             });

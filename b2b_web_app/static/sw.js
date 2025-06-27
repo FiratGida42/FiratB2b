@@ -1,10 +1,15 @@
 // Önbellek adını güncelliyoruz, bu sayede eski önbellekler temizlenip yenisi kurulur.
-const CACHE_NAME = 'firat-b2b-cache-v6';
+const CACHE_NAME = 'firat-b2b-cache-v8';
 
 // Uygulamanın "kabuğunu" oluşturan, çevrimdışı çalışması gereken tüm dosyalar.
 const STATIC_ASSETS = [
   '/static/manifest.json',
   '/static/images/Logo.png',
+  // HTML sayfaları da önbelleğe alıyoruz
+  '/products',
+  '/cart', 
+  '/orders',
+  '/customer-balances',
   'https://bootswatch.com/5/yeti/bootstrap.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/css/lightgallery.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/css/lg-zoom.min.css',
@@ -71,12 +76,57 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // HTML sayfaları için network-first stratejisi (çevrimdışı fallback ile)
+  // Cart sayfası için cache-first stratejisi (offline çalışması için)
+  if (event.request.url.includes('/cart')) {
+    event.respondWith(
+      caches.match(event.request)
+        .then(response => {
+          if (response) {
+            return response;
+          }
+          // Cache'te yoksa network'ten al ve cache'e kaydet
+          return fetch(event.request).then(fetchResponse => {
+            if (fetchResponse && fetchResponse.status === 200) {
+              const responseToCache = fetchResponse.clone();
+              caches.open(CACHE_NAME).then(cache => {
+                cache.put(event.request, responseToCache);
+              });
+            }
+            return fetchResponse;
+          }).catch(() => {
+            // Offline fallback
+            return new Response(`
+              <!DOCTYPE html>
+              <html lang="tr">
+              <head>
+                  <meta charset="UTF-8">
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                  <title>Sepet - Çevrimdışı</title>
+                  <link href="https://bootswatch.com/5/yeti/bootstrap.min.css" rel="stylesheet">
+              </head>
+              <body>
+                  <div class="container mt-5">
+                      <h1>Sepet - Çevrimdışı Modu</h1>
+                      <p>Sepet sayfası çevrimdışı olarak yüklenemedi.</p>
+                      <button onclick="location.reload()" class="btn btn-primary">Yeniden Dene</button>
+                      <a href="/products" class="btn btn-secondary">Ürünlere Dön</a>
+                  </div>
+              </body>
+              </html>
+            `, {
+              headers: { 'Content-Type': 'text/html' }
+            });
+          });
+        })
+    );
+    return;
+  }
+
+  // Diğer HTML sayfaları için network-first stratejisi (çevrimdışı fallback ile)
   if (
     event.request.mode === 'navigate' ||
     event.request.destination === 'document' ||
     event.request.url.includes('/products') ||
-    event.request.url.includes('/cart') ||
     event.request.url.includes('/orders') ||
     event.request.url.includes('/customer-balances') ||
     event.request.url.endsWith('/')
