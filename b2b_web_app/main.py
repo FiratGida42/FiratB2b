@@ -306,24 +306,26 @@ async def read_root(request: Request):
     return RedirectResponse(url="/products")
 
 @app.get("/products", response_class=HTMLResponse)
-async def view_products(request: Request, current_user: str = Depends(get_current_admin_user_with_redirect)):
+async def view_products(request: Request):
     """Renders the products page."""
-    # Bu endpoint artık sadece sayfanın iskeletini (HTML) döndürür.
-    # Veriler, sayfa içindeki JavaScript tarafından /api/products'tan çekilir.
+    # Çevrimdışı çalışması için session kontrolü yapmıyoruz
+    admin_user = request.session.get("admin_user", "Admin")  # Varsayılan değer ver
+    
     return templates.TemplateResponse("products.html", {
         "request": request,
         "title": "Ürün Kataloğu",
-        "admin_user": current_user
+        "admin_user": admin_user
     })
 
 @app.get("/customer-balances", response_class=HTMLResponse)
-async def view_customer_balances(request: Request, current_user: str = Depends(get_current_admin_user_with_redirect)):
-    # Bu endpoint de artık sadece sayfanın iskeletini (HTML) döndürür.
-    # Veriler, sayfa içindeki JavaScript tarafından /api/customers'tan çekilir.
+async def view_customer_balances(request: Request):
+    # Çevrimdışı çalışması için session kontrolü yapmıyoruz
+    admin_user = request.session.get("admin_user", "Admin")  # Varsayılan değer ver
+    
     return templates.TemplateResponse("customer_balances.html", {
         "request": request,
         "title": "Cari Bakiyeler",
-        "admin_user": current_user,
+        "admin_user": admin_user,
     })
 
 @app.get("/cart", response_class=HTMLResponse)
