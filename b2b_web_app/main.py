@@ -272,7 +272,8 @@ async def receive_products_api(products: List[Dict]):
         raise HTTPException(status_code=500, detail=f"Ürünler kaydedilemedi: {str(e)}")
 
 @app.get("/api/products")
-async def get_products_api(current_user: str = Depends(get_current_admin_user_for_api)):
+async def get_products_api():
+    # Çevrimdışı çalışması için authentication kontrolü yapmıyoruz
     if not os.path.exists(PRODUCTS_FILE):
         return []
     try:
@@ -284,8 +285,9 @@ async def get_products_api(current_user: str = Depends(get_current_admin_user_fo
         return []
 
 @app.get("/api/customers")
-async def get_customers_api(current_user: str = Depends(get_current_admin_user_for_api)):
+async def get_customers_api():
     """Müşteri/Cari verilerini JSON olarak döndüren API endpoint'i."""
+    # Çevrimdışı çalışması için authentication kontrolü yapmıyoruz
     if not os.path.exists(CUSTOMER_BALANCES_JSON_PATH):
         # Dosya yoksa boş liste döndürerek istemcinin hata almasını önle
         return []

@@ -1002,9 +1002,7 @@
                     // 1. Ürünleri çek
                     updateButtonText(1, "Ürünler yükleniyor");
                     console.log("Ürünler internetten çekiliyor...");
-                    const productsResponse = await fetch('/api/products', {
-                        credentials: 'include' // Session cookie'sini dahil et
-                    });
+                    const productsResponse = await fetch('/api/products');
                     if (!productsResponse.ok) {
                         throw new Error('Ürünler yüklenemedi: ' + productsResponse.statusText);
                     }
@@ -1015,9 +1013,7 @@
                     // 2. Cari bakiyeleri çek
                     updateButtonText(2, "Cari bakiyeler yükleniyor");
                     console.log("Cari bakiyeler internetten çekiliyor...");
-                    const customersResponse = await fetch('/api/customers', {
-                        credentials: 'include' // Session cookie'sini dahil et
-                    });
+                    const customersResponse = await fetch('/api/customers');
                     if (!customersResponse.ok) {
                         throw new Error('Cari bakiyeler yüklenemedi: ' + customersResponse.statusText);
                     }
