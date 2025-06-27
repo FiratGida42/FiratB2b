@@ -346,50 +346,76 @@
                     }))
                 };
 
-                // Önce Service Worker ve SyncManager desteğini kontrol et
-                if ('serviceWorker' in navigator && 'SyncManager' in window) {
-                     // İnternet yoksa veya SW destekleniyorsa senkronize etmeyi dene
-                     try {
-                        await addToDB(db, 'sync-orders', orderPayload);
-                        const swRegistration = await navigator.serviceWorker.ready;
-                        await swRegistration.sync.register('sync-new-orders');
-                        
-                        // Başarılı çevrimdışı kayıttan sonra kullanıcıya bilgi ver
-                        offlineOrderInfo.style.display = 'block';
-                        clearCartFromStorage();
-                        renderCart(); // Sepeti temizlenmiş olarak yeniden çiz
-
-                     } catch (error) {
-                        console.error('Sipariş senkronizasyon için kaydedilemedi', error);
-                        alert('Sipariş çevrimdışı kayıt için saklanamadı. Lütfen daha sonra tekrar deneyin.');
-                        saveOrderBtn.disabled = false;
-                        saveOrderBtn.textContent = 'Siparişi Kaydet ve Bitir';
-                     }
-
-                } else {
-                    // SyncManager desteklenmiyorsa, sadece online göndermeyi dene
+                // İnternet bağlantısını kontrol et
+                if (navigator.onLine) {
+                    // ONLİNE - Direkt API'ye gönder
                     try {
+                        console.log("Online - Sipariş direkt API'ye gönderiliyor...");
                         const response = await fetch('/api/orders', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include', // Session cookie'sini dahil et
                             body: JSON.stringify(orderPayload)
                         });
 
                         if (!response.ok) {
-                           const errorData = await response.json();
-                           throw new Error(errorData.detail || 'Sipariş oluşturulamadı.');
+                            const errorData = await response.json();
+                            throw new Error(errorData.detail || 'Sipariş oluşturulamadı.');
                         }
+                        
+                        const createdOrder = await response.json();
+                        console.log("Sipariş başarıyla oluşturuldu:", createdOrder);
                         
                         alert('Sipariş başarıyla oluşturuldu!');
                         clearCartFromStorage();
                         window.location.href = '/orders'; // Siparişlerim sayfasına yönlendir
 
                     } catch (error) {
-                        console.error('Sipariş gönderim hatası:', error);
-                        alert(`Sipariş gönderilirken bir hata oluştu: ${error.message}`);
-                        saveOrderBtn.disabled = false;
-                        saveOrderBtn.textContent = 'Siparişi Kaydet ve Bitir';
+                        console.error('Online sipariş gönderim hatası:', error);
+                        
+                        // Online başarısız olursa offline kayıt dene
+                        console.log("Online gönderim başarısız, offline kayıt deneniyor...");
+                        await handleOfflineOrder(orderPayload);
                     }
+                } else {
+                    // OFFLİNE - Background sync ile kaydet
+                    console.log("Offline - Sipariş background sync ile kaydediliyor...");
+                    await handleOfflineOrder(orderPayload);
+                }
+            }
+
+            async function handleOfflineOrder(orderPayload) {
+                try {
+                    if ('serviceWorker' in navigator && 'SyncManager' in window) {
+                        // IndexedDB'ye kaydet
+                        await addToDB(db, 'sync-orders', orderPayload);
+                        
+                        // Background sync kaydet
+                        const swRegistration = await navigator.serviceWorker.ready;
+                        await swRegistration.sync.register('sync-new-orders');
+                        
+                        console.log("Sipariş offline kaydedildi, sync beklemede");
+                        
+                        // Başarılı çevrimdışı kayıt
+                        offlineOrderInfo.style.display = 'block';
+                        clearCartFromStorage();
+                        renderCart();
+                        
+                        // Butonu eski haline getir
+                        setTimeout(() => {
+                            saveOrderBtn.disabled = false;
+                            saveOrderBtn.textContent = 'Siparişi Kaydet ve Bitir';
+                        }, 2000);
+
+                    } else {
+                        throw new Error('Background sync desteklenmiyor');
+                    }
+                } catch (error) {
+                    console.error('Offline sipariş kayıt hatası:', error);
+                    alert('Sipariş kaydedilemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.');
+                    
+                    saveOrderBtn.disabled = false;
+                    saveOrderBtn.textContent = 'Siparişi Kaydet ve Bitir';
                 }
             }
             
