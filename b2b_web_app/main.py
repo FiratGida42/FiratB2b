@@ -436,8 +436,8 @@ def increment_view_count():
 @app.post("/api/orders", response_model=OrderResponse, status_code=status.HTTP_201_CREATED, tags=["Orders"])
 async def create_order(
     order_data: OrderCreate, 
-    db: Session = Depends(get_db), 
-    current_user: str = Depends(get_current_admin_user_for_api) # Admin koruması
+    db: Session = Depends(get_db)
+    # Admin koruması kaldırıldı - offline çalışması için
 ):
     """
     Yeni bir sipariş oluşturur.

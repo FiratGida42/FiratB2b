@@ -116,13 +116,16 @@
         <div id="orderActions" class="mt-4 p-3 border rounded shadow-sm bg-white" style="display:none;">
             <h3 class="mb-3">Siparişi Tamamla</h3>
             <div class="row gy-3 align-items-end">
-                <div class="col-md-8">
+                <div class="col-md-6">
                     <label for="customer-select-cart" class="form-label">Cari Seçiniz:</label>
                     <select class="form-select form-select-lg" id="customer-select-cart" style="width: 100%;">
                         <option value="" selected disabled>Yükleniyor...</option>
                     </select>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
+                    <button class="btn btn-info btn-lg w-100" id="loadCustomersButton" style="display:none;">Müşteri Verilerini Yükle</button>
+                </div>
+                <div class="col-md-3">
                     <button class="btn btn-success btn-lg w-100" id="saveOrderButton">Siparişi Kaydet ve Bitir</button>
                 </div>
             </div>
@@ -153,6 +156,7 @@
             const orderActionsSection = document.getElementById('orderActions');
             const customerCartSelectDropdown = document.getElementById('customer-select-cart');
             const saveOrderBtn = document.getElementById('saveOrderButton');
+            const loadCustomersBtn = document.getElementById('loadCustomersButton');
             const offlineOrderInfo = document.getElementById('offline-order-info');
             let db; // IndexedDB bağlantısı için
 
@@ -303,13 +307,29 @@
                             option.textContent = `${customer.CARI_ISIM} (${customer.CARI_KOD})`;
                             customerCartSelectDropdown.appendChild(option);
                         });
+                        // Başarılı durumda butonları düzenle
+                        loadCustomersBtn.style.display = 'none';
+                        saveOrderBtn.innerHTML = 'Siparişi Kaydet ve Bitir';
+                        saveOrderBtn.disabled = false;
                     } else {
-                        customerCartSelectDropdown.innerHTML = '<option value="" disabled>Çevrimdışı müşteri verisi bulunamadı. Lütfen Cari Bakiyeler sayfasından verileri güncelleyin.</option>';
+                        customerCartSelectDropdown.innerHTML = '<option value="" disabled>Müşteri verisi bulunamadı.</option>';
+                        // Müşteri yükleme butonunu göster
+                        loadCustomersBtn.style.display = 'block';
+                        loadCustomersBtn.innerHTML = 'Müşteri Verilerini Yükle';
+                        loadCustomersBtn.disabled = false;
+                        // Sipariş kaydetme butonunu devre dışı bırak
+                        saveOrderBtn.innerHTML = 'Önce Müşteri Verilerini Yükleyin';
                         saveOrderBtn.disabled = true;
                     }
                 } catch (error) {
                     console.error('Müşteriler yüklenemedi:', error);
-                    customerCartSelectDropdown.innerHTML = '<option value="" disabled>Müşteriler yüklenirken hata oluştu.</option>';
+                    customerCartSelectDropdown.innerHTML = '<option value="" disabled>Müşteri verisi bulunamadı.</option>';
+                    // Müşteri yükleme butonunu göster
+                    loadCustomersBtn.style.display = 'block';
+                    loadCustomersBtn.innerHTML = 'Müşteri Verilerini Yükle';
+                    loadCustomersBtn.disabled = false;
+                    // Sipariş kaydetme butonunu devre dışı bırak
+                    saveOrderBtn.innerHTML = 'Önce Müşteri Verilerini Yükleyin';
                     saveOrderBtn.disabled = true;
                 } finally {
                     // Select2'yi başlat
@@ -404,7 +424,7 @@
                         // Butonu eski haline getir
                         setTimeout(() => {
                             saveOrderBtn.disabled = false;
-                            saveOrderBtn.textContent = 'Siparişi Kaydet ve Bitir';
+                            saveOrderBtn.innerHTML = 'Siparişi Kaydet ve Bitir';
                         }, 2000);
 
                     } else {
@@ -415,7 +435,38 @@
                     alert('Sipariş kaydedilemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.');
                     
                     saveOrderBtn.disabled = false;
-                    saveOrderBtn.textContent = 'Siparişi Kaydet ve Bitir';
+                    saveOrderBtn.innerHTML = 'Siparişi Kaydet ve Bitir';
+                }
+            }
+
+            async function loadCustomersData() {
+                loadCustomersBtn.disabled = true;
+                loadCustomersBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Yükleniyor...';
+                
+                try {
+                    const response = await fetch('/api/customers');
+                    if (!response.ok) {
+                        throw new Error('Müşteri verileri alınamadı');
+                    }
+                    
+                    const customers = await response.json();
+                    
+                    // IndexedDB'ye kaydet
+                    const tx = db.transaction('keyval', 'readwrite');
+                    const store = tx.objectStore('keyval');
+                    await store.put(customers, 'customers');
+                    
+                    console.log('Müşteri verileri başarıyla yüklendi ve IndexedDB\'ye kaydedildi');
+                    
+                    // Dropdown'ı yeniden doldur
+                    await populateCustomerDropdown();
+                    
+                } catch (error) {
+                    console.error('Müşteri verileri yüklenirken hata:', error);
+                    alert('Müşteri verileri yüklenemedi. Lütfen internet bağlantınızı kontrol edin.');
+                    
+                    loadCustomersBtn.disabled = false;
+                    loadCustomersBtn.innerHTML = 'Müşteri Verilerini Yükle';
                 }
             }
             
@@ -425,6 +476,7 @@
                     renderCart();
                     await populateCustomerDropdown();
                     saveOrderBtn.addEventListener('click', handleOrderCreation);
+                    loadCustomersBtn.addEventListener('click', loadCustomersData);
                 } catch (e) {
                     console.error("Sayfa başlatılamadı:", e);
                     document.getElementById('cartContent').innerHTML = '<div class="alert alert-danger">Uygulama başlatılırken bir hata oluştu. Lütfen sayfayı yenileyin.</div>';

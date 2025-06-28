@@ -281,6 +281,7 @@ async function syncNewOrders() {
         fetch('/api/orders', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include', // Session cookie'sini dahil et
           body: JSON.stringify(orderData)
         })
         .then(response => {
