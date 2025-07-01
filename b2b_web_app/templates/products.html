@@ -184,15 +184,6 @@
     <main class="px-md-4">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
             <h1 class="h2 page-title">{{ title or 'Ürünler' }}</h1>
-            <div class="btn-toolbar mb-2 mb-md-0">
-                <button type="button" class="btn btn-info" id="sync-button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
-                        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
-                    </svg>
-                    Verileri Güncelle
-                </button>
-            </div>
         </div>
 
         <!-- Ürün Arama -->
@@ -253,7 +244,6 @@
             const mainCategoriesNav = document.getElementById('main-categories-nav');
             const quickStockCodeInput = document.getElementById('quick-stock-code-input');
             const quickAddByStockCodeButton = document.getElementById('quick-add-by-stock-code-button');
-            const syncButton = document.getElementById('sync-button');
             
             // Kritik elementlerin varlığını kontrol et
             if (!productTableContainer) {
@@ -266,8 +256,7 @@
                 searchInput: !!searchInput,
                 mainCategoriesNav: !!mainCategoriesNav,
                 quickStockCodeInput: !!quickStockCodeInput,
-                quickAddByStockCodeButton: !!quickAddByStockCodeButton,
-                syncButton: !!syncButton
+                quickAddByStockCodeButton: !!quickAddByStockCodeButton
             });
             
             let allProducts = []; 
@@ -866,58 +855,7 @@
                 });
             }
 
-            // Verileri Yükleme Fonksiyonu (Offline özellik kaldırıldı)
-            async function fetchAndCacheProducts() {
-                syncButton.disabled = true;
-                const originalButtonHTML = syncButton.innerHTML;
-                
-                syncButton.innerHTML = `
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    Veriler yükleniyor...
-                `;
-
-                try {
-                    console.log("Ürünler API'den çekiliyor...");
-                    const productsResponse = await fetch('/api/products', {
-                        credentials: 'include'
-                    });
-                    if (!productsResponse.ok) {
-                        throw new Error('Ürünler yüklenemedi: ' + productsResponse.statusText);
-                    }
-                    const products = await productsResponse.json();
-                    console.log("Ürünler başarıyla çekildi.");
-
-                    // Başarı durumunda butonu güncelle
-                    syncButton.classList.remove('btn-info', 'btn-danger');
-                    syncButton.classList.add('btn-success');
-                    syncButton.innerHTML = `
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16" style="vertical-align: -0.125em; margin-right: 5px;">
-                           <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-                        </svg>
-                        Veriler Güncellendi
-                    `;
-                    
-                    // Ürün verilerini ekrana bas
-                    processAndRenderProducts(products);
-                    
-                    console.log(`✅ Veriler yüklendi: ${products.length} ürün`);
-
-                } catch (error) {
-                    console.error("Veri yükleme başarısız:", error);
-                    syncButton.classList.remove('btn-info', 'btn-success');
-                    syncButton.classList.add('btn-danger');
-                    syncButton.textContent = 'Yükleme Başarısız!';
-                    alert('Veriler yüklenemedi. Hata: ' + error.message);
-                } finally {
-                    // Butonu bir süre sonra eski haline getir
-                    setTimeout(() => {
-                        syncButton.disabled = false;
-                        syncButton.innerHTML = originalButtonHTML;
-                        syncButton.classList.remove('btn-success', 'btn-danger');
-                        syncButton.classList.add('btn-info');
-                    }, 3000);
-                }
-            }
+            // Bu fonksiyon kaldırıldı - artık manuel güncelleme butonu yok
             
             // Bu fonksiyon sadece ürünleri alır ve ekrana basar
             function processAndRenderProducts(products) {
@@ -968,7 +906,6 @@
                             <ul class="list-unstyled">
                                 <li>• İnternet bağlantınızı kontrol edin</li>
                                 <li>• Sayfayı yeniden yükleyin</li>
-                                <li>• Veya "Verileri Güncelle" butonunu kullanın</li>
                             </ul>
                             <button class="btn btn-primary" onclick="location.reload()">Sayfayı Yenile</button>
                         </div>
@@ -976,10 +913,7 @@
                 }
             }
             
-            // Butonun click olayını güvenli bir şekilde ata
-            if (syncButton) {
-                syncButton.addEventListener('click', fetchAndCacheProducts);
-            }
+            // Sync button kaldırıldı - artık manuel güncelleme yok
 
             // Sayfa yüklendiğinde ilk veriyi yükle
             loadInitialData();

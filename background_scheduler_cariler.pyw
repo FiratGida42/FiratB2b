@@ -19,10 +19,11 @@ if BASE_DIR not in sys.path:
 
 # API Anahtarı ve Render URL için global değişkenler
 API_KEY = None
-RENDER_API_URL = "image.pnghttps://firatb2b.onrender.com/api/update-customer-balances"
 
-# Render API endpoint URL'si ve API anahtarı için ayarlar
-RENDER_API_URL = "https://firatb2b.onrender.com/api/update-customer-balances"
+# API endpoint URL'si (local development vs production)
+# Local development için
+RENDER_API_URL = "http://localhost:8001/api/update-customer-balances"
+# Production için: "https://firatb2b.onrender.com/api/update-customer-balances"
 # API Anahtarını settings.json'dan okumak için bir fonksiyon veya doğrudan data_extractor'dan import edilebilir
 # Şimdilik data_extractor'daki SETTINGS_FILE'ı kullanacağız
 

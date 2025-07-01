@@ -8,9 +8,8 @@ SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
 
 if SQLALCHEMY_DATABASE_URL is None:
     print("UYARI: DATABASE_URL ortam değişkeni bulunamadı! Yerel geliştirme için varsayılan bir yol kullanılacak.")
-    # Yerel geliştirme için varsayılan bir yol (proje kökünde b2p_database.db)
-    # Render ortam değişkenlerindeki dosya adıyla aynı olmalı: b2p_database.db
-    DATABASE_FILE_NAME_LOCAL = "b2p_database.db"
+    # Yerel geliştirme için varsayılan bir yol (proje kökünde b2b_database.db)
+    DATABASE_FILE_NAME_LOCAL = "b2b_database.db"
     PROJECT_ROOT_DIRECTORY_LOCAL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     SQLALCHEMY_DATABASE_URL = f"sqlite:///{os.path.join(PROJECT_ROOT_DIRECTORY_LOCAL, DATABASE_FILE_NAME_LOCAL)}"
 

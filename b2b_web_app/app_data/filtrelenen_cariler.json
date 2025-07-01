@@ -1,0 +1,20 @@
+[
+    {
+        "CARI_KOD": "MAN001",
+        "CARI_ISIM": "Manuel Test Müşteri 1",
+        "GRUP_KODU": "TOPTAN",
+        "NET_BAKIYE": "5000.00"
+    },
+    {
+        "CARI_KOD": "MAN002",
+        "CARI_ISIM": "Manuel Test Müşteri 2",
+        "GRUP_KODU": "SERVIS",
+        "NET_BAKIYE": "3500.25"
+    },
+    {
+        "CARI_KOD": "MAN003",
+        "CARI_ISIM": "Manuel Test Müşteri 3",
+        "GRUP_KODU": "TOPTAN",
+        "NET_BAKIYE": "1200.75"
+    }
+]
