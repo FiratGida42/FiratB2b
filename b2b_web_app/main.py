@@ -272,8 +272,7 @@ async def receive_products_api(products: List[Dict]):
         raise HTTPException(status_code=500, detail=f"Ürünler kaydedilemedi: {str(e)}")
 
 @app.get("/api/products")
-async def get_products_api():
-    # Çevrimdışı çalışması için authentication kontrolü yapmıyoruz
+async def get_products_api(current_user: str = Depends(get_current_admin_user_for_api)):
     if not os.path.exists(PRODUCTS_FILE):
         return []
     try:
@@ -285,9 +284,8 @@ async def get_products_api():
         return []
 
 @app.get("/api/customers")
-async def get_customers_api():
+async def get_customers_api(current_user: str = Depends(get_current_admin_user_for_api)):
     """Müşteri/Cari verilerini JSON olarak döndüren API endpoint'i."""
-    # Çevrimdışı çalışması için authentication kontrolü yapmıyoruz
     if not os.path.exists(CUSTOMER_BALANCES_JSON_PATH):
         # Dosya yoksa boş liste döndürerek istemcinin hata almasını önle
         return []
@@ -302,55 +300,42 @@ async def get_customers_api():
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
-    # Ana sayfa isteği geldiğinde, kullanıcıyı her zaman /products sayfasına yönlendir.
-    # /products endpoint'i zaten giriş yapılıp yapılmadığını kontrol edecektir.
-    # Bu, PWA yapısının ve client-side rendering'in doğru çalışması için gereklidir.
+    # Ana sayfa isteği geldiğinde, kullanıcıyı /products sayfasına yönlendir.
+    # /products endpoint'i giriş kontrolü yapacaktır.
     return RedirectResponse(url="/products")
 
 @app.get("/products", response_class=HTMLResponse)
-async def view_products(request: Request):
+async def view_products(request: Request, current_user: str = Depends(get_current_admin_user_with_redirect)):
     """Renders the products page."""
-    # Çevrimdışı çalışması için session kontrolü yapmıyoruz
-    admin_user = request.session.get("admin_user", "Admin")  # Varsayılan değer ver
     
     return templates.TemplateResponse("products.html", {
         "request": request,
         "title": "Ürün Kataloğu",
-        "admin_user": admin_user
+        "admin_user": current_user
     })
 
 @app.get("/customer-balances", response_class=HTMLResponse)
-async def view_customer_balances(request: Request):
-    # Çevrimdışı çalışması için session kontrolü yapmıyoruz
-    admin_user = request.session.get("admin_user", "Admin")  # Varsayılan değer ver
-    
+async def view_customer_balances(request: Request, current_user: str = Depends(get_current_admin_user_with_redirect)):
     return templates.TemplateResponse("customer_balances.html", {
         "request": request,
         "title": "Cari Bakiyeler",
-        "admin_user": admin_user,
+        "admin_user": current_user,
     })
 
 @app.get("/cart", response_class=HTMLResponse)
-async def view_cart(request: Request):
-    # Çevrimdışı çalışması için session kontrolü yapmıyoruz
-    # Client-side'da localStorage kontrolü yapılacak
-    admin_user = request.session.get("admin_user", "Admin")  # Varsayılan değer ver
-    
+async def view_cart(request: Request, current_user: str = Depends(get_current_admin_user_with_redirect)):
     return templates.TemplateResponse("cart.html", {
         "request": request, 
         "title": "Sepetim",
-        "admin_user": admin_user
+        "admin_user": current_user
     })
 
 @app.get("/orders", response_class=HTMLResponse)
-async def view_orders(request: Request):
-    # Çevrimdışı çalışması için session kontrolü yapmıyoruz
-    admin_user = request.session.get("admin_user", "Admin")  # Varsayılan değer ver
-    
+async def view_orders(request: Request, current_user: str = Depends(get_current_admin_user_with_redirect)):
     return templates.TemplateResponse("orders.html", {
         "request": request, 
         "title": "Siparişlerim",
-        "admin_user": admin_user
+        "admin_user": current_user
     })
 
 @app.get("/login", response_class=HTMLResponse, tags=["Admin"])
@@ -436,8 +421,8 @@ def increment_view_count():
 @app.post("/api/orders", response_model=OrderResponse, status_code=status.HTTP_201_CREATED, tags=["Orders"])
 async def create_order(
     order_data: OrderCreate, 
-    db: Session = Depends(get_db)
-    # Admin koruması kaldırıldı - offline çalışması için
+    db: Session = Depends(get_db),
+    current_user: str = Depends(get_current_admin_user_for_api)
 ):
     """
     Yeni bir sipariş oluşturur.

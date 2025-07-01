@@ -36,16 +36,7 @@
             text-align: right;
         }
     </style>
-    <script>
-        // Service Worker'ı kaydet (her sayfada olması iyi bir pratiktir)
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/static/sw.js?v=8')
-                    .then(reg => console.log('Service Worker registered in cart page.', reg))
-                    .catch(err => console.log('Service Worker registration failed: ', err));
-            });
-        }
-    </script>
+
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
@@ -129,11 +120,7 @@
                     <button class="btn btn-success btn-lg w-100" id="saveOrderButton">Siparişi Kaydet ve Bitir</button>
                 </div>
             </div>
-            <div id="offline-order-info" class="alert alert-info mt-3" style="display: none;">
-                <h5 class="alert-heading">Sipariş Kaydedildi!</h5>
-                <p>İnternet bağlantınız yok. Siparişiniz kaydedildi ve bağlantı kurulduğunda otomatik olarak sunucuya gönderilecektir.</p>
-                <p class="mb-0">Siparişlerinizi <a href="/orders" class="alert-link">Siparişlerim</a> sayfasından takip edebilirsiniz.</p>
-            </div>
+
         </div>
 
     </div>
@@ -157,48 +144,7 @@
             const customerCartSelectDropdown = document.getElementById('customer-select-cart');
             const saveOrderBtn = document.getElementById('saveOrderButton');
             const loadCustomersBtn = document.getElementById('loadCustomersButton');
-            const offlineOrderInfo = document.getElementById('offline-order-info');
-            let db; // IndexedDB bağlantısı için
 
-            // --- IndexedDB Helper Fonksiyonları ---
-            function openDB(name, version = 2) {
-                return new Promise((resolve, reject) => {
-                    const request = indexedDB.open(name, version);
-                    request.onupgradeneeded = (event) => {
-                        const db = request.result;
-                        if (!db.objectStoreNames.contains('keyval')) {
-                            db.createObjectStore('keyval');
-                        }
-                        // Çevrimdışı siparişler için yeni bir store oluşturalım
-                        if (!db.objectStoreNames.contains('sync-orders')) {
-                            // autoIncrement birincil anahtar oluşturur
-                            db.createObjectStore('sync-orders', { autoIncrement: true });
-                        }
-                    };
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-
-            async function getFromDB(db, storeName, key) {
-                return new Promise((resolve, reject) => {
-                    const tx = db.transaction(storeName, 'readonly');
-                    const store = tx.objectStore(storeName);
-                    const request = store.get(key);
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-
-            async function addToDB(db, storeName, value) {
-                return new Promise((resolve, reject) => {
-                    const tx = db.transaction(storeName, 'readwrite');
-                    const store = tx.objectStore(storeName);
-                    const request = store.add(value);
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
 
             // --- localStorage Fonksiyonları (Sepet için) ---
             function getCartItemsFromStorage() {
@@ -298,12 +244,20 @@
 
             async function populateCustomerDropdown() {
                 try {
-                    const customers = await getFromDB(db, 'keyval', 'customers');
-                    customerCartSelectDropdown.innerHTML = '<option value="" selected disabled>Lütfen bir cari seçin...</option>'; // Önce temizle
+                    const response = await fetch('/api/customers', {
+                        credentials: 'include'
+                    });
+                    if (!response.ok) {
+                        throw new Error('Müşteri verileri alınamadı');
+                    }
+                    const customers = await response.json();
+                    
+                    customerCartSelectDropdown.innerHTML = '<option value="" selected disabled>Lütfen bir cari seçin...</option>';
+                    
                     if (customers && customers.length > 0) {
                         customers.forEach(customer => {
                             const option = document.createElement('option');
-                            option.value = customer.CARI_ISIM; // Değer olarak cari ismini kullanıyoruz
+                            option.value = customer.CARI_ISIM;
                             option.textContent = `${customer.CARI_ISIM} (${customer.CARI_KOD})`;
                             customerCartSelectDropdown.appendChild(option);
                         });
@@ -366,100 +320,48 @@
                     }))
                 };
 
-                // İnternet bağlantısını kontrol et
-                if (navigator.onLine) {
-                    // ONLİNE - Direkt API'ye gönder
-                    try {
-                        console.log("Online - Sipariş direkt API'ye gönderiliyor...");
-                        const response = await fetch('/api/orders', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            credentials: 'include', // Session cookie'sini dahil et
-                            body: JSON.stringify(orderPayload)
-                        });
-
-                        if (!response.ok) {
-                            const errorData = await response.json();
-                            throw new Error(errorData.detail || 'Sipariş oluşturulamadı.');
-                        }
-                        
-                        const createdOrder = await response.json();
-                        console.log("Sipariş başarıyla oluşturuldu:", createdOrder);
-                        
-                        alert('Sipariş başarıyla oluşturuldu!');
-                        clearCartFromStorage();
-                        window.location.href = '/orders'; // Siparişlerim sayfasına yönlendir
-
-                    } catch (error) {
-                        console.error('Online sipariş gönderim hatası:', error);
-                        
-                        // Online başarısız olursa offline kayıt dene
-                        console.log("Online gönderim başarısız, offline kayıt deneniyor...");
-                        await handleOfflineOrder(orderPayload);
-                    }
-                } else {
-                    // OFFLİNE - Background sync ile kaydet
-                    console.log("Offline - Sipariş background sync ile kaydediliyor...");
-                    await handleOfflineOrder(orderPayload);
-                }
-            }
-
-            async function handleOfflineOrder(orderPayload) {
+                // Direkt API'ye gönder
                 try {
-                    if ('serviceWorker' in navigator && 'SyncManager' in window) {
-                        // IndexedDB'ye kaydet
-                        await addToDB(db, 'sync-orders', orderPayload);
-                        
-                        // Background sync kaydet
-                        const swRegistration = await navigator.serviceWorker.ready;
-                        await swRegistration.sync.register('sync-new-orders');
-                        
-                        console.log("Sipariş offline kaydedildi, sync beklemede");
-                        
-                        // Başarılı çevrimdışı kayıt
-                        offlineOrderInfo.style.display = 'block';
-                        clearCartFromStorage();
-                        renderCart();
-                        
-                        // Butonu eski haline getir
-                        setTimeout(() => {
-                            saveOrderBtn.disabled = false;
-                            saveOrderBtn.innerHTML = 'Siparişi Kaydet ve Bitir';
-                        }, 2000);
+                    console.log("Sipariş API'ye gönderiliyor...");
+                    const response = await fetch('/api/orders', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify(orderPayload)
+                    });
 
-                    } else {
-                        throw new Error('Background sync desteklenmiyor');
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.detail || 'Sipariş oluşturulamadı.');
                     }
+                    
+                    const createdOrder = await response.json();
+                    console.log("Sipariş başarıyla oluşturuldu:", createdOrder);
+                    
+                    alert('Sipariş başarıyla oluşturuldu!');
+                    clearCartFromStorage();
+                    window.location.href = '/orders';
+
                 } catch (error) {
-                    console.error('Offline sipariş kayıt hatası:', error);
-                    alert('Sipariş kaydedilemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.');
+                    console.error('Sipariş gönderim hatası:', error);
+                    alert('Sipariş oluşturulamadı: ' + error.message);
                     
                     saveOrderBtn.disabled = false;
                     saveOrderBtn.innerHTML = 'Siparişi Kaydet ve Bitir';
                 }
             }
 
+
+
             async function loadCustomersData() {
                 loadCustomersBtn.disabled = true;
                 loadCustomersBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Yükleniyor...';
                 
                 try {
-                    const response = await fetch('/api/customers');
-                    if (!response.ok) {
-                        throw new Error('Müşteri verileri alınamadı');
-                    }
-                    
-                    const customers = await response.json();
-                    
-                    // IndexedDB'ye kaydet
-                    const tx = db.transaction('keyval', 'readwrite');
-                    const store = tx.objectStore('keyval');
-                    await store.put(customers, 'customers');
-                    
-                    console.log('Müşteri verileri başarıyla yüklendi ve IndexedDB\'ye kaydedildi');
-                    
-                    // Dropdown'ı yeniden doldur
+                    // Dropdown'ı yeniden doldur (API'den direkt çeker)
                     await populateCustomerDropdown();
+                    
+                    console.log('Müşteri verileri başarıyla yüklendi');
                     
                 } catch (error) {
                     console.error('Müşteri verileri yüklenirken hata:', error);
@@ -472,7 +374,6 @@
             
             async function initializePage() {
                 try {
-                    db = await openDB('FiratB2B_DB'); // Artık versiyonu belirtmeye gerek yok
                     renderCart();
                     await populateCustomerDropdown();
                     saveOrderBtn.addEventListener('click', handleOrderCreation);

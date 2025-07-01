@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }} - B2B Portalı</title>
-
-    <!-- PWA Manifest Linki -->
-    <link rel="manifest" href="/static/manifest.json">
-    <meta name="theme-color" content="#4a90e2">
     
     <!-- Bootswatch Yeti Theme CSS -->
     <link href="https://bootswatch.com/5/yeti/bootstrap.min.css" rel="stylesheet">
@@ -194,7 +190,7 @@
                         <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
                         <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
                     </svg>
-                    Tüm Verileri Güncelle
+                    Verileri Güncelle
                 </button>
             </div>
         </div>
@@ -219,117 +215,8 @@
     </main>
 
     <script>
-        // Service Worker'ı kaydet ve hard refresh zorla
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                // Tüm cache'leri temizle
-                if ('caches' in window) {
-                    caches.keys().then(cacheNames => {
-                        return Promise.all(
-                            cacheNames.map(cacheName => {
-                                if (cacheName.includes('firat-b2b-cache')) {
-                                    console.log('Cache siliniyor:', cacheName);
-                                    return caches.delete(cacheName);
-                                }
-                            })
-                        );
-                    });
-                }
-                
-                // Mevcut Service Worker'ları da temizle
-                navigator.serviceWorker.getRegistrations().then(registrations => {
-                    registrations.forEach(registration => {
-                        console.log('Service Worker registration siliniyor');
-                        registration.unregister();
-                    });
-                });
-                
-                navigator.serviceWorker.register('/static/sw.js?v=8')
-                    .then(registration => {
-                        console.log('Service Worker başarıyla kaydedildi: ', registration);
-                        
-                        // Aktif Service Worker varsa güncellemeyi zorla
-                        if (registration.active) {
-                            registration.update();
-                        }
-                        
-                        // Eğer yeni bir Service Worker kuruluyorsa otomatik aktif et
-                        if (registration.waiting) {
-                            registration.waiting.postMessage({type: 'SKIP_WAITING'});
-                        }
-                        
-                        registration.addEventListener('updatefound', () => {
-                            console.log('Yeni Service Worker versiyonu bulundu.');
-                            const newWorker = registration.installing;
-                            if (newWorker) {
-                                newWorker.addEventListener('statechange', () => {
-                                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                        console.log('Yeni Service Worker kuruldu. Sayfa yenileniyor...');
-                                        window.location.reload();
-                                    }
-                                });
-                            }
-                        });
-                    })
-                    .catch(registrationError => {
-                        console.error('Service Worker kaydı başarısız: ', registrationError);
-                    });
-            });
-        } else {
-            console.warn('Bu tarayıcı Service Worker desteklemiyor.');
-        }
 
-        // --- IndexedDB Helper Fonksiyonları Başlangıç ---
-        function openDB(name, version = 2) {
-            return new Promise((resolve, reject) => {
-                try {
-                    const request = indexedDB.open(name, version);
-                    request.onupgradeneeded = (event) => {
-                        const db = event.target.result;
-                        if (!db.objectStoreNames.contains('keyval')) {
-                            db.createObjectStore('keyval');
-                        }
-                        if (!db.objectStoreNames.contains('sync-orders')) {
-                            db.createObjectStore('sync-orders', { autoIncrement: true });
-                        }
-                    };
-                    request.onsuccess = (event) => resolve(event.target.result);
-                    request.onerror = (event) => reject(event.target.error);
-                } catch (error) {
-                    reject(error);
-                }
-            });
-        }
 
-        function getFromDB(db, key) {
-            return new Promise((resolve, reject) => {
-                try {
-                    const tx = db.transaction('keyval', 'readonly');
-                    const store = tx.objectStore('keyval');
-                    const request = store.get(key);
-                    request.onsuccess = (event) => resolve(event.target.result);
-                    request.onerror = (event) => reject(event.target.error);
-                } catch (error) {
-                    reject(error);
-                }
-            });
-        }
-
-        function setInDB(db, key, value) {
-            return new Promise((resolve, reject) => {
-                try {
-                    const tx = db.transaction('keyval', 'readwrite');
-                    const store = tx.objectStore('keyval');
-                    const putRequest = store.put(value, key);
-                    putRequest.onsuccess = () => resolve();
-                    putRequest.onerror = (event) => reject(event.target.error);
-                    tx.onerror = (event) => reject(event.target.error);
-                } catch (error) {
-                    reject(error);
-                }
-            });
-        }
-        // --- IndexedDB Helper Fonksiyonları Bitiş ---
 
         const AnaKategoriYapisi = [
             {
@@ -858,10 +745,7 @@
                     productTableContainer.appendChild(tableWrapper);
                     initializeOrRefreshLightGallery();
                 } else {
-                    // Çevrimdışı durumda ürün bulunamazsa daha anlamlı bir mesaj göster
-                    const offlineMessage = '<p class="text-center text-muted mt-4">Çevrimdışı moddasınız ve önbellekte ürün bulunamadı. Lütfen internete bağlanıp tekrar deneyin.</p>';
-                    const onlineMessage = '<p class="text-center text-muted mt-4">Aramanızla eşleşen ürün bulunamadı veya seçili kategoride ürün yok.</p>';
-                    productTableContainer.innerHTML = navigator.onLine ? onlineMessage : offlineMessage;
+                    productTableContainer.innerHTML = '<p class="text-center text-muted mt-4">Aramanızla eşleşen ürün bulunamadı veya seçili kategoride ürün yok.</p>';
                 }
             }
 
@@ -982,68 +866,48 @@
                 });
             }
 
-            // --- GÜNCELLENMİŞ Tüm Verileri Yükleme Fonksiyonu ---
-            // Bu fonksiyon hem ürünleri hem de cari bakiyeleri internetten çekip DB'ye kaydeder.
+            // Verileri Yükleme Fonksiyonu (Offline özellik kaldırıldı)
             async function fetchAndCacheProducts() {
                 syncButton.disabled = true;
                 const originalButtonHTML = syncButton.innerHTML;
                 
-                let currentStep = 1;
-                const totalSteps = 2;
-                
-                function updateButtonText(step, stepName) {
-                    syncButton.innerHTML = `
-                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                        ${stepName}... (${step}/${totalSteps})
-                    `;
-                }
+                syncButton.innerHTML = `
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Veriler yükleniyor...
+                `;
 
                 try {
-                    // 1. Ürünleri çek
-                    updateButtonText(1, "Ürünler yükleniyor");
-                    console.log("Ürünler internetten çekiliyor...");
-                    const productsResponse = await fetch('/api/products');
+                    console.log("Ürünler API'den çekiliyor...");
+                    const productsResponse = await fetch('/api/products', {
+                        credentials: 'include'
+                    });
                     if (!productsResponse.ok) {
                         throw new Error('Ürünler yüklenemedi: ' + productsResponse.statusText);
                     }
                     const products = await productsResponse.json();
-                    console.log("Ürünler başarıyla çekildi, IndexedDB'ye kaydediliyor.");
-                    await setInDB(db, 'products', products);
+                    console.log("Ürünler başarıyla çekildi.");
 
-                    // 2. Cari bakiyeleri çek
-                    updateButtonText(2, "Cari bakiyeler yükleniyor");
-                    console.log("Cari bakiyeler internetten çekiliyor...");
-                    const customersResponse = await fetch('/api/customers');
-                    if (!customersResponse.ok) {
-                        throw new Error('Cari bakiyeler yüklenemedi: ' + customersResponse.statusText);
-                    }
-                    const customers = await customersResponse.json();
-                    console.log("Cari bakiyeler başarıyla çekildi, IndexedDB'ye kaydediliyor.");
-                    await setInDB(db, 'customers', customers);
-
-                    // Başarı mesajını kaldır (eğer varsa) ve butonu güncelle
-                    const offlineAlert = document.getElementById('offline-alert');
-                    if (offlineAlert) offlineAlert.remove();
+                    // Başarı durumunda butonu güncelle
                     syncButton.classList.remove('btn-info', 'btn-danger');
                     syncButton.classList.add('btn-success');
                     syncButton.innerHTML = `
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16" style="vertical-align: -0.125em; margin-right: 5px;">
                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
                         </svg>
-                        Tüm Veriler Güncel
+                        Veriler Güncellendi
                     `;
                     
                     // Ürün verilerini ekrana bas
                     processAndRenderProducts(products);
                     
-                    console.log(`✅ Senkronizasyon tamamlandı: ${products.length} ürün, ${customers.length} cari`);
+                    console.log(`✅ Veriler yüklendi: ${products.length} ürün`);
 
                 } catch (error) {
-                    console.error("Veri senkronizasyonu başarısız:", error);
+                    console.error("Veri yükleme başarısız:", error);
                     syncButton.classList.remove('btn-info', 'btn-success');
                     syncButton.classList.add('btn-danger');
-                    syncButton.textContent = 'Güncelleme Başarısız!';
-                    alert('Veriler güncellenemedi. Hata: ' + error.message);
+                    syncButton.textContent = 'Yükleme Başarısız!';
+                    alert('Veriler yüklenemedi. Hata: ' + error.message);
                 } finally {
                     // Butonu bir süre sonra eski haline getir
                     setTimeout(() => {
@@ -1079,66 +943,36 @@
                 updateCartBadge();
             }
 
-            // GÜNCELLENMİŞ Sayfa Yükleme Mantığı
+            // Sayfa Yükleme Fonksiyonu (Offline özellik kaldırıldı)
             async function loadInitialData() {
                 try {
-                    console.log("IndexedDB açılıyor...");
-                    db = await openDB('FiratB2B_DB');
-                    console.log("IndexedDB başarıyla açıldı.");
+                    console.log("Ürünler API'den yükleniyor...");
+                    const productsResponse = await fetch('/api/products', {
+                        credentials: 'include'
+                    });
                     
-                    console.log("Başlangıç için veriler IndexedDB'den okunuyor...");
-                    const products = await getFromDB(db, 'products');
-
-                    if (products && Array.isArray(products) && products.length > 0) {
-                        console.log(`${products.length} ürün IndexedDB'den başarıyla okundu.`);
+                    if (productsResponse.ok) {
+                        const products = await productsResponse.json();
+                        console.log(`${products.length} ürün API'den başarıyla okundu.`);
                         processAndRenderProducts(products);
-                        
-                        // Çevrimdışı uyarısı göster
-                        if (!navigator.onLine && !document.getElementById('offline-alert')) {
-                            const alertDiv = document.createElement('div');
-                            alertDiv.className = 'alert alert-warning text-center';
-                            alertDiv.id = 'offline-alert';
-                            alertDiv.textContent = 'Çevrimdışı modda çalışıyorsunuz. Gösterilen veriler en son kaydedilen verilerdir.';
-                            const mainElement = document.querySelector('main.px-md-4');
-                            if (mainElement) {
-                                mainElement.prepend(alertDiv);
-                            }
-                        }
-
                     } else {
-                        console.log("IndexedDB'de ürün bulunamadı veya geçersiz format. Kullanıcının güncelleme yapması bekleniyor.");
-                        productTableContainer.innerHTML = `
-                            <div class="alert alert-primary text-center">
-                                <h5>Hoş Geldiniz!</h5>
-                                <p>Çevrimdışı kullanım için lütfen <strong>'Tüm Verileri Güncelle'</strong> butonuna basarak en güncel verileri (ürünler + cari bakiyeler) tabletinize indirin.</p>
-                                <hr>
-                                <small class="text-muted">
-                                    <strong>İndirilen veriler:</strong><br>
-                                    • Ürün listesi ve fiyatları<br>
-                                    • Cari bakiye bilgileri<br>
-                                    • Ürün resimleri (otomatik)
-                                </small>
-                            </div>
-                        `;
+                        throw new Error('API\'den ürün verisi alınamadı: ' + productsResponse.statusText);
                     }
 
                 } catch (e) {
-                    console.error("IndexedDB hatası:", e);
+                    console.error("Veri yükleme hatası:", e);
                     productTableContainer.innerHTML = `
-                        <div class="alert alert-danger text-center">
-                            <h5>Veritabanı Hatası</h5>
-                            <p>Uygulama veritabanı başlatılamadı. Lütfen:</p>
+                        <div class="alert alert-warning text-center">
+                            <h5>Veriler Yüklenemedi</h5>
+                            <p>Ürün verileri sunucudan alınamadı. Lütfen:</p>
                             <ul class="list-unstyled">
+                                <li>• İnternet bağlantınızı kontrol edin</li>
                                 <li>• Sayfayı yeniden yükleyin</li>
-                                <li>• Tarayıcınızın güncel olduğundan emin olun</li>
-                                <li>• Özel/gizli modda olmadığınızdan emin olun</li>
+                                <li>• Veya "Verileri Güncelle" butonunu kullanın</li>
                             </ul>
                             <button class="btn btn-primary" onclick="location.reload()">Sayfayı Yenile</button>
                         </div>
                     `;
-                    if (syncButton) {
-                        syncButton.disabled = true;
-                    }
                 }
             }
             
