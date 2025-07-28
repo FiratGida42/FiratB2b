@@ -22,7 +22,9 @@ from . import models # models.py dosyamızı import ediyoruz
 from .database import engine, SessionLocal, get_db # database.py'den engine, SessionLocal ve get_db'yi import ediyoruz
 
 # Uygulama başlangıcında veritabanı tablolarını oluştur (eğer yoksa)
-# models.Base.metadata.create_all(bind=engine) # ALEMBIC KULLANILDIĞI İÇİN BU SATIR YORUMA ALINDI
+print("Veritabanı tabloları kontrol ediliyor ve gerekirse oluşturuluyor...")
+models.Base.metadata.create_all(bind=engine)
+print("Veritabanı tabloları hazır!")
 
 # --- Pydantic Şemaları (Schemas) Başlangıcı ---
 class OrderItemBase(BaseModel):
@@ -125,6 +127,18 @@ if not CUSTOMER_SYNC_API_KEY_VALUE:
     print(f"Geliştirme için oluşturulan geçici CUSTOMER_SYNC_API_KEY: {CUSTOMER_SYNC_API_KEY_VALUE}")
 
 app = FastAPI(title="B2B Ürün Servisi", version="0.1.0")
+
+# FastAPI startup event - uygulama başlarken tabloları oluştur
+@app.on_event("startup")
+async def startup_event():
+    print("FastAPI başlatılıyor...")
+    print("Veritabanı tabloları kontrol ediliyor...")
+    try:
+        models.Base.metadata.create_all(bind=engine)
+        print("✅ Veritabanı tabloları başarıyla oluşturuldu/kontrol edildi!")
+    except Exception as e:
+        print(f"❌ Veritabanı tablo oluşturma hatası: {e}")
+        raise e
 
 # --- Para Formatlama için Jinja2 Filtresi ---
 def format_currency_tr(value):

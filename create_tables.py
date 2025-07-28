@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Render deployment için basit tablo oluşturma script'i
-Alembic olmadan direkt SQLAlchemy ile tabloları oluşturur.
+Standalone tablo oluşturma script'i
+Web uygulaması çalışmazsa manuel olarak kullanılabilir.
 """
 
 import os
@@ -34,9 +34,9 @@ def create_tables():
     # Tabloları oluştur
     print("CREATE_TABLES: Tablolar oluşturuluyor...")
     Base.metadata.create_all(bind=engine)
-    print("CREATE_TABLES: Tablolar başarıyla oluşturuldu!")
+    print("✅ CREATE_TABLES: Tablolar başarıyla oluşturuldu!")
 
 if __name__ == "__main__":
-    print("CREATE_TABLES: Tablo oluşturma işlemi başlatılıyor...")
+    print("CREATE_TABLES: Manuel tablo oluşturma işlemi başlatılıyor...")
     create_tables()
     print("CREATE_TABLES: İşlem tamamlandı.") 
