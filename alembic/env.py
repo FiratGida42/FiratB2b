@@ -33,7 +33,7 @@ print(f"DEBUG: target_metadata type in env.py: {type(target_metadata)}")
 print(f"DEBUG: target_metadata tables: {target_metadata.tables.keys() if target_metadata else 'None'}")
 
 # other values from the config, defined by the needs of env.py,
-# can be acquired:-
+# can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
@@ -56,7 +56,7 @@ def run_migrations_offline() -> None:
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
-        target_metadata=target_metadata, 
+        target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
         compare_type=True, # Tip karşılaştırmasını etkinleştir (özellikle Enum için)
