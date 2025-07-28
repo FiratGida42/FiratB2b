@@ -323,8 +323,13 @@
                 const quantityModal = new bootstrap.Modal(quantityModalEl);
                 
                 quantityModalEl.addEventListener('shown.bs.modal', function () {
-                    document.getElementById('quantityInput').focus();
-                    document.getElementById('quantityInput').select();
+                    setTimeout(() => { // Mobil cihazlarda odaklanmayı garantilemek için küçük bir gecikme ekliyoruz
+                        const quantityInput = document.getElementById('quantityInput');
+                        if (quantityInput) {
+                            quantityInput.focus();
+                            quantityInput.select();
+                        }
+                    }, 150);
                 });
 
                 quantityModalEl.addEventListener('hidden.bs.modal', function () {
@@ -384,8 +389,13 @@
                     const priceModal = new bootstrap.Modal(priceModalEl);
 
                     priceModalEl.addEventListener('shown.bs.modal', function () {
-                        document.getElementById('priceInput').focus();
-                        document.getElementById('priceInput').select();
+                        setTimeout(() => { // Odaklanmayı garantilemek için küçük bir gecikme
+                            const priceInput = document.getElementById('priceInput');
+                            if (priceInput) {
+                                priceInput.focus();
+                                priceInput.select();
+                            }
+                        }, 150);
                     });
                     
                     priceModalEl.addEventListener('hidden.bs.modal', function () {
