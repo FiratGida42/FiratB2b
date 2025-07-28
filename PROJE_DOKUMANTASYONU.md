@@ -170,7 +170,8 @@ Bu dosya, projenin FastAPI tabanlı web uygulamasının ana mantığını içeri
 - **Veritabanı Entegrasyonu:**
     - `b2b_web_app/models.py` (SQLAlchemy modelleri) ve `b2b_web_app/database.py` (veritabanı motoru, oturum oluşturma) dosyaları ile entegrasyon sağlanır.
     - `get_db` dependency'si ile her request için bir veritabanı oturumu elde edilir.
-    - Alembic kullanıldığı için `Base.metadata.create_all(bind=engine)` satırı yorumlanmıştır.
+    - Uygulama başladığında FastAPI startup event'i ile tablolar otomatik olarak oluşturulur (`Base.metadata.create_all(bind=engine)`).
+    - **Basit SQLAlchemy Yaklaşımı:** Migration sistemleri yerine uygulama her başladığında gerekli tabloları otomatik oluşturur.
 - **API Anahtarları ve Güvenlik:**
     - `PRODUCTS_API_KEY_VALUE`: Masaüstü uygulamasından ürün verilerini almak için kullanılan API anahtarı. Ortam değişkeni (`PRODUCTS_API_KEY`) veya `settings.json` üzerinden alınır.
     - `CUSTOMER_SYNC_API_KEY_VALUE`: Cari senkronizasyonu için kullanılan API anahtarı (`SERVER_API_KEY` ortam değişkeninden).
@@ -390,6 +391,25 @@ Bu betik, `background_scheduler_cariler.pyw`'ye benzer bir yapıya sahip olup, S
 
 Web uygulaması, sipariş verilerini kalıcı olarak saklamak için bir veritabanı kullanır. SQLAlchemy ORM (Object Relational Mapper) aracılığıyla bu veritabanı ile etkileşim kurar.
 
+#### 🔧 **Basit SQLAlchemy Tablo Yönetimi Sistemi**
+
+Proje, migration sistemleri (Alembic vb.) yerine basit ve güvenilir bir yaklaşım kullanır:
+
+**Otomatik Tablo Oluşturma:**
+- Web uygulaması başladığında FastAPI startup event'i tetiklenir
+- `Base.metadata.create_all(bind=engine)` komutu çalışarak gerekli tablolar otomatik oluşturulur
+- Eğer tablolar zaten varsa, var olanları korur (üzerine yazmaz)
+
+**Manuel Tablo Oluşturma (Yedek):**
+- `create_tables.py` standalone script'i ile manuel olarak tablolar oluşturulabilir
+- Bu script Alembic'e bağımlı değildir ve bağımsız çalışır
+
+**Avantajları:**
+- ✅ Migration dosyaları ve komplekslik yok
+- ✅ Deployment sorunları yaşanmaz
+- ✅ Basit ve güvenilir sistem
+- ✅ Her environment'ta tutarlı çalışır
+
 #### a. Veritabanı Modelleri (`b2b_web_app/models.py`)
 
 Bu dosya, veritabanı tablolarına karşılık gelen Python sınıflarını (SQLAlchemy modelleri) tanımlar.
@@ -428,7 +448,7 @@ Bu dosya, veritabanı tablolarına karşılık gelen Python sınıflarını (SQL
 **Kullanım:**
 
 -   Bu modeller, `b2b_web_app/main.py` içindeki API endpoint'leri tarafından sipariş oluşturma (`/api/orders POST`), listeleme (`/api/orders GET`), detay görme (`/api/orders/{order_id} GET`) ve durum güncelleme (`/api/orders/{order_id}/status PUT`) işlemleri sırasında SQLAlchemy aracılığıyla veritabanı ile etkileşim kurmak için kullanılır.
--   Alembic gibi bir veritabanı migration aracı (proje dosyalarında `alembic.ini` ve `alembic` klasörü olduğuna göre muhtemelen kullanılıyor) bu modellerdeki değişiklikleri veritabanı şemasına uygulamak için kullanılır.
+-   Modellerdeki değişiklikler web uygulaması yeniden başlatıldığında otomatik olarak veritabanına uygulanır (basit yaklaşım).
 
 #### b. Veritabanı Kurulumu ve Oturum Yönetimi (`b2b_web_app/database.py`)
 
@@ -464,7 +484,7 @@ Bu dosya, SQLAlchemy kullanarak veritabanı bağlantısını kurmak, oturumları
 -   `engine` ve `Base`, `b2b_web_app/models.py` dosyası tarafından modelleri tanımlamak ve veritabanı ile ilişkilendirmek için kullanılır.
 -   `SessionLocal`, `get_db` fonksiyonu içinde oturumlar oluşturmak için kullanılır.
 -   `get_db` fonksiyonu, `b2b_web_app/main.py` içindeki veritabanı işlemi gerektiren API endpoint'lerine `Depends(get_db)` şeklinde enjekte edilir.
--   Alembic (eğer kullanılıyorsa), veritabanı şeması migration'ları için `SQLALCHEMY_DATABASE_URL`'i kullanır.
+-   Uygulama başladığında `engine` üzerinden `Base.metadata.create_all()` çağrısıyla tablolar otomatik oluşturulur.
 
 ### 7. Cari Yönetim Modülü (Masaüstü Arayüzü - `customers_module.py`)
 
@@ -684,4 +704,59 @@ Bu modül, B2B masaüstü uygulamasının kullanıcı arayüzü (GUI) elemanlar�
     *   Sol menüdeki genel `QListWidget` stilinden biraz farklılaşan, `objectName` ile hedeflenmiş özel stiller.
     *   Farklı padding, yazı tipi boyutu (`10pt`).
     *   Seçili öğe (`::item:selected`) için daha açık bir arka plan rengi (`#cce5ff`) ve farklı metin rengi.
+
+## 12. Tablo Oluşturma Script'i (`create_tables.py`)
+
+Bu standalone script, web uygulamasından bağımsız olarak veritabanı tablolarını manuel oluşturmak için kullanılır.
+
+#### Temel İşleyiş:
+
+- **Bağımsız Çalışma:** Alembic veya web uygulamasına bağımlı değildir
+- **Environment Detection:** `DATABASE_URL` ortam değişkenini kontrol eder
+- **Fallback Mechanism:** Ortam değişkeni yoksa yerel SQLite dosyası kullanır
+- **SQLAlchemy Integration:** `Base.metadata.create_all()` ile tablolar oluşturulur
+
+#### Kullanım:
+
+```bash
+python create_tables.py
+```
+
+#### Çıktı Örneği:
+
+```
+CREATE_TABLES: Manuel tablo oluşturma işlemi başlatılıyor...
+CREATE_TABLES: Veritabanı URL'si: sqlite:///C:\path\to\b2b_database.db
+CREATE_TABLES: Tablolar oluşturuluyor...
+✅ CREATE_TABLES: Tablolar başarıyla oluşturuldu!
+CREATE_TABLES: İşlem tamamlandı.
+```
+
+## 13. Sistem Değişiklikleri ve Güncellemeler
+
+### 🚀 **Alembic'den SQLAlchemy Otomatik Tablo Oluşturmaya Geçiş**
+
+**Kaldırılan Bileşenler:**
+- `alembic/` klasörü ve tüm migration dosyaları
+- `alembic.ini` konfigürasyon dosyası
+- `requirements.txt`'den `alembic` ve `mako` paketleri
+- `init_db.py` (artık gereksiz)
+
+**Eklenen Bileşenler:**
+- FastAPI startup event ile otomatik tablo oluşturma
+- `create_tables.py` standalone script'i
+- `.renderignore` dosyası (Poetry'yi devre dışı bırakmak için)
+- `runtime.txt` dosyası (Python runtime belirtmek için)
+
+**Deployment Komutları:**
+- **Build Command:** `echo "Using pip instead of poetry"`
+- **Start Command:** `pip install -r requirements.txt && python -m uvicorn b2b_web_app.main:app --host 0.0.0.0 --port $PORT`
+
+**Avantajlar:**
+- ✅ Migration sorunları tamamen eliminasyonu
+- ✅ Deployment kompleksitesinin azalması
+- ✅ Basit ve güvenilir sistem
+- ✅ Yeni environment'larda hızlı kurulum
+- ✅ Alembic dependency'si olmadığı için daha az hata riski
+
 --- 
