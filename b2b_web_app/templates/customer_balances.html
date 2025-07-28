@@ -83,22 +83,6 @@
     <div class="container mt-4" style="padding-top: 20px;">
         <h1 class="mb-4">{{ title }}</h1>
 
-        <div class="row justify-content-center mb-3">
-            <div class="col-md-10 col-lg-8">
-                <div class="alert alert-info text-center">
-                    <h5 class="alert-heading">Veri Güncelleme</h5>
-                    <p>Cari bakiye verileri otomatik olarak güncel verilerden alınmaktadır.</p>
-                    <a href="/products" class="btn btn-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M2 13.5V7h1v6.5a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V7h1v6.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5ZM3 7V6a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v1h1a1 1 0 0 1 1 1v5.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 14.5V8a1 1 0 0 1 1-1h1Zm10-2V6H3v1h10Z"/>
-                            <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v.5h1V7.207l6-6 6 6V8h1v-.5a.5.5 0 0 0-.146-.354l-6-6Z"/>
-                        </svg>
-                        Ana Sayfaya Git
-                    </a>
-                </div>
-            </div>
-        </div>
-
         <div id="table-container" class="table-responsive">
             <table id="customerBalancesTable" class="table table-striped table-hover table-sm" style="width:100%">
                 <thead class="table-dark">
@@ -109,7 +93,6 @@
                         <th scope="col" class="text-end">Borç Bakiyesi</th>
                         <th scope="col" class="text-end">Alacak Bakiyesi</th>
                         <th scope="col" class="text-end">Net Bakiye</th>
-                        <th scope="col">Grup Kodu</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -165,7 +148,6 @@
                             <td class="text-end" data-order="${customer.BORC_BAKIYESI || 0}">${formatCurrency(customer.BORC_BAKIYESI)}</td>
                             <td class="text-end" data-order="${customer.ALACAK_BAKIYESI || 0}">${formatCurrency(customer.ALACAK_BAKIYESI)}</td>
                             <td class="text-end fw-bold" data-order="${customer.NET_BAKIYE || 0}">${formatCurrency(customer.NET_BAKIYE)}</td>
-                            <td>${customer.GRUP_KODU || '-'}</td>
                         </tr>
                     `;
                     tableBody.append(row);
