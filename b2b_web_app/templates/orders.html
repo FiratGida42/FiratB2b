@@ -366,7 +366,9 @@
                     // Genellikle Flask/Django gibi frameworklerde /static/... şeklinde direkt erişim olur.
                     // Tarayıcıdan direkt HTML dosyası açılıyorsa, dosya yapısına göre ../static/... gibi olur.
                     // Flask kullandığınızı varsayarak /static/... kullanıyorum, eğer farklıysa düzeltmeniz gerekebilir.
-                    const response = await fetch('/static/json_data/filtrelenen_cariler.json'); 
+                    const response = await fetch('/api/customers', {
+                        credentials: 'include'
+                    }); 
                     if (!response.ok) {
                         throw new Error(`Müşteri listesi yüklenemedi: ${response.status} ${response.statusText}`);
                     }
