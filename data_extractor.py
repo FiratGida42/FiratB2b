@@ -73,6 +73,24 @@ def _convert_numeric_fields_in_row(row_dict, field_list=NUMERIC_FIELDS_TO_CONVER
             row_dict[key] = to_decimal(row_dict[key])
     return row_dict
 
+def get_preferred_sql_driver() -> str:
+    """Sistemde kurulu olan en uygun SQL Server ODBC sürücüsünü döndürür.
+
+    Öncelik: 'ODBC Driver 18 for SQL Server' > 'ODBC Driver 17 for SQL Server' > 'SQL Server'
+    """
+    try:
+        available_drivers = [d.strip() for d in pyodbc.drivers()]
+    except Exception:
+        # pyodbc.drivers çağrısı başarısız olursa güvenli varsayılanı kullan
+        available_drivers = []
+
+    if any('ODBC Driver 18 for SQL Server' == d for d in available_drivers):
+        return 'ODBC Driver 18 for SQL Server'
+    if any('ODBC Driver 17 for SQL Server' == d for d in available_drivers):
+        return 'ODBC Driver 17 for SQL Server'
+    # Eski/generic sürücü
+    return 'SQL Server'
+
 def get_db_connection_settings():
     '''settings.json dosyasından sunucu, kullanıcı adı ve veritabanı adını okur.'''
     try:
@@ -101,8 +119,10 @@ def get_db_connection(caller_info: str = "Unknown"):
         logging.error(f"get_db_connection (called by {caller_info}): '{user}' için şifre keyring'de bulunamadı.")
         return None
 
+    driver_name = get_preferred_sql_driver()
+    # ODBC 18'de Encrypt varsayılanı 'yes' olduğu için TrustServerCertificate ile birlikte çalışır
     conn_str = (
-        f"DRIVER={{ODBC Driver 17 for SQL Server}};" 
+        f"DRIVER={{{driver_name}}};"
         f"SERVER={server};"
         f"DATABASE={db_name};"
         f"UID={user};"
@@ -228,13 +248,14 @@ def extract_data_from_db(connection_params):
 
     products = []
     try:
+        driver_name = get_preferred_sql_driver()
         conn_str = (
-            f'DRIVER={{SQL Server}};'
+            f'DRIVER={{{driver_name}}};'
             f'SERVER={server};'
             f'DATABASE={database};'
             f'UID={username};'
             f'PWD={password};'
-            f'TrustServerCertificate=yes;' 
+            f'TrustServerCertificate=yes;'
         )
         conn = pyodbc.connect(conn_str, timeout=10)
         cursor = conn.cursor()

@@ -113,6 +113,7 @@ def load_configuration():
     try:
         with open(SETTINGS_FILE, 'r', encoding='utf-8') as f:
             settings = json.load(f)
+            # Doğru anahtar adı: customer_sync_api_key
             API_KEY = settings.get("customer_sync_api_key")
             if not API_KEY:
                 main_logger.critical(f"KRİTİK HATA: 'customer_sync_api_key' {SETTINGS_FILE} dosyasında bulunamadı veya boş. Script çalıştırılamıyor.")

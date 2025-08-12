@@ -804,6 +804,16 @@ class MainWindow(QMainWindow):
                     password = keyring.get_password(SERVICE_NAME, username_for_keyring)
                     if password:
                         self.password_input.setText(password)
+                    else:
+                        # Eğer keyring'de şifre yoksa ve kullanıcı adı "sa" ise varsayılan şifreyi ayarla
+                        if username_for_keyring == "sa":
+                            self.password_input.setText("sapass")
+                            # Şifreyi keyring'e kaydet
+                            try:
+                                keyring.set_password(SERVICE_NAME, "sa", "sapass")
+                                self.status_bar.showMessage("FIRATSRV şifresi keyring'e kaydedildi.", 3000)
+                            except Exception as e:
+                                self.status_bar.showMessage(f"Şifre keyring'e kaydedilemedi: {e}", 3000)
                 
                 user_prefs = settings_data.get("user_preferences", {})
                 self.excluded_group_codes_pref = user_prefs.get("excluded_group_codes", [])
@@ -817,7 +827,11 @@ class MainWindow(QMainWindow):
                 self.status_bar.showMessage("Ayarlar, kullanıcı tercihleri ve zamanlayıcı ayarları yüklendi.", 3000)
         
         except FileNotFoundError:
-            self.status_bar.showMessage(f"{SETTINGS_FILE} bulunamadı. İlk çalıştırma olabilir.", 3000)
+            self.status_bar.showMessage(f"{SETTINGS_FILE} bulunamadı. FIRATSRV sunucusu için varsayılan ayarlar yükleniyor.", 3000)
+            # FIRATSRV sunucusu için varsayılan değerler
+            self.server_address_input.setText("FIRATSRV")
+            self.username_input.setText("sa")
+            self.password_input.setText("sapass")
             self.excluded_group_codes_pref = []
             self.scheduler_enabled_checkbox.setChecked(False)
             self.scheduler_interval_spinbox.setValue(30)
@@ -830,6 +844,10 @@ class MainWindow(QMainWindow):
             self.scheduler_interval_spinbox.setValue(30)
             # self.auto_download_images_checkbox.setChecked(False) # Hata durumunda varsayılan - KALDIRILDI
         finally:
+            # Eğer settings.json dosyası yoksa, varsayılan ayarları kaydet
+            if not os.path.exists(SETTINGS_FILE):
+                self._save_default_settings()
+            
             # Ayarlar yüklendikten sonra (veya hata durumunda bile) grup filtresini dosyadan doldurmayı dene
             # ve tabloyu başlangıçta boşalt/güncelle.
             # Bu işlem artık change_view veya preview_product_data içinde yönetilecek.
@@ -938,8 +956,20 @@ class MainWindow(QMainWindow):
 
         self.status_bar.showMessage(f"{server} sunucusundaki veritabanları listeleniyor...", 3000)
 
+        # Sistemde kurulu SQL Server ODBC sürücüsünü tespit et (18 > 17 > generic)
+        try:
+            drivers = [d.strip() for d in pyodbc.drivers()]
+        except Exception:
+            drivers = []
+        if any(d == 'ODBC Driver 18 for SQL Server' for d in drivers):
+            driver_name = 'ODBC Driver 18 for SQL Server'
+        elif any(d == 'ODBC Driver 17 for SQL Server' for d in drivers):
+            driver_name = 'ODBC Driver 17 for SQL Server'
+        else:
+            driver_name = 'SQL Server'
+
         conn_str = (
-            f"DRIVER={{ODBC Driver 17 for SQL Server}};" +
+            f"DRIVER={{{driver_name}}};" +
             f"SERVER={server};" +
             f"UID={user};" +
             f"PWD={password};" +
@@ -975,6 +1005,37 @@ class MainWindow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Veritabanı Listeleme Hatası", f"Beklenmedik bir hata oluştu: {e}")
             self.status_bar.showMessage("Veritabanı listeleme hatası!", 3000)
+
+    def _save_default_settings(self):
+        '''
+        FIRATSRV sunucusu için varsayılan ayarları settings.json dosyasına kaydeder.
+        Bu fonksiyon sadece ilk çalıştırmada kullanılır.
+        '''
+        settings_data = {
+            "server_address": "FIRATSRV",
+            "username": "sa",
+            "db_name": "",  # Veritabanı adı boş bırakılır, kullanıcı seçecek
+            "products_api_key": "",
+            "scheduler_settings": {
+                "enabled": False,
+                "interval_minutes": 30
+            },
+            "user_preferences": {
+                "excluded_group_codes": []
+            }
+        }
+
+        try:
+            with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
+                json.dump(settings_data, f, ensure_ascii=False, indent=4)
+            
+            # Şifreyi keyring'e kaydet
+            keyring.set_password(SERVICE_NAME, "sa", "sapass")
+            
+            self.status_bar.showMessage("FIRATSRV sunucusu için varsayılan ayarlar kaydedildi.", 3000)
+
+        except Exception as e:
+            self.status_bar.showMessage(f"Varsayılan ayarlar kaydedilemedi: {e}", 3000)
 
     def save_settings(self):
         '''

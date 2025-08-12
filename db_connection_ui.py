@@ -169,13 +169,24 @@ class DBConnectionUI(QMainWindow):
         # ODBC Driver 17 for SQL Server yaygın bir sürücüdür.
         # Eğer farklı bir sürücü kullanılıyorsa, burası güncellenmeli.
         # TrustServerCertificate=yes eklenerek SSL sertifika hataları bazı durumlarda bypass edilebilir (test ortamları için).
+        # Sistemde mevcut olan SQL Server ODBC sürücüsünü otomatik seç
+        try:
+            drivers = [d.strip() for d in pyodbc.drivers()]
+        except Exception:
+            drivers = []
+        if any(d == 'ODBC Driver 18 for SQL Server' for d in drivers):
+            driver_name = 'ODBC Driver 18 for SQL Server'
+        elif any(d == 'ODBC Driver 17 for SQL Server' for d in drivers):
+            driver_name = 'ODBC Driver 17 for SQL Server'
+        else:
+            driver_name = 'SQL Server'
+
         conn_str = (
-            f"DRIVER={{ODBC Driver 17 for SQL Server}};" +
+            f"DRIVER={{{driver_name}}};" +
             f"SERVER={server};" +
-            #f"DATABASE={db_name};" # Veritabanı listelemek için spesifik bir db adına gerek yok
             f"UID={user};" +
             f"PWD={password};" +
-            f"TrustServerCertificate=yes;" # Geliştirme ortamında sertifika hatalarını önlemek için
+            f"TrustServerCertificate=yes;"
         )
         
         try:
